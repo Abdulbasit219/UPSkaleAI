@@ -36,7 +36,7 @@ The system is focused on **learning & understanding** rather than just copy-past
 - **Abdul Basit (CSC-22S-008)** – Co-Lead
 - **Hisham Ahmed (CSC-22s-052)** - Team-Member
 
-**Supervisor:** Dr. Aftab Ahmed Sheikh  
+**Supervisor:** Dr. Sarmad Sheikh  
 
 ---
 
