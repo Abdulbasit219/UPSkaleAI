@@ -9,14 +9,14 @@ const connectDB = async () => {
     return;
   }
 
-  const uri = process.env.MONGODB_URL;
+  const url = process.env.MONGODB_URL;
 
-   if (!uri) {
+   if (!url) {
     throw new Error("MONGODB_URI is not defined in .env.local");
   }
 
   try {
-    const db = await mongoose.connect(uri);
+    const db = await mongoose.connect(url);
 
     isConnected = db.connection.readyState === 1;
 
