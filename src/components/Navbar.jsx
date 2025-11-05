@@ -28,10 +28,10 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-gray-300 hover:text-white transition-colors">Features</a>
-            <a href="#how-it-works" className="text-gray-300 hover:text-white transition-colors">How It Works</a>
-            <a href="#pricing" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
-            
+            <Link href="/features" className="text-gray-300 hover:text-white transition-colors">Features</Link>
+            <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors">How It Works</Link>
+            <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors">Pricing</Link>
+    
             {/* Changed from button to Link */}
             <Link href="/sign-in" className="text-gray-300 hover:text-white transition-colors">
               Login

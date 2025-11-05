@@ -16,7 +16,7 @@ export async function middleware(request) {
     token &&
     (url.pathname.startsWith("/sign-in") || url.pathname.startsWith("/sign-up"))
   ) {
-    return NextResponse.redirect(new URL("/home", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   // If user is not logged in and tries to access dashboard → redirect to sign-in
