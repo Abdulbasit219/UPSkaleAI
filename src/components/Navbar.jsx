@@ -24,7 +24,7 @@ const Navbar = () => {
   ];
 
   const userMenuItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: <Sparkles className="w-4 h-4" /> },
+    { name: 'Dashboard', href: '/dashboardd', icon: <Sparkles className="w-4 h-4" /> },
     { name: 'Profile', href: '/profile', icon: <User className="w-4 h-4" /> },
     { name: 'Settings', href: '/settings', icon: <Settings className="w-4 h-4" /> },
     { name: 'Sign Out', href: '/sign-out', icon: <LogOut className="w-4 h-4" /> },
@@ -107,7 +107,7 @@ const Navbar = () => {
               </Link>
               
               <Link 
-                href="/sign-up" 
+                href="/signup" 
                 className="group relative px-6 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-white hover:shadow-2xl hover:shadow-purple-500/40 transition-all duration-300 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
@@ -201,7 +201,7 @@ const Navbar = () => {
               </Link>
               
               <Link
-                href="/sign-up"
+                href="/signup"
                 onClick={() => setIsMenuOpen(false)}
                 className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
               >

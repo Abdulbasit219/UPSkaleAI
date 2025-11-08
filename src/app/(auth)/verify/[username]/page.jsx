@@ -181,7 +181,7 @@ const Page = () => {
             <p className="text-gray-400 text-sm">
               Wrong email?{" "}
               <Link 
-                href="/sign-up" 
+                href="/signup" 
                 className="text-purple-400 hover:text-purple-300 font-semibold transition-colors"
               >
                 Sign up again

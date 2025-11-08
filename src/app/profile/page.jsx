@@ -15,13 +15,13 @@ export default function ProfilePage() {
 
   // Mock user data
   const userData = {
-    name: "Alex Johnson",
-    username: "@alexj",
+    name: "Ali",
+    username: "@ali",
     role: "Aspiring Full-Stack Developer",
-    location: "San Francisco, CA",
+    location: "Karachi, Pakistan",
     memberSince: "January 2024",
     bio: "Passionate about building scalable web applications and learning new technologies. Currently focused on mastering React and Node.js while building real-world projects.",
-    email: "alex.johnson@example.com",
+    email: "ali@example.com",
     avatar: null,
     coverPhoto: null,
   };
