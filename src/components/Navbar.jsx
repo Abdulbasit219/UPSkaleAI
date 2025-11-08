@@ -18,7 +18,7 @@ const Navbar = () => {
 
   const navItems = [
     { name: 'Home', href: '/', icon: <Home className="w-4 h-4" /> },
-    { name: 'Features', href: '/#features', icon: <Sparkles className="w-4 h-4" /> },
+    { name: 'Features', href: '/features', icon: <Sparkles className="w-4 h-4" /> },
     { name: 'How It Works', href: '/how-it-works', icon: <BookOpen className="w-4 h-4" /> },
     { name: 'Pricing', href: '/pricing', icon: <DollarSign className="w-4 h-4" /> },
   ];
