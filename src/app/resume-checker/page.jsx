@@ -26,6 +26,8 @@ import {
   Clock,
   Users,
   Crown,
+  Trophy,
+
 } from "lucide-react";
 
 export default function ATSResumeChecker() {

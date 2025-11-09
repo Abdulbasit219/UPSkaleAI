@@ -80,6 +80,12 @@ const Navbar = () => {
       icon: <FileCheck className="w-4 h-4" />,
       description: "ATS optimization",
     },
+      {
+      name: "Code Twin AI",
+      href: "/code-twin",
+      icon: <Bot className="w-4 h-4" />,
+      description: "AI coding assistant",
+    },
     {
       name: "Career Path",
       href: "/career-path",
@@ -91,12 +97,6 @@ const Navbar = () => {
       href: "/assessment",
       icon: <Trophy className="w-4 h-4" />,
       description: "Test your skills",
-    },
-    {
-      name: "Code Twin AI",
-      href: "/code-twin",
-      icon: <Bot className="w-4 h-4" />,
-      description: "AI coding assistant",
     },
     {
       name: "Analytics",
@@ -208,7 +208,7 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              {/* Resources Dropdown - FIXED VERSION */}
+              {/* Resources Dropdown  */}
               <div className="relative">
                 <div
                   onMouseEnter={handleMouseEnter}
