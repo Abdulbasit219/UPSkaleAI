@@ -6,6 +6,7 @@ import {
   Clock,
   DollarSign,
   Building,
+  Eye,
   Users,
   Target,
   Star,
@@ -34,10 +35,13 @@ import {
   Linkedin,
 } from "lucide-react";
 import Link from "next/link";
+import { useSelector } from "react-redux";
 
 export default function JobDetailsPage({ jobId }) {
   const [activeTab, setActiveTab] = useState("overview");
   const [isSaved, setIsSaved] = useState(false);
+    const theme = useSelector((state) => state.theme.mode);
+    const isDark = theme === 'dark';
 
   // Mock job data - in real app, this would come from props or API
   const job = {
@@ -158,17 +162,26 @@ export default function JobDetailsPage({ jobId }) {
     { id: "process", label: "Process", icon: <Target className="w-4 h-4" /> },
   ];
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 pt-20">
+ return (
+  <>
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDark 
+        ? 'bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white'
+        : 'bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50 text-gray-900'
+    }`}>
       {/* Background Pattern */}
-      <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjAzIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30 pointer-events-none" />
+      <div className={`fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjAzIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30 pointer-events-none ${
+        isDark ? '' : 'invert'
+      }`} />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-20">
         {/* Header Navigation */}
         <div className="flex items-center justify-between mb-8">
           <Link
             href="/jobsearch"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
+            className={`flex items-center gap-2 transition-colors group ${
+              isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+            }`}
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             Back to Jobs
@@ -177,10 +190,14 @@ export default function JobDetailsPage({ jobId }) {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsSaved(!isSaved)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all border ${
                 isSaved
-                  ? "text-yellow-400 bg-yellow-500/20 border border-yellow-500/30"
-                  : "text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10 border border-slate-700"
+                  ? "text-yellow-400 bg-yellow-500/20 border-yellow-500/30"
+                  : `${
+                      isDark
+                        ? "text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10 border-slate-700"
+                        : "text-gray-600 hover:text-yellow-500 hover:bg-yellow-100 border-gray-300"
+                    }`
               }`}
             >
               <Bookmark
@@ -188,7 +205,11 @@ export default function JobDetailsPage({ jobId }) {
               />
               {isSaved ? "Saved" : "Save"}
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-white hover:bg-slate-800 rounded-xl font-medium transition-all border border-slate-700">
+            <button className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all border ${
+              isDark
+                ? "text-gray-400 hover:text-white hover:bg-slate-800 border-slate-700"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-gray-300"
+            }`}>
               <Share2 className="w-4 h-4" />
               Share
             </button>
@@ -199,15 +220,23 @@ export default function JobDetailsPage({ jobId }) {
           {/* Main Content */}
           <div className="lg:col-span-3">
             {/* Job Header */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6 mb-6">
+            <div className={`backdrop-blur-xl border rounded-2xl p-6 mb-6 ${
+              isDark
+                ? 'bg-slate-900/50 border-purple-500/20'
+                : 'bg-white/80 border-purple-300/30'
+            }`}>
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl flex items-center justify-center text-4xl border border-purple-500/20">
+                  <div className={`w-20 h-20 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl flex items-center justify-center text-4xl border ${
+                    isDark ? 'border-purple-500/20' : 'border-purple-300/20'
+                  }`}>
                     {job.logo}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
-                      <h1 className="text-3xl font-bold text-white">
+                      <h1 className={`text-3xl font-bold ${
+                        isDark ? 'text-white' : 'text-gray-900'
+                      }`}>
                         {job.title}
                       </h1>
                       {job.featured && (
@@ -223,7 +252,9 @@ export default function JobDetailsPage({ jobId }) {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-4 text-gray-400 mb-3 flex-wrap">
+                    <div className={`flex items-center gap-4 mb-3 flex-wrap ${
+                      isDark ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
                       <div className="flex items-center gap-2 font-medium">
                         <Building className="w-4 h-4" />
                         {job.company}
@@ -239,7 +270,9 @@ export default function JobDetailsPage({ jobId }) {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-6 text-sm text-gray-400 flex-wrap">
+                    <div className={`flex items-center gap-6 text-sm flex-wrap ${
+                      isDark ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
                       <div className="flex items-center gap-2">
                         <Briefcase className="w-4 h-4" />
                         {job.type}
@@ -271,7 +304,9 @@ export default function JobDetailsPage({ jobId }) {
                       </span>
                     </div>
                   </div>
-                  <div className="text-gray-400 text-sm mt-2">
+                  <div className={`text-sm mt-2 ${
+                    isDark ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
                     AI Match Score
                   </div>
                 </div>
@@ -282,7 +317,11 @@ export default function JobDetailsPage({ jobId }) {
                 {job.skills.map((skill, index) => (
                   <span
                     key={index}
-                    className="px-4 py-2 bg-purple-500/10 text-purple-300 rounded-xl text-sm border border-purple-500/20 hover:bg-purple-500/20 hover:border-purple-500/40 transition-all font-medium"
+                    className={`px-4 py-2 rounded-xl text-sm border font-medium transition-all ${
+                      isDark
+                        ? 'bg-purple-500/10 text-purple-300 border-purple-500/20 hover:bg-purple-500/20 hover:border-purple-500/40'
+                        : 'bg-purple-100 text-purple-700 border-purple-300/20 hover:bg-purple-200 hover:border-purple-400/40'
+                    }`}
                   >
                     {skill}
                   </span>
@@ -290,7 +329,11 @@ export default function JobDetailsPage({ jobId }) {
               </div>
 
               {/* Stats */}
-              <div className="flex items-center gap-6 text-sm text-gray-400 border-t border-purple-500/20 pt-4">
+              <div className={`flex items-center gap-6 text-sm border-t pt-4 ${
+                isDark 
+                  ? 'text-gray-400 border-purple-500/20' 
+                  : 'text-gray-600 border-purple-300/20'
+              }`}>
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
                   {job.applicants} applicants
@@ -307,7 +350,11 @@ export default function JobDetailsPage({ jobId }) {
             </div>
 
             {/* Tabs Navigation */}
-            <div className="flex items-center gap-1 mb-6 bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-2">
+            <div className={`flex items-center gap-1 mb-6 backdrop-blur-xl border rounded-2xl p-2 ${
+              isDark
+                ? 'bg-slate-900/50 border-purple-500/20'
+                : 'bg-white/80 border-purple-300/30'
+            }`}>
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
@@ -315,7 +362,11 @@ export default function JobDetailsPage({ jobId }) {
                   className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all flex-1 justify-center ${
                     activeTab === tab.id
                       ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30"
-                      : "text-gray-400 hover:text-white hover:bg-white/5"
+                      : `${
+                          isDark
+                            ? "text-gray-400 hover:text-white hover:bg-white/5"
+                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                        }`
                   }`}
                 >
                   {tab.icon}
@@ -325,21 +376,31 @@ export default function JobDetailsPage({ jobId }) {
             </div>
 
             {/* Tab Content */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6">
+            <div className={`backdrop-blur-xl border rounded-2xl p-6 ${
+              isDark
+                ? 'bg-slate-900/50 border-purple-500/20'
+                : 'bg-white/80 border-purple-300/30'
+            }`}>
               {/* Overview Tab */}
               {activeTab === "overview" && (
                 <div className="space-y-8">
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-4">
+                    <h2 className={`text-2xl font-bold mb-4 ${
+                      isDark ? 'text-white' : 'text-gray-900'
+                    }`}>
                       Job Description
                     </h2>
-                    <p className="text-gray-300 leading-relaxed">
+                    <p className={`leading-relaxed ${
+                      isDark ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       {job.description}
                     </p>
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <h3 className={`text-xl font-bold mb-4 flex items-center gap-2 ${
+                      isDark ? 'text-white' : 'text-gray-900'
+                    }`}>
                       <CheckCircle className="w-5 h-5 text-green-400" />
                       Key Responsibilities
                     </h3>
@@ -347,9 +408,13 @@ export default function JobDetailsPage({ jobId }) {
                       {job.responsibilities.map((item, index) => (
                         <li
                           key={index}
-                          className="flex items-start gap-3 text-gray-300"
+                          className={`flex items-start gap-3 ${
+                            isDark ? 'text-gray-300' : 'text-gray-700'
+                          }`}
                         >
-                          <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
+                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                            isDark ? 'bg-purple-400' : 'bg-purple-500'
+                          }`} />
                           {item}
                         </li>
                       ))}
@@ -357,7 +422,9 @@ export default function JobDetailsPage({ jobId }) {
                   </div>
 
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <h3 className={`text-xl font-bold mb-4 flex items-center gap-2 ${
+                      isDark ? 'text-white' : 'text-gray-900'
+                    }`}>
                       <Target className="w-5 h-5 text-blue-400" />
                       Requirements
                     </h3>
@@ -365,9 +432,13 @@ export default function JobDetailsPage({ jobId }) {
                       {job.requirements.map((item, index) => (
                         <li
                           key={index}
-                          className="flex items-start gap-3 text-gray-300"
+                          className={`flex items-start gap-3 ${
+                            isDark ? 'text-gray-300' : 'text-gray-700'
+                          }`}
                         >
-                          <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
+                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                            isDark ? 'bg-blue-400' : 'bg-blue-500'
+                          }`} />
                           {item}
                         </li>
                       ))}
@@ -380,41 +451,55 @@ export default function JobDetailsPage({ jobId }) {
               {activeTab === "company" && (
                 <div className="space-y-8">
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-4">
+                    <h2 className={`text-2xl font-bold mb-4 ${
+                      isDark ? 'text-white' : 'text-gray-900'
+                    }`}>
                       About {job.companyInfo.name}
                     </h2>
-                    <p className="text-gray-300 leading-relaxed">
+                    <p className={`leading-relaxed ${
+                      isDark ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       {job.companyInfo.description}
                     </p>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-white">
+                      <h3 className={`text-lg font-semibold ${
+                        isDark ? 'text-white' : 'text-gray-900'
+                      }`}>
                         Company Details
                       </h3>
                       <div className="space-y-3">
-                        <div className="flex justify-between py-2 border-b border-purple-500/20">
-                          <span className="text-gray-400">Company Size</span>
-                          <span className="text-white">
+                        <div className={`flex justify-between py-2 border-b ${
+                          isDark ? 'border-purple-500/20' : 'border-gray-200'
+                        }`}>
+                          <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Company Size</span>
+                          <span className={isDark ? 'text-white' : 'text-gray-900'}>
                             {job.companyInfo.size}
                           </span>
                         </div>
-                        <div className="flex justify-between py-2 border-b border-purple-500/20">
-                          <span className="text-gray-400">Founded</span>
-                          <span className="text-white">
+                        <div className={`flex justify-between py-2 border-b ${
+                          isDark ? 'border-purple-500/20' : 'border-gray-200'
+                        }`}>
+                          <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Founded</span>
+                          <span className={isDark ? 'text-white' : 'text-gray-900'}>
                             {job.companyInfo.founded}
                           </span>
                         </div>
-                        <div className="flex justify-between py-2 border-b border-purple-500/20">
-                          <span className="text-gray-400">Industry</span>
-                          <span className="text-white">
+                        <div className={`flex justify-between py-2 border-b ${
+                          isDark ? 'border-purple-500/20' : 'border-gray-200'
+                        }`}>
+                          <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Industry</span>
+                          <span className={isDark ? 'text-white' : 'text-gray-900'}>
                             {job.companyInfo.industry}
                           </span>
                         </div>
-                        <div className="flex justify-between py-2 border-b border-purple-500/20">
-                          <span className="text-gray-400">Culture</span>
-                          <span className="text-white">
+                        <div className={`flex justify-between py-2 border-b ${
+                          isDark ? 'border-purple-500/20' : 'border-gray-200'
+                        }`}>
+                          <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Culture</span>
+                          <span className={isDark ? 'text-white' : 'text-gray-900'}>
                             {job.companyInfo.culture}
                           </span>
                         </div>
@@ -422,23 +507,37 @@ export default function JobDetailsPage({ jobId }) {
                     </div>
 
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-white">
+                      <h3 className={`text-lg font-semibold ${
+                        isDark ? 'text-white' : 'text-gray-900'
+                      }`}>
                         Company Links
                       </h3>
                       <div className="space-y-3">
                         <a
                           href={job.companyInfo.website}
-                          className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all group"
+                          className={`flex items-center gap-3 p-3 rounded-xl border transition-all group ${
+                            isDark
+                              ? 'bg-slate-800/50 border-purple-500/20 hover:border-purple-500/40'
+                              : 'bg-gray-50 border-purple-300/20 hover:border-purple-400/40'
+                          }`}
                         >
                           <Globe className="w-5 h-5 text-purple-400" />
-                          <span className="text-white group-hover:text-purple-300 transition-colors">
+                          <span className={`group-hover:text-purple-300 transition-colors ${
+                            isDark ? 'text-white' : 'text-gray-900'
+                          }`}>
                             Company Website
                           </span>
                           <ExternalLink className="w-4 h-4 text-gray-400 ml-auto" />
                         </a>
-                        <button className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all group w-full">
+                        <button className={`flex items-center gap-3 p-3 rounded-xl border transition-all group w-full ${
+                          isDark
+                            ? 'bg-slate-800/50 border-purple-500/20 hover:border-purple-500/40'
+                            : 'bg-gray-50 border-purple-300/20 hover:border-purple-400/40'
+                        }`}>
                           <Linkedin className="w-5 h-5 text-blue-400" />
-                          <span className="text-white group-hover:text-blue-300 transition-colors">
+                          <span className={`group-hover:text-blue-300 transition-colors ${
+                            isDark ? 'text-white' : 'text-gray-900'
+                          }`}>
                             LinkedIn Page
                           </span>
                         </button>
@@ -451,7 +550,9 @@ export default function JobDetailsPage({ jobId }) {
               {/* Benefits Tab */}
               {activeTab === "benefits" && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-white mb-6">
+                  <h2 className={`text-2xl font-bold mb-6 ${
+                    isDark ? 'text-white' : 'text-gray-900'
+                  }`}>
                     Compensation & Benefits
                   </h2>
 
@@ -459,20 +560,28 @@ export default function JobDetailsPage({ jobId }) {
                     {job.benefits.map((benefit, index) => (
                       <div
                         key={index}
-                        className="flex items-start gap-3 p-4 bg-slate-800/50 rounded-xl border border-purple-500/20"
+                        className={`flex items-start gap-3 p-4 rounded-xl border ${
+                          isDark
+                            ? 'bg-slate-800/50 border-purple-500/20'
+                            : 'bg-gray-50 border-purple-300/20'
+                        }`}
                       >
                         <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-300">{benefit}</span>
+                        <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>{benefit}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="p-6 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20">
-                    <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
+                  <div className={`p-6 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border ${
+                    isDark ? 'border-purple-500/20' : 'border-purple-300/20'
+                  }`}>
+                    <h3 className={`text-lg font-semibold mb-2 flex items-center gap-2 ${
+                      isDark ? 'text-white' : 'text-gray-900'
+                    }`}>
                       <Zap className="w-5 h-5 text-yellow-400" />
                       Why You'll Love Working Here
                     </h3>
-                    <p className="text-gray-300">
+                    <p className={isDark ? 'text-gray-300' : 'text-gray-700'}>
                       Join a team that values innovation, collaboration, and
                       work-life balance. We're committed to your professional
                       growth and provide ample opportunities for learning and
@@ -486,7 +595,9 @@ export default function JobDetailsPage({ jobId }) {
               {activeTab === "process" && (
                 <div className="space-y-8">
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-6">
+                    <h2 className={`text-2xl font-bold mb-6 ${
+                      isDark ? 'text-white' : 'text-gray-900'
+                    }`}>
                       Hiring Process
                     </h2>
                     <div className="space-y-4">
@@ -496,10 +607,14 @@ export default function JobDetailsPage({ jobId }) {
                             {index + 1}
                           </div>
                           <div className="flex-1">
-                            <div className="text-white font-medium mb-1">
+                            <div className={`font-medium mb-1 ${
+                              isDark ? 'text-white' : 'text-gray-900'
+                            }`}>
                               {step}
                             </div>
-                            <div className="text-gray-400 text-sm">
+                            <div className={`text-sm ${
+                              isDark ? 'text-gray-400' : 'text-gray-600'
+                            }`}>
                               Typically takes{" "}
                               {index === 0
                                 ? "1-2"
@@ -514,12 +629,20 @@ export default function JobDetailsPage({ jobId }) {
                     </div>
                   </div>
 
-                  <div className="p-6 bg-slate-800/50 rounded-xl border border-purple-500/20">
-                    <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                  <div className={`p-6 rounded-xl border ${
+                    isDark
+                      ? 'bg-slate-800/50 border-purple-500/20'
+                      : 'bg-gray-50 border-purple-300/20'
+                  }`}>
+                    <h3 className={`text-lg font-semibold mb-3 flex items-center gap-2 ${
+                      isDark ? 'text-white' : 'text-gray-900'
+                    }`}>
                       <Shield className="w-5 h-5 text-green-400" />
                       What to Expect
                     </h3>
-                    <ul className="space-y-2 text-gray-300">
+                    <ul className={`space-y-2 ${
+                      isDark ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       <li>
                         • Transparent communication throughout the process
                       </li>
@@ -536,15 +659,23 @@ export default function JobDetailsPage({ jobId }) {
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             {/* Apply Card */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6 sticky top-24">
+            <div className={`backdrop-blur-xl border rounded-2xl p-6 sticky top-24 ${
+              isDark
+                ? 'bg-slate-900/50 border-purple-500/20'
+                : 'bg-white/80 border-purple-300/30'
+            }`}>
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">
                   🚀
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">
+                <h3 className={`text-xl font-bold mb-2 ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}>
                   Ready to Apply?
                 </h3>
-                <p className="text-gray-400 text-sm">
+                <p className={`text-sm ${
+                  isDark ? 'text-gray-400' : 'text-gray-600'
+                }`}>
                   Your profile matches {job.match}% of requirements
                 </p>
               </div>
@@ -557,20 +688,30 @@ export default function JobDetailsPage({ jobId }) {
                   <Send className="w-5 h-5" />
                   Quick Apply
                 </Link>
-                <button className="w-full py-3.5 bg-slate-800 text-white rounded-xl font-semibold hover:bg-slate-700 transition-all border border-slate-700 flex items-center justify-center gap-2">
+                <button className={`w-full py-3.5 rounded-xl font-semibold transition-all border flex items-center justify-center gap-2 ${
+                  isDark
+                    ? 'bg-slate-800 text-white border-slate-700 hover:bg-slate-700'
+                    : 'bg-white text-gray-900 border-gray-300 hover:bg-gray-100'
+                }`}>
                   <MessageCircle className="w-5 h-5" />
                   Contact Recruiter
                 </button>
               </div>
 
-              <div className="mt-6 p-4 bg-green-500/10 rounded-xl border border-green-500/20">
+              <div className={`mt-6 p-4 rounded-xl border ${
+                isDark
+                  ? 'bg-green-500/10 border-green-500/20'
+                  : 'bg-green-50 border-green-300/20'
+              }`}>
                 <div className="flex items-center gap-2 mb-2">
                   <Zap className="w-4 h-4 text-green-400" />
                   <span className="text-green-400 font-semibold text-sm">
                     Good Match
                   </span>
                 </div>
-                <p className="text-gray-400 text-xs">
+                <p className={`text-xs ${
+                  isDark ? 'text-gray-400' : 'text-gray-600'
+                }`}>
                   Based on your skills and experience, you're a strong candidate
                   for this position.
                 </p>
@@ -578,22 +719,36 @@ export default function JobDetailsPage({ jobId }) {
             </div>
 
             {/* Similar Jobs */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6">
-              <h3 className="text-lg font-bold text-white mb-4">
+            <div className={`backdrop-blur-xl border rounded-2xl p-6 ${
+              isDark
+                ? 'bg-slate-900/50 border-purple-500/20'
+                : 'bg-white/80 border-purple-300/30'
+            }`}>
+              <h3 className={`text-lg font-bold mb-4 ${
+                isDark ? 'text-white' : 'text-gray-900'
+              }`}>
                 Similar Jobs
               </h3>
               <div className="space-y-4">
                 {similarJobs.map((similarJob) => (
                   <div
                     key={similarJob.id}
-                    className="p-4 bg-slate-800/50 rounded-xl border border-purple-500/10 hover:border-purple-500/30 transition-all cursor-pointer"
+                    className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                      isDark
+                        ? 'bg-slate-800/50 border-purple-500/10 hover:border-purple-500/30'
+                        : 'bg-gray-50 border-purple-300/10 hover:border-purple-400/30'
+                    }`}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <div className="text-white font-semibold text-sm mb-1">
+                        <div className={`font-semibold text-sm mb-1 ${
+                          isDark ? 'text-white' : 'text-gray-900'
+                        }`}>
                           {similarJob.title}
                         </div>
-                        <div className="text-gray-400 text-xs">
+                        <div className={`text-xs ${
+                          isDark ? 'text-gray-400' : 'text-gray-600'
+                        }`}>
                           {similarJob.company}
                         </div>
                       </div>
@@ -603,7 +758,9 @@ export default function JobDetailsPage({ jobId }) {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center justify-between text-xs text-gray-400">
+                    <div className={`flex items-center justify-between text-xs ${
+                      isDark ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
                       <span>{similarJob.location}</span>
                       <span className="text-green-400 font-semibold">
                         {similarJob.match}%
@@ -612,7 +769,11 @@ export default function JobDetailsPage({ jobId }) {
                   </div>
                 ))}
               </div>
-              <button className="w-full mt-4 py-2.5 bg-slate-800/50 border border-purple-500/20 text-white rounded-xl text-sm font-medium hover:bg-slate-800 hover:border-purple-500/40 transition-all">
+              <button className={`w-full mt-4 py-2.5 border rounded-xl text-sm font-medium transition-all ${
+                isDark
+                  ? 'bg-slate-800/50 border-purple-500/20 text-white hover:bg-slate-800 hover:border-purple-500/40'
+                  : 'bg-gray-50 border-purple-300/20 text-gray-900 hover:bg-gray-100 hover:border-purple-400/40'
+              }`}>
                 View All Similar Jobs
               </button>
             </div>
@@ -620,5 +781,6 @@ export default function JobDetailsPage({ jobId }) {
         </div>
       </div>
     </div>
-  );
+  </>
+);
 }

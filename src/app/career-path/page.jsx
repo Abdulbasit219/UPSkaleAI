@@ -1,93 +1,129 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  Target, Brain, Award, Rocket, TrendingUp,
-  BookOpen, Clock, Users, Zap, Sparkles,
-  CheckCircle, Play, ArrowRight, Star, Shield,
-  Briefcase, Code, Palette, BarChart3, Cpu,
-  GitBranch, Database, Cloud, Smartphone, Globe,
-  Heart, MessageCircle, Share2, Download, Calendar,DollarSign
-} from 'lucide-react';
+  Target,
+  Brain,
+  Award,
+  Rocket,
+  TrendingUp,
+  BookOpen,
+  Clock,
+  Users,
+  Zap,
+  Sparkles,
+  CheckCircle,
+  Play,
+  ArrowRight,
+  Star,
+  Shield,
+  Briefcase,
+  Code,
+  Palette,
+  BarChart3,
+  Cpu,
+  GitBranch,
+  Database,
+  Cloud,
+  Smartphone,
+  Globe,
+  Heart,
+  MessageCircle,
+  Share2,
+  Download,
+  Calendar,
+  DollarSign,
+} from "lucide-react";
+import { useSelector } from "react-redux";
 
 export default function CareerPathPage() {
-  const [activePath, setActivePath] = useState('frontend');
+  const [activePath, setActivePath] = useState("frontend");
   const [selectedMilestone, setSelectedMilestone] = useState(0);
+  const theme = useSelector((state) => state.theme.mode);
+  const isDark = theme === "dark";
 
   const careerPaths = [
     {
-      id: 'frontend',
-      name: 'Frontend Developer',
+      id: "frontend",
+      name: "Frontend Developer",
       icon: <Code className="w-6 h-6" />,
-      description: 'Build interactive user interfaces and web applications',
-      demand: 'High',
-      salary: '$85K - $150K',
-      growth: '22%',
+      description: "Build interactive user interfaces and web applications",
+      demand: "High",
+      salary: "$85K - $150K",
+      growth: "22%",
       popularity: 95,
-      color: 'from-blue-500 to-cyan-500'
+      color: "from-blue-500 to-cyan-500",
     },
     {
-      id: 'backend',
-      name: 'Backend Developer',
+      id: "backend",
+      name: "Backend Developer",
       icon: <Database className="w-6 h-6" />,
-      description: 'Develop server-side logic and database architecture',
-      demand: 'Very High',
-      salary: '$90K - $160K',
-      growth: '25%',
+      description: "Develop server-side logic and database architecture",
+      demand: "Very High",
+      salary: "$90K - $160K",
+      growth: "25%",
       popularity: 92,
-      color: 'from-green-500 to-emerald-500'
+      color: "from-green-500 to-emerald-500",
     },
     {
-      id: 'fullstack',
-      name: 'Full Stack Developer',
+      id: "fullstack",
+      name: "Full Stack Developer",
       icon: <Cpu className="w-6 h-6" />,
-      description: 'Master both frontend and backend technologies',
-      demand: 'Extreme',
-      salary: '$95K - $170K',
-      growth: '28%',
+      description: "Master both frontend and backend technologies",
+      demand: "Extreme",
+      salary: "$95K - $170K",
+      growth: "28%",
       popularity: 98,
-      color: 'from-purple-500 to-pink-500'
+      color: "from-purple-500 to-pink-500",
     },
     {
-      id: 'mobile',
-      name: 'Mobile Developer',
+      id: "mobile",
+      name: "Mobile Developer",
       icon: <Smartphone className="w-6 h-6" />,
-      description: 'Create native and cross-platform mobile apps',
-      demand: 'High',
-      salary: '$80K - $140K',
-      growth: '20%',
+      description: "Create native and cross-platform mobile apps",
+      demand: "High",
+      salary: "$80K - $140K",
+      growth: "20%",
       popularity: 88,
-      color: 'from-orange-500 to-red-500'
+      color: "from-orange-500 to-red-500",
     },
     {
-      id: 'devops',
-      name: 'DevOps Engineer',
+      id: "devops",
+      name: "DevOps Engineer",
       icon: <Cloud className="w-6 h-6" />,
-      description: 'Manage infrastructure and deployment pipelines',
-      demand: 'Very High',
-      salary: '$100K - $180K',
-      growth: '30%',
+      description: "Manage infrastructure and deployment pipelines",
+      demand: "Very High",
+      salary: "$100K - $180K",
+      growth: "30%",
       popularity: 90,
-      color: 'from-yellow-500 to-orange-500'
+      color: "from-yellow-500 to-orange-500",
     },
     {
-      id: 'ai-ml',
-      name: 'AI/ML Engineer',
+      id: "ai-ml",
+      name: "AI/ML Engineer",
       icon: <Brain className="w-6 h-6" />,
-      description: 'Build intelligent systems and machine learning models',
-      demand: 'Extreme',
-      salary: '$120K - $200K',
-      growth: '35%',
+      description: "Build intelligent systems and machine learning models",
+      demand: "Extreme",
+      salary: "$120K - $200K",
+      growth: "35%",
       popularity: 96,
-      color: 'from-purple-500 to-blue-500'
-    }
+      color: "from-purple-500 to-blue-500",
+    },
   ];
 
   const pathDetails = {
     frontend: {
-      overview: "Frontend developers are responsible for creating the visual and interactive elements of websites and web applications that users see and interact with directly.",
+      overview:
+        "Frontend developers are responsible for creating the visual and interactive elements of websites and web applications that users see and interact with directly.",
       timeline: "6-12 months to job-ready",
       difficulty: "Intermediate",
-      skills: ["HTML/CSS", "JavaScript", "React", "TypeScript", "Responsive Design", "UI/UX Principles"],
+      skills: [
+        "HTML/CSS",
+        "JavaScript",
+        "React",
+        "TypeScript",
+        "Responsive Design",
+        "UI/UX Principles",
+      ],
       milestones: [
         {
           title: "Web Fundamentals",
@@ -95,7 +131,7 @@ export default function CareerPathPage() {
           progress: 100,
           skills: ["HTML5", "CSS3", "Git", "Basic JavaScript"],
           resources: 12,
-          completed: true
+          completed: true,
         },
         {
           title: "JavaScript Mastery",
@@ -103,7 +139,7 @@ export default function CareerPathPage() {
           progress: 85,
           skills: ["ES6+", "DOM Manipulation", "Async Programming", "APIs"],
           resources: 18,
-          completed: false
+          completed: false,
         },
         {
           title: "React & Modern Frameworks",
@@ -111,7 +147,7 @@ export default function CareerPathPage() {
           progress: 60,
           skills: ["React", "State Management", "React Router", "Testing"],
           resources: 24,
-          completed: false
+          completed: false,
         },
         {
           title: "Advanced Concepts",
@@ -119,7 +155,7 @@ export default function CareerPathPage() {
           progress: 20,
           skills: ["TypeScript", "Performance", "Accessibility", "PWA"],
           resources: 16,
-          completed: false
+          completed: false,
         },
         {
           title: "Portfolio & Job Ready",
@@ -127,21 +163,37 @@ export default function CareerPathPage() {
           progress: 10,
           skills: ["Projects", "Interview Prep", "Resume Building"],
           resources: 8,
-          completed: false
-        }
+          completed: false,
+        },
       ],
       jobOpportunities: [
-        { role: "Junior Frontend Developer", companies: 234, avgSalary: "$85,000" },
+        {
+          role: "Junior Frontend Developer",
+          companies: 234,
+          avgSalary: "$85,000",
+        },
         { role: "Frontend Developer", companies: 567, avgSalary: "$110,000" },
-        { role: "Senior Frontend Developer", companies: 189, avgSalary: "$145,000" },
-        { role: "Frontend Architect", companies: 45, avgSalary: "$180,000" }
-      ]
+        {
+          role: "Senior Frontend Developer",
+          companies: 189,
+          avgSalary: "$145,000",
+        },
+        { role: "Frontend Architect", companies: 45, avgSalary: "$180,000" },
+      ],
     },
     backend: {
-      overview: "Backend developers focus on server-side development, working with databases, APIs, and application logic that power web applications behind the scenes.",
+      overview:
+        "Backend developers focus on server-side development, working with databases, APIs, and application logic that power web applications behind the scenes.",
       timeline: "8-14 months to job-ready",
       difficulty: "Intermediate",
-      skills: ["Node.js", "Python", "Databases", "APIs", "Authentication", "Deployment"],
+      skills: [
+        "Node.js",
+        "Python",
+        "Databases",
+        "APIs",
+        "Authentication",
+        "Deployment",
+      ],
       milestones: [
         {
           title: "Programming Fundamentals",
@@ -149,7 +201,7 @@ export default function CareerPathPage() {
           progress: 100,
           skills: ["Python/JavaScript", "Data Structures", "Algorithms"],
           resources: 15,
-          completed: true
+          completed: true,
         },
         {
           title: "Backend Basics",
@@ -157,7 +209,7 @@ export default function CareerPathPage() {
           progress: 75,
           skills: ["Node.js/Express", "REST APIs", "Database Design"],
           resources: 20,
-          completed: false
+          completed: false,
         },
         {
           title: "Advanced Backend",
@@ -165,7 +217,7 @@ export default function CareerPathPage() {
           progress: 40,
           skills: ["Authentication", "Caching", "Microservices"],
           resources: 18,
-          completed: false
+          completed: false,
         },
         {
           title: "DevOps & Deployment",
@@ -173,56 +225,127 @@ export default function CareerPathPage() {
           progress: 15,
           skills: ["Docker", "AWS", "CI/CD", "Monitoring"],
           resources: 14,
-          completed: false
-        }
+          completed: false,
+        },
       ],
       jobOpportunities: [
-        { role: "Junior Backend Developer", companies: 198, avgSalary: "$90,000" },
+        {
+          role: "Junior Backend Developer",
+          companies: 198,
+          avgSalary: "$90,000",
+        },
         { role: "Backend Developer", companies: 432, avgSalary: "$120,000" },
-        { role: "Senior Backend Developer", companies: 234, avgSalary: "$155,000" },
-        { role: "Backend Architect", companies: 67, avgSalary: "$190,000" }
-      ]
-    }
+        {
+          role: "Senior Backend Developer",
+          companies: 234,
+          avgSalary: "$155,000",
+        },
+        { role: "Backend Architect", companies: 67, avgSalary: "$190,000" },
+      ],
+    },
   };
 
-  const currentPath = careerPaths.find(path => path.id === activePath);
+  const currentPath = careerPaths.find((path) => path.id === activePath);
   const currentDetails = pathDetails[activePath] || pathDetails.frontend;
 
   const stats = [
-    { value: "95%", label: "Success Rate", icon: <Target className="w-5 h-5" /> },
-    { value: "6-12mo", label: "Avg. Timeline", icon: <Clock className="w-5 h-5" /> },
-    { value: "2.3K+", label: "Career Switchers", icon: <Users className="w-5 h-5" /> },
-    { value: "$85K+", label: "Starting Salary", icon: <TrendingUp className="w-5 h-5" /> }
+    {
+      value: "95%",
+      label: "Success Rate",
+      icon: <Target className="w-5 h-5" />,
+    },
+    {
+      value: "6-12mo",
+      label: "Avg. Timeline",
+      icon: <Clock className="w-5 h-5" />,
+    },
+    {
+      value: "2.3K+",
+      label: "Career Switchers",
+      icon: <Users className="w-5 h-5" />,
+    },
+    {
+      value: "$85K+",
+      label: "Starting Salary",
+      icon: <TrendingUp className="w-5 h-5" />,
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 pt-20">
+    <div
+      className={`min-h-screen transition-colors duration-300 ${
+        isDark
+          ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950"
+          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50"
+      } pt-20`}
+    >
       {/* Background Pattern */}
-      <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjAzIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30 pointer-events-none" />
+      <div
+        className={`fixed inset-0 pointer-events-none ${
+          isDark
+            ? "bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjAzIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"
+            : "bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iZ3JheSIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9IjAuMDMiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20"
+        }`}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 rounded-full mb-6 backdrop-blur-sm">
-            <Rocket className="w-4 h-4 text-purple-400" />
-            <span className="text-sm font-medium text-purple-300">AI-Powered Career Guidance</span>
+          <div
+            className={`inline-flex items-center gap-2 px-4 py-2 border rounded-full mb-6 backdrop-blur-sm ${
+              isDark
+                ? "bg-purple-500/20 border-purple-500/30"
+                : "bg-purple-100 border-purple-300/30"
+            }`}
+          >
+            <Rocket
+              className={`w-4 h-4 ${isDark ? "text-purple-400" : "text-purple-600"}`}
+            />
+            <span
+              className={`text-sm font-medium ${isDark ? "text-purple-300" : "text-purple-700"}`}
+            >
+              AI-Powered Career Guidance
+            </span>
           </div>
-          
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+
+          <h1
+            className={`text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 ${isDark ? "text-white" : "text-gray-900"}`}
+          >
             Your
-            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Career Path</span>
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              {" "}
+              Career Path
+            </span>
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
-            Discover personalized learning journeys and master the skills needed for your dream tech career
+          <p
+            className={`text-xl max-w-3xl mx-auto mb-8 ${isDark ? "text-gray-400" : "text-gray-600"}`}
+          >
+            Discover personalized learning journeys and master the skills needed
+            for your dream tech career
           </p>
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center p-4 bg-slate-900/50 backdrop-blur-sm border border-purple-500/20 rounded-xl">
+              <div
+                key={index}
+                className={`text-center p-4 backdrop-blur-sm border rounded-xl ${
+                  isDark
+                    ? "bg-slate-900/50 border-purple-500/20"
+                    : "bg-white/80 border-purple-300/20"
+                }`}
+              >
                 <div className="flex justify-center mb-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center">
-                    <div className="text-purple-400">
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      isDark
+                        ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20"
+                        : "bg-gradient-to-br from-purple-100 to-pink-100"
+                    }`}
+                  >
+                    <div
+                      className={isDark ? "text-purple-400" : "text-purple-600"}
+                    >
                       {stat.icon}
                     </div>
                   </div>
@@ -230,7 +353,11 @@ export default function CareerPathPage() {
                 <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                   {stat.value}
                 </div>
-                <div className="text-gray-400 text-sm">{stat.label}</div>
+                <div
+                  className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                >
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>
@@ -240,9 +367,19 @@ export default function CareerPathPage() {
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Career Paths Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <Target className="w-5 h-5 text-purple-400" />
+            <div
+              className={`backdrop-blur-xl border rounded-2xl p-6 ${
+                isDark
+                  ? "bg-slate-900/50 border-purple-500/20"
+                  : "bg-white/80 border-purple-300/20"
+              }`}
+            >
+              <h3
+                className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}
+              >
+                <Target
+                  className={`w-5 h-5 ${isDark ? "text-purple-400" : "text-purple-600"}`}
+                />
                 Career Paths
               </h3>
               <div className="space-y-2">
@@ -250,20 +387,28 @@ export default function CareerPathPage() {
                   <button
                     key={path.id}
                     onClick={() => setActivePath(path.id)}
-                    className={`w-full flex items-center gap-3 p-4 rounded-xl text-left transition-all ${
+                    className={`w-full flex items-center gap-3 p-4 rounded-xl text-left transition-all border ${
                       activePath === path.id
-                        ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+                        ? isDark
+                          ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border-purple-500/30"
+                          : "bg-gradient-to-r from-purple-100 to-pink-100 text-gray-900 border-purple-300/30"
+                        : isDark
+                          ? "text-gray-400 hover:text-white hover:bg-white/5 border-transparent"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent"
                     }`}
                   >
-                    <div className={`w-10 h-10 bg-gradient-to-br ${path.color} rounded-xl flex items-center justify-center`}>
-                      <div className="text-white">
-                        {path.icon}
-                      </div>
+                    <div
+                      className={`w-10 h-10 bg-gradient-to-br ${path.color} rounded-xl flex items-center justify-center`}
+                    >
+                      <div className="text-white">{path.icon}</div>
                     </div>
                     <div className="flex-1">
                       <div className="font-semibold text-sm">{path.name}</div>
-                      <div className="text-xs text-gray-400 mt-1">{path.description}</div>
+                      <div
+                        className={`text-xs mt-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                      >
+                        {path.description}
+                      </div>
                     </div>
                     <div className="flex items-center gap-1 text-xs">
                       <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
@@ -275,22 +420,50 @@ export default function CareerPathPage() {
             </div>
 
             {/* AI Recommendation */}
-            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6 mt-6">
-              <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+            <div
+              className={`backdrop-blur-xl border rounded-2xl p-6 mt-6 ${
+                isDark
+                  ? "bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-purple-500/30"
+                  : "bg-gradient-to-br from-purple-50 to-pink-50 border-purple-300/30"
+              }`}
+            >
+              <h3
+                className={`text-lg font-bold mb-3 flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}
+              >
                 <Sparkles className="w-5 h-5 text-yellow-400" />
                 AI Recommendation
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-sm">Best Match</span>
-                  <span className="text-white font-semibold">Full Stack</span>
+                  <span
+                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                  >
+                    Best Match
+                  </span>
+                  <span
+                    className={`font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                  >
+                    Full Stack
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-sm">Based on</span>
-                  <span className="text-white font-semibold">Your Skills</span>
+                  <span
+                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                  >
+                    Based on
+                  </span>
+                  <span
+                    className={`font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                  >
+                    Your Skills
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-sm">Confidence</span>
+                  <span
+                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                  >
+                    Confidence
+                  </span>
                   <span className="text-green-400 font-semibold">92%</span>
                 </div>
               </div>
@@ -304,29 +477,57 @@ export default function CareerPathPage() {
           {/* Path Details */}
           <div className="lg:col-span-3">
             {/* Path Header */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6 mb-6">
+            <div
+              className={`backdrop-blur-xl border rounded-2xl p-6 mb-6 ${
+                isDark
+                  ? "bg-slate-900/50 border-purple-500/20"
+                  : "bg-white/80 border-purple-300/20"
+              }`}
+            >
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-start gap-4">
-                  <div className={`w-16 h-16 bg-gradient-to-br ${currentPath.color} rounded-2xl flex items-center justify-center`}>
+                  <div
+                    className={`w-16 h-16 bg-gradient-to-br ${currentPath.color} rounded-2xl flex items-center justify-center`}
+                  >
                     <div className="text-white text-2xl">
                       {currentPath.icon}
                     </div>
                   </div>
                   <div>
-                    <h2 className="text-3xl font-bold text-white mb-2">{currentPath.name}</h2>
-                    <p className="text-gray-400 text-lg mb-4">{currentPath.description}</p>
+                    <h2
+                      className={`text-3xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}
+                    >
+                      {currentPath.name}
+                    </h2>
+                    <p
+                      className={`text-lg mb-4 ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                    >
+                      {currentPath.description}
+                    </p>
                     <div className="flex items-center gap-6 text-sm">
                       <div className="flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-green-400" />
-                        <span className="text-white">{currentPath.demand} Demand</span>
+                        <span
+                          className={isDark ? "text-white" : "text-gray-900"}
+                        >
+                          {currentPath.demand} Demand
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-yellow-400" />
-                        <span className="text-white">{currentPath.salary}</span>
+                        <span
+                          className={isDark ? "text-white" : "text-gray-900"}
+                        >
+                          {currentPath.salary}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Zap className="w-4 h-4 text-blue-400" />
-                        <span className="text-white">{currentPath.growth} Growth</span>
+                        <span
+                          className={isDark ? "text-white" : "text-gray-900"}
+                        >
+                          {currentPath.growth} Growth
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -335,31 +536,73 @@ export default function CareerPathPage() {
                   <div className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                     {currentPath.popularity}%
                   </div>
-                  <div className="text-gray-400 text-sm">Popularity Score</div>
+                  <div
+                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                  >
+                    Popularity Score
+                  </div>
                 </div>
               </div>
 
               {/* Progress Overview */}
-              <div className="grid md:grid-cols-3 gap-4 pt-6 border-t border-purple-500/20">
+              <div
+                className={`grid md:grid-cols-3 gap-4 pt-6 border-t ${
+                  isDark ? "border-purple-500/20" : "border-purple-300/20"
+                }`}
+              >
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white mb-1">{currentDetails.timeline}</div>
-                  <div className="text-gray-400 text-sm">Estimated Timeline</div>
+                  <div
+                    className={`text-2xl font-bold mb-1 ${isDark ? "text-white" : "text-gray-900"}`}
+                  >
+                    {currentDetails.timeline}
+                  </div>
+                  <div
+                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                  >
+                    Estimated Timeline
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white mb-1">{currentDetails.difficulty}</div>
-                  <div className="text-gray-400 text-sm">Difficulty Level</div>
+                  <div
+                    className={`text-2xl font-bold mb-1 ${isDark ? "text-white" : "text-gray-900"}`}
+                  >
+                    {currentDetails.difficulty}
+                  </div>
+                  <div
+                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                  >
+                    Difficulty Level
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white mb-1">{currentDetails.skills.length}</div>
-                  <div className="text-gray-400 text-sm">Key Skills</div>
+                  <div
+                    className={`text-2xl font-bold mb-1 ${isDark ? "text-white" : "text-gray-900"}`}
+                  >
+                    {currentDetails.skills.length}
+                  </div>
+                  <div
+                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                  >
+                    Key Skills
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Learning Path */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6 mb-6">
-              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                <BookOpen className="w-6 h-6 text-purple-400" />
+            <div
+              className={`backdrop-blur-xl border rounded-2xl p-6 mb-6 ${
+                isDark
+                  ? "bg-slate-900/50 border-purple-500/20"
+                  : "bg-white/80 border-purple-300/20"
+              }`}
+            >
+              <h3
+                className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}
+              >
+                <BookOpen
+                  className={`w-6 h-6 ${isDark ? "text-purple-400" : "text-purple-600"}`}
+                />
                 Learning Path
               </h3>
 
@@ -369,20 +612,28 @@ export default function CareerPathPage() {
                     key={index}
                     className={`flex gap-6 p-4 rounded-xl border transition-all cursor-pointer ${
                       selectedMilestone === index
-                        ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-500/50'
-                        : 'bg-slate-800/50 border-purple-500/20 hover:border-purple-500/40'
+                        ? isDark
+                          ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-500/50"
+                          : "bg-gradient-to-r from-purple-100 to-pink-100 border-purple-300/50"
+                        : isDark
+                          ? "bg-slate-800/50 border-purple-500/20 hover:border-purple-500/40"
+                          : "bg-gray-50 border-purple-300/20 hover:border-purple-300/40"
                     }`}
                     onClick={() => setSelectedMilestone(index)}
                   >
                     {/* Step Number */}
                     <div className="flex flex-col items-center">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg ${
-                        milestone.completed
-                          ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                          : milestone.progress > 0
-                          ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                          : 'bg-slate-700 text-gray-400 border border-slate-600'
-                      }`}>
+                      <div
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg border ${
+                          milestone.completed
+                            ? "bg-green-500/20 text-green-400 border-green-500/30"
+                            : milestone.progress > 0
+                              ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
+                              : isDark
+                                ? "bg-slate-700 text-gray-400 border-slate-600"
+                                : "bg-gray-200 text-gray-400 border-gray-300"
+                        }`}
+                      >
                         {milestone.completed ? (
                           <CheckCircle className="w-6 h-6" />
                         ) : (
@@ -390,7 +641,11 @@ export default function CareerPathPage() {
                         )}
                       </div>
                       {index < currentDetails.milestones.length - 1 && (
-                        <div className="w-0.5 h-12 bg-purple-500/20 mt-2"></div>
+                        <div
+                          className={`w-0.5 h-12 mt-2 ${
+                            isDark ? "bg-purple-500/20" : "bg-purple-300/20"
+                          }`}
+                        ></div>
                       )}
                     </div>
 
@@ -398,26 +653,46 @@ export default function CareerPathPage() {
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <h4 className="text-lg font-semibold text-white mb-1">{milestone.title}</h4>
-                          <div className="flex items-center gap-4 text-sm text-gray-400">
-                            <div className="flex items-center gap-1">
+                          <h4
+                            className={`text-lg font-semibold mb-1 ${isDark ? "text-white" : "text-gray-900"}`}
+                          >
+                            {milestone.title}
+                          </h4>
+                          <div className="flex items-center gap-4 text-sm">
+                            <div
+                              className={`flex items-center gap-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                            >
                               <Clock className="w-4 h-4" />
                               {milestone.duration}
                             </div>
-                            <div className="flex items-center gap-1">
+                            <div
+                              className={`flex items-center gap-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                            >
                               <BookOpen className="w-4 h-4" />
                               {milestone.resources} resources
                             </div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-lg font-bold text-white mb-1">{milestone.progress}%</div>
-                          <div className="text-gray-400 text-sm">Complete</div>
+                          <div
+                            className={`text-lg font-bold mb-1 ${isDark ? "text-white" : "text-gray-900"}`}
+                          >
+                            {milestone.progress}%
+                          </div>
+                          <div
+                            className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                          >
+                            Complete
+                          </div>
                         </div>
                       </div>
 
                       {/* Progress Bar */}
-                      <div className="w-full bg-slate-700 rounded-full h-2 mb-3">
+                      <div
+                        className={`w-full rounded-full h-2 mb-3 ${
+                          isDark ? "bg-slate-700" : "bg-gray-200"
+                        }`}
+                      >
                         <div
                           className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500"
                           style={{ width: `${milestone.progress}%` }}
@@ -429,7 +704,11 @@ export default function CareerPathPage() {
                         {milestone.skills.map((skill, skillIndex) => (
                           <span
                             key={skillIndex}
-                            className="px-3 py-1 bg-purple-500/10 text-purple-300 rounded-lg text-sm border border-purple-500/20"
+                            className={`px-3 py-1 rounded-lg text-sm border ${
+                              isDark
+                                ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
+                                : "bg-purple-100 text-purple-700 border-purple-300/20"
+                            }`}
                           >
                             {skill}
                           </span>
@@ -442,7 +721,13 @@ export default function CareerPathPage() {
                           <Play className="w-4 h-4" />
                           Start Learning
                         </button>
-                        <button className="px-4 py-2 bg-slate-700 text-white rounded-lg font-semibold hover:bg-slate-600 transition-all flex items-center gap-2 text-sm">
+                        <button
+                          className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 text-sm ${
+                            isDark
+                              ? "bg-slate-700 text-white hover:bg-slate-600"
+                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                          }`}
+                        >
                           <BookOpen className="w-4 h-4" />
                           View Resources
                         </button>
@@ -454,26 +739,59 @@ export default function CareerPathPage() {
             </div>
 
             {/* Job Opportunities */}
-            <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6">
-              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                <Briefcase className="w-6 h-6 text-purple-400" />
+            <div
+              className={`backdrop-blur-xl border rounded-2xl p-6 ${
+                isDark
+                  ? "bg-slate-900/50 border-purple-500/20"
+                  : "bg-white/80 border-purple-300/20"
+              }`}
+            >
+              <h3
+                className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}
+              >
+                <Briefcase
+                  className={`w-6 h-6 ${isDark ? "text-purple-400" : "text-purple-600"}`}
+                />
                 Career Opportunities
               </h3>
 
               <div className="grid md:grid-cols-2 gap-6">
                 {currentDetails.jobOpportunities.map((job, index) => (
-                  <div key={index} className="p-4 bg-slate-800/50 rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all">
+                  <div
+                    key={index}
+                    className={`p-4 rounded-xl border transition-all ${
+                      isDark
+                        ? "bg-slate-800/50 border-purple-500/20 hover:border-purple-500/40"
+                        : "bg-gray-50 border-purple-300/20 hover:border-purple-300/40"
+                    }`}
+                  >
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-lg font-semibold text-white">{job.role}</h4>
+                      <h4
+                        className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                      >
+                        {job.role}
+                      </h4>
                       <div className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs border border-green-500/30">
                         {job.companies}+ companies
                       </div>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-400">Average Salary</span>
-                      <span className="text-yellow-400 font-semibold">{job.avgSalary}</span>
+                      <span
+                        className={isDark ? "text-gray-400" : "text-gray-600"}
+                      >
+                        Average Salary
+                      </span>
+                      <span className="text-yellow-400 font-semibold">
+                        {job.avgSalary}
+                      </span>
                     </div>
-                    <button className="w-full mt-4 py-2 bg-slate-700 text-white rounded-lg font-semibold hover:bg-slate-600 transition-all text-sm">
+                    <button
+                      className={`w-full mt-4 py-2 rounded-lg font-semibold transition-all text-sm ${
+                        isDark
+                          ? "bg-slate-700 text-white hover:bg-slate-600"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      }`}
+                    >
                       Explore Jobs
                     </button>
                   </div>
@@ -489,13 +807,16 @@ export default function CareerPathPage() {
           <div className="relative z-10 text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4">
               <Brain className="w-4 h-4 text-white" />
-              <span className="text-sm font-medium text-white">AI Career Assessment</span>
+              <span className="text-sm font-medium text-white">
+                AI Career Assessment
+              </span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Ready to Start Your Journey?
             </h2>
             <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-              Take our AI-powered assessment to get a personalized career path tailored to your skills and goals
+              Take our AI-powered assessment to get a personalized career path
+              tailored to your skills and goals
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="px-8 py-4 bg-white text-purple-600 rounded-xl font-bold hover:shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-2">

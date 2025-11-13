@@ -19,9 +19,13 @@ import {
   GraduationCap,
   Trophy,
   BarChart3,
+  Moon,
+  Sun,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleTheme } from '@/store/slices/themeSlice';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,6 +34,11 @@ const Navbar = () => {
   const [closingTimeout, setClosingTimeout] = useState(null);
   const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
   const pathname = usePathname();
+  
+  // Redux theme
+  const dispatch = useDispatch();
+  const theme = useSelector((state) => state.theme.mode);
+  const isDark = theme === 'dark';
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -66,7 +75,6 @@ const Navbar = () => {
     },
   ];
 
-  // Resources/Tools Dropdown Items
   const resourcesItems = [
     {
       name: "Find Jobs",
@@ -80,7 +88,7 @@ const Navbar = () => {
       icon: <FileCheck className="w-4 h-4" />,
       description: "ATS optimization",
     },
-      {
+    {
       name: "Code Twin AI",
       href: "/code-twin",
       icon: <Bot className="w-4 h-4" />,
@@ -144,7 +152,9 @@ const Navbar = () => {
       <nav
         className={`fixed w-full z-50 transition-all duration-500 ${
           scrolled
-            ? "bg-slate-950/95 backdrop-blur-xl shadow-2xl shadow-purple-500/20"
+            ? isDark 
+              ? "bg-slate-950/95 backdrop-blur-xl shadow-2xl shadow-purple-500/20"
+              : "bg-white/95 backdrop-blur-xl shadow-2xl shadow-purple-300/20"
             : "bg-transparent"
         }`}
       >
@@ -173,7 +183,7 @@ const Navbar = () => {
                 <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                   SkillBridge
                 </span>
-                <span className="text-xs text-gray-400 -mt-1">
+                <span className={`text-xs -mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                   Learn • Earn • Grow
                 </span>
               </div>
@@ -187,15 +197,21 @@ const Navbar = () => {
                   href={item.href}
                   className={`relative flex items-center gap-2 px-4 py-2.5 mx-1 rounded-xl font-medium transition-all duration-300 group ${
                     isActiveLink(item.href)
-                      ? "text-white bg-gradient-to-r from-purple-500/20 to-pink-500/20 shadow-lg shadow-purple-500/10"
-                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                      ? isDark
+                        ? "text-white bg-gradient-to-r from-purple-500/20 to-pink-500/20 shadow-lg shadow-purple-500/10"
+                        : "text-gray-900 bg-gradient-to-r from-purple-100 to-pink-100 shadow-lg shadow-purple-300/10"
+                      : isDark
+                      ? "text-gray-300 hover:text-white hover:bg-white/5"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                   }`}
                 >
                   <div
                     className={`transition-colors duration-300 ${
                       isActiveLink(item.href)
-                        ? "text-purple-300"
-                        : "text-gray-400 group-hover:text-purple-300"
+                        ? "text-purple-400"
+                        : isDark 
+                        ? "text-gray-400 group-hover:text-purple-300"
+                        : "text-gray-500 group-hover:text-purple-500"
                     }`}
                   >
                     {item.icon}
@@ -208,7 +224,7 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              {/* Resources Dropdown  */}
+              {/* Resources Dropdown */}
               <div className="relative">
                 <div
                   onMouseEnter={handleMouseEnter}
@@ -218,15 +234,21 @@ const Navbar = () => {
                   <button
                     className={`relative flex items-center gap-2 px-4 py-2.5 mx-1 rounded-xl font-medium transition-all duration-300 group ${
                       isResourcesActive()
-                        ? "text-white bg-gradient-to-r from-purple-500/20 to-pink-500/20 shadow-lg shadow-purple-500/10"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
+                        ? isDark
+                          ? "text-white bg-gradient-to-r from-purple-500/20 to-pink-500/20 shadow-lg shadow-purple-500/10"
+                          : "text-gray-900 bg-gradient-to-r from-purple-100 to-pink-100 shadow-lg shadow-purple-300/10"
+                        : isDark
+                        ? "text-gray-300 hover:text-white hover:bg-white/5"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                     }`}
                   >
                     <Layers
                       className={`w-4 h-4 transition-colors duration-300 ${
                         isResourcesActive()
-                          ? "text-purple-300"
-                          : "text-gray-400 group-hover:text-purple-300"
+                          ? "text-purple-400"
+                          : isDark
+                          ? "text-gray-400 group-hover:text-purple-300"
+                          : "text-gray-500 group-hover:text-purple-500"
                       }`}
                     />
                     Tools
@@ -240,9 +262,13 @@ const Navbar = () => {
 
                   {/* Dropdown Menu */}
                   {isResourcesDropdownOpen && (
-                    <div className="absolute left-0 mt-2 w-80 bg-slate-900/98 backdrop-blur-xl border border-purple-500/30 rounded-2xl shadow-2xl shadow-purple-500/20 py-3 animate-in fade-in-0 zoom-in-95">
-                      <div className="px-3 py-2 border-b border-purple-500/10 mb-2">
-                        <p className="text-xs font-semibold text-purple-300 uppercase tracking-wider">
+                    <div className={`absolute left-0 mt-2 w-80 backdrop-blur-xl border rounded-2xl shadow-2xl py-3 animate-in fade-in-0 zoom-in-95 ${
+                      isDark 
+                        ? 'bg-slate-900/98 border-purple-500/30 shadow-purple-500/20'
+                        : 'bg-white/98 border-purple-300/30 shadow-purple-300/20'
+                    }`}>
+                      <div className={`px-3 py-2 border-b mb-2 ${isDark ? 'border-purple-500/10' : 'border-purple-300/10'}`}>
+                        <p className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>
                           SkillBridge Tools
                         </p>
                       </div>
@@ -251,17 +277,27 @@ const Navbar = () => {
                           <Link
                             key={item.name}
                             href={item.href}
-                            className="group flex items-start gap-3 px-3 py-3 rounded-xl hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 transition-all duration-200 border border-transparent hover:border-purple-500/20"
+                            className={`group flex items-start gap-3 px-3 py-3 rounded-xl transition-all duration-200 border ${
+                              isDark
+                                ? 'hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 border-transparent hover:border-purple-500/20'
+                                : 'hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 border-transparent hover:border-purple-300/20'
+                            }`}
                             onClick={() => setIsResourcesDropdownOpen(false)}
                           >
-                            <div className="mt-0.5 w-8 h-8 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg flex items-center justify-center border border-purple-500/20 group-hover:scale-110 transition-transform">
+                            <div className={`mt-0.5 w-8 h-8 bg-gradient-to-br rounded-lg flex items-center justify-center border group-hover:scale-110 transition-transform ${
+                              isDark
+                                ? 'from-purple-500/20 to-pink-500/20 border-purple-500/20'
+                                : 'from-purple-100 to-pink-100 border-purple-300/20'
+                            }`}>
                               <div className="text-purple-400">{item.icon}</div>
                             </div>
                             <div className="flex-1">
-                              <div className="text-white font-medium text-sm group-hover:text-purple-300 transition-colors">
+                              <div className={`font-medium text-sm group-hover:text-purple-400 transition-colors ${
+                                isDark ? 'text-white' : 'text-gray-900'
+                              }`}>
                                 {item.name}
                               </div>
-                              <div className="text-gray-400 text-xs mt-0.5">
+                              <div className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                                 {item.description}
                               </div>
                             </div>
@@ -274,11 +310,32 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Desktop Auth Buttons */}
+            {/* Desktop Auth Buttons & Theme Toggle */}
             <div className="hidden lg:flex items-center gap-3">
+              {/* Theme Toggle */}
+              <button
+                onClick={() => dispatch(toggleTheme())}
+                className={`p-3 rounded-xl border transition-all duration-300 ${
+                  isDark
+                    ? 'bg-slate-800/50 border-purple-500/20 text-gray-300 hover:text-white hover:bg-slate-700/50 hover:border-purple-500/40'
+                    : 'bg-white/50 border-purple-300/20 text-gray-600 hover:text-gray-900 hover:bg-gray-100 hover:border-purple-300/40'
+                }`}
+                aria-label="Toggle theme"
+              >
+                {isDark ? (
+                  <Sun className="w-5 h-5 text-yellow-400" />
+                ) : (
+                  <Moon className="w-5 h-5 text-purple-500" />
+                )}
+              </button>
+
               <Link
                 href="/sign-in"
-                className="px-6 py-2.5 text-gray-300 hover:text-white transition-colors duration-300 font-medium hover:bg-white/5 rounded-xl border border-transparent hover:border-purple-500/20"
+                className={`px-6 py-2.5 transition-colors duration-300 font-medium rounded-xl border ${
+                  isDark
+                    ? 'text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20'
+                }`}
               >
                 Sign In
               </Link>
@@ -287,9 +344,17 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:text-white transition-colors duration-300 rounded-xl hover:bg-white/5 border border-transparent hover:border-purple-500/20"
+                  className={`flex items-center gap-2 px-3 py-2 transition-colors duration-300 rounded-xl border ${
+                    isDark
+                      ? 'text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20'
+                  }`}
                 >
-                  <div className="w-9 h-9 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center border border-purple-500/30">
+                  <div className={`w-9 h-9 bg-gradient-to-br rounded-xl flex items-center justify-center border ${
+                    isDark
+                      ? 'from-purple-500/20 to-pink-500/20 border-purple-500/30'
+                      : 'from-purple-100 to-pink-100 border-purple-300/30'
+                  }`}>
                     <User className="w-4 h-4 text-purple-400" />
                   </div>
                   <ChevronDown
@@ -298,19 +363,27 @@ const Navbar = () => {
                 </button>
 
                 {isUserDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-slate-900/98 backdrop-blur-xl border border-purple-500/30 rounded-xl shadow-2xl shadow-purple-500/20 py-2 animate-in fade-in-0 zoom-in-95">
-                    <div className="px-4 py-3 border-b border-purple-500/10">
-                      <p className="text-sm font-semibold text-white">
+                  <div className={`absolute right-0 mt-2 w-56 backdrop-blur-xl border rounded-xl shadow-2xl py-2 animate-in fade-in-0 zoom-in-95 ${
+                    isDark
+                      ? 'bg-slate-900/98 border-purple-500/30 shadow-purple-500/20'
+                      : 'bg-white/98 border-purple-300/30 shadow-purple-300/20'
+                  }`}>
+                    <div className={`px-4 py-3 border-b ${isDark ? 'border-purple-500/10' : 'border-purple-300/10'}`}>
+                      <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         Welcome Back!
                       </p>
-                      <p className="text-sm text-gray-400">Ready to learn?</p>
+                      <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Ready to learn?</p>
                     </div>
                     <div className="py-2">
                       {userMenuItems.map((item) => (
                         <Link
                           key={item.name}
                           href={item.href}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-purple-500/10 transition-all duration-200 mx-2 rounded-lg"
+                          className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 mx-2 rounded-lg ${
+                            isDark
+                              ? 'text-gray-300 hover:text-white hover:bg-purple-500/10'
+                              : 'text-gray-600 hover:text-gray-900 hover:bg-purple-50'
+                          }`}
                           onClick={() => setIsUserDropdownOpen(false)}
                         >
                           <div className="text-purple-400">{item.icon}</div>
@@ -324,22 +397,49 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-3 rounded-xl bg-slate-800/50 border border-purple-500/20 text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-300 hover:border-purple-500/40"
-            >
-              {isMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
-            </button>
+            <div className="lg:hidden flex items-center gap-2">
+              {/* Mobile Theme Toggle */}
+              <button
+                onClick={() => dispatch(toggleTheme())}
+                className={`p-3 rounded-xl border transition-all duration-300 ${
+                  isDark
+                    ? 'bg-slate-800/50 border-purple-500/20 text-gray-300 hover:text-white hover:bg-slate-700/50'
+                    : 'bg-white/50 border-purple-300/20 text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+                aria-label="Toggle theme"
+              >
+                {isDark ? (
+                  <Sun className="w-5 h-5 text-yellow-400" />
+                ) : (
+                  <Moon className="w-5 h-5 text-purple-500" />
+                )}
+              </button>
+
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className={`p-3 rounded-xl border transition-all duration-300 ${
+                  isDark
+                    ? 'bg-slate-800/50 border-purple-500/20 text-gray-300 hover:text-white hover:bg-slate-700/50 hover:border-purple-500/40'
+                    : 'bg-white/50 border-purple-300/20 text-gray-600 hover:text-gray-900 hover:bg-gray-100 hover:border-purple-300/40'
+                }`}
+              >
+                {isMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Mobile Menu */}
         <div
-          className={`lg:hidden absolute top-full left-0 w-full bg-slate-900/98 backdrop-blur-xl shadow-2xl border-t border-purple-500/20 transition-all duration-500 overflow-hidden ${
+          className={`lg:hidden absolute top-full left-0 w-full backdrop-blur-xl shadow-2xl border-t transition-all duration-500 overflow-hidden ${
+            isDark
+              ? 'bg-slate-900/98 border-purple-500/20'
+              : 'bg-white/98 border-purple-300/20'
+          } ${
             isMenuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
@@ -353,12 +453,16 @@ const Navbar = () => {
                   onClick={() => setIsMenuOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
                     isActiveLink(item.href)
-                      ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30"
-                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                      ? isDark
+                        ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30'
+                        : 'bg-gradient-to-r from-purple-100 to-pink-100 text-gray-900 border border-purple-300/30'
+                      : isDark
+                      ? 'text-gray-300 hover:text-white hover:bg-white/5'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
                   <div
-                    className={`${isActiveLink(item.href) ? "text-purple-300" : "text-gray-400"}`}
+                    className={`${isActiveLink(item.href) ? 'text-purple-400' : isDark ? 'text-gray-400' : 'text-gray-500'}`}
                   >
                     {item.icon}
                   </div>
@@ -368,8 +472,8 @@ const Navbar = () => {
             </div>
 
             {/* Resources Section */}
-            <div className="pt-3 border-t border-purple-500/20">
-              <p className="text-xs font-semibold text-purple-300 uppercase tracking-wider mb-2 px-2">
+            <div className={`pt-3 border-t ${isDark ? 'border-purple-500/20' : 'border-purple-300/20'}`}>
+              <p className={`text-xs font-semibold uppercase tracking-wider mb-2 px-2 ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>
                 Tools & Resources
               </p>
               <div className="space-y-2">
@@ -380,18 +484,22 @@ const Navbar = () => {
                     onClick={() => setIsMenuOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
                       isActiveLink(item.href)
-                        ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
+                        ? isDark
+                          ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30'
+                          : 'bg-gradient-to-r from-purple-100 to-pink-100 text-gray-900 border border-purple-300/30'
+                        : isDark
+                        ? 'text-gray-300 hover:text-white hover:bg-white/5'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                     }`}
                   >
                     <div
-                      className={`${isActiveLink(item.href) ? "text-purple-300" : "text-gray-400"}`}
+                      className={`${isActiveLink(item.href) ? 'text-purple-400' : isDark ? 'text-gray-400' : 'text-gray-500'}`}
                     >
                       {item.icon}
                     </div>
                     <div>
                       <div>{item.name}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
                         {item.description}
                       </div>
                     </div>
@@ -401,11 +509,15 @@ const Navbar = () => {
             </div>
 
             {/* Auth Buttons */}
-            <div className="pt-4 border-t border-purple-500/20 space-y-3">
+            <div className={`pt-4 border-t space-y-3 ${isDark ? 'border-purple-500/20' : 'border-purple-300/20'}`}>
               <Link
                 href="/sign-in"
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-colors duration-300 border border-transparent hover:border-purple-500/20"
+                className={`flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-medium transition-colors duration-300 border ${
+                  isDark
+                    ? 'text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20'
+                }`}
               >
                 <User className="w-4 h-4" />
                 Sign In

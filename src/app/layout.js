@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import AuthProvider from "@/context/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
+import ReduxProvider from '@/providers/ReduxProvider';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,6 +24,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+       <ReduxProvider>
       <AuthProvider>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -33,6 +35,7 @@ export default function RootLayout({ children }) {
           <Toaster />
         </body>
       </AuthProvider>
+      </ReduxProvider>
     </html>
   );
 }
