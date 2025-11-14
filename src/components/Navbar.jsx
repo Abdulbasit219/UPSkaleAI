@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Sparkles,
   Menu,
@@ -38,6 +38,10 @@ const Navbar = () => {
   const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
   const pathname = usePathname();
 
+  // Refs for detecting outside clicks
+  const userDropdownRef = useRef(null);
+  const userButtonRef = useRef(null);
+
   // Redux theme
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme.mode);
@@ -48,6 +52,32 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close user dropdown when route changes
+  useEffect(() => {
+    setIsUserDropdownOpen(false);
+  }, [pathname]); // This will run every time the pathname changes
+
+  // Close user dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if click is outside both the dropdown and the button
+      if (
+        isUserDropdownOpen &&
+        userDropdownRef.current &&
+        userButtonRef.current &&
+        !userDropdownRef.current.contains(event.target) &&
+        !userButtonRef.current.contains(event.target)
+      ) {
+        setIsUserDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isUserDropdownOpen]);
 
   const handleMouseLeave = () => {
     const timeout = setTimeout(() => {
@@ -62,6 +92,10 @@ const Navbar = () => {
       setClosingTimeout(null);
     }
     setIsResourcesDropdownOpen(true);
+  };
+
+  const toggleUserDropdown = () => {
+    setIsUserDropdownOpen(!isUserDropdownOpen);
   };
 
   const mainNavItems = [
@@ -115,12 +149,12 @@ const Navbar = () => {
       icon: <FileUser className="w-4 h-4" />,
       description: "Build resume with AI",
     },
-    {
-      name: "Analytics",
-      href: "/analytics",
-      icon: <BarChart3 className="w-4 h-4" />,
-      description: "Track your progress",
-    },
+    // {
+    //   name: "Analytics",
+    //   href: "/analytics",
+    //   icon: <BarChart3 className="w-4 h-4" />,
+    //   description: "Track your progress",
+    // },
   ];
 
   const userMenuItems = [
@@ -158,7 +192,10 @@ const Navbar = () => {
   };
 
   const isResourcesActive = () => {
-    return resourcesItems.some((item) => pathname.startsWith(item.href));
+    const mainNavHrefs = mainNavItems.map(item => item.href);
+    return resourcesItems.some((item) => 
+      pathname.startsWith(item.href) && !mainNavHrefs.includes(item.href)
+    );
   };
 
   return (
@@ -369,9 +406,10 @@ const Navbar = () => {
               </Link>
 
               {/* User Dropdown */}
-              <div className="relative">
+              <div className="relative" ref={userDropdownRef}>
                 <button
-                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                  ref={userButtonRef}
+                  onClick={toggleUserDropdown}
                   className={`flex items-center gap-2 px-3 py-2 transition-colors duration-300 rounded-xl border ${
                     isDark
                       ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
@@ -488,7 +526,10 @@ const Navbar = () => {
                 <Link
                   key={item.name}
                   href={item.href}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsUserDropdownOpen(false);
+                  }}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
                     isActiveLink(item.href)
                       ? isDark
@@ -523,7 +564,10 @@ const Navbar = () => {
                   <Link
                     key={item.name}
                     href={item.href}
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setIsUserDropdownOpen(false);
+                    }}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
                       isActiveLink(item.href)
                         ? isDark
@@ -558,7 +602,10 @@ const Navbar = () => {
             >
               <Link
                 href="/sign-in"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setIsUserDropdownOpen(false);
+                }}
                 className={`flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-medium transition-colors duration-300 border ${
                   isDark
                     ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
@@ -571,7 +618,10 @@ const Navbar = () => {
 
               <Link
                 href="/signup"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setIsUserDropdownOpen(false);
+                }}
                 className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
               >
                 <Zap className="w-4 h-4" />
