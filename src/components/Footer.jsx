@@ -45,7 +45,7 @@ const Footer = () => {
             >
               <li>
                 <a
-                  href="#"
+                  href="/features"
                   className={`transition-colors ${isDark ? "hover:text-white" : "hover:text-gray-900"}`}
                 >
                   Features
@@ -53,7 +53,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/pricing"
                   className={`transition-colors ${isDark ? "hover:text-white" : "hover:text-gray-900"}`}
                 >
                   Pricing
@@ -88,7 +88,7 @@ const Footer = () => {
             >
               <li>
                 <a
-                  href="#"
+                  href="/features"
                   className={`transition-colors ${isDark ? "hover:text-white" : "hover:text-gray-900"}`}
                 >
                   About
@@ -96,23 +96,23 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/features"
                   className={`transition-colors ${isDark ? "hover:text-white" : "hover:text-gray-900"}`}
                 >
-                  Blog
+                  Features
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/how-it-works"
                   className={`transition-colors ${isDark ? "hover:text-white" : "hover:text-gray-900"}`}
                 >
-                  Careers
+                How it Works
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/contact"
                   className={`transition-colors ${isDark ? "hover:text-white" : "hover:text-gray-900"}`}
                 >
                   Contact

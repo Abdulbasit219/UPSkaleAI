@@ -7,9 +7,12 @@ import {
   BarChart3, Briefcase, BookOpen,
   Star, Shield, Globe
 } from 'lucide-react';
+import { useSelector } from 'react-redux';
 
 export default function HowItWorksPage() {
   const [activeStep, setActiveStep] = useState(0);
+  const theme = useSelector((state) => state.theme.mode);
+  const isDark = theme === "dark";
 
   const steps = [
     {
@@ -105,26 +108,43 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 pt-24 pb-20">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDark 
+        ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white"
+        : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50 text-gray-900"
+    } pt-24 pb-20`}>
+      
       {/* Background Pattern */}
-      <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjAzIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30 pointer-events-none" />
+      {isDark && (
+        <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjAzIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30 pointer-events-none" />
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Animated Header */}
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-500/30 to-pink-500/30 border border-purple-400/40 rounded-full mb-8 backdrop-blur-md shadow-lg shadow-purple-500/20 animate-pulse">
-            <Sparkles className="w-4 h-4 text-purple-300 animate-spin" style={{ animationDuration: '3s' }} />
-            <span className="text-sm font-semibold text-purple-200">Your Journey Starts Here</span>
-            <Sparkles className="w-4 h-4 text-pink-300 animate-spin" style={{ animationDuration: '3s', animationDirection: 'reverse' }} />
+          <div className={`inline-flex items-center gap-2 px-5 py-2.5 border rounded-full mb-8 backdrop-blur-sm ${
+            isDark
+              ? "bg-purple-500/20 border-purple-500/30"
+              : "bg-purple-100/80 border-purple-300/30"
+          }`}>
+            <Sparkles className={`w-4 h-4 ${isDark ? "text-purple-300" : "text-purple-500"}`} />
+            <span className={`text-sm font-semibold ${isDark ? "text-purple-200" : "text-purple-700"}`}>
+              Your Journey Starts Here
+            </span>
+            <Sparkles className={`w-4 h-4 ${isDark ? "text-pink-300" : "text-pink-500"}`} />
           </div>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
+          <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black mb-6 leading-tight ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}>
             How
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-gradient"> SkillBridge </span>
             Works
           </h1>
           
-          <p className="text-xl sm:text-2xl text-gray-300 max-w-3xl mx-auto mb-12 leading-relaxed">
+          <p className={`text-xl sm:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed ${
+            isDark ? "text-gray-300" : "text-gray-600"
+          }`}>
             Transform your career in <span className="text-purple-400 font-bold">4 simple steps</span> with AI-powered guidance. 
             <br className="hidden sm:block" />
             From learning to earning, we bridge the gap with personalized roadmaps.
@@ -135,11 +155,21 @@ export default function HowItWorksPage() {
             {successMetrics.map((metric, idx) => (
               <div 
                 key={idx} 
-                className="group text-center p-6 bg-gradient-to-br from-slate-900/80 to-slate-800/80 backdrop-blur-md border border-purple-500/30 rounded-2xl hover:border-purple-400/60 hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+                className={`group text-center p-6 backdrop-blur-sm border rounded-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 ${
+                  isDark
+                    ? "bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 hover:border-purple-400/60 hover:shadow-2xl hover:shadow-purple-500/30"
+                    : "bg-gradient-to-br from-white/80 to-white/40 border-purple-300/30 hover:border-purple-300/60 hover:shadow-2xl hover:shadow-purple-300/30"
+                }`}
               >
                 <div className="flex justify-center mb-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <div className="text-purple-300 group-hover:text-purple-200 transition-colors">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg ${
+                    isDark
+                      ? "bg-gradient-to-br from-purple-500/30 to-pink-500/30"
+                      : "bg-gradient-to-br from-purple-100 to-pink-100"
+                  }`}>
+                    <div className={`transition-colors ${
+                      isDark ? "text-purple-300 group-hover:text-purple-200" : "text-purple-500 group-hover:text-purple-600"
+                    }`}>
                       {metric.icon}
                     </div>
                   </div>
@@ -147,7 +177,9 @@ export default function HowItWorksPage() {
                 <div className="text-3xl font-black bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent mb-1">
                   {metric.value}
                 </div>
-                <div className="text-gray-300 text-sm font-medium">{metric.label}</div>
+                <div className={`text-sm font-medium ${
+                  isDark ? "text-gray-300" : "text-gray-600"
+                }`}>{metric.label}</div>
               </div>
             ))}
           </div>
@@ -162,10 +194,18 @@ export default function HowItWorksPage() {
                 <div
                   key={idx}
                   onClick={() => setActiveStep(idx)}
-                  className={`group p-7 rounded-3xl border backdrop-blur-md cursor-pointer transition-all duration-500 ${
+                  className={`group p-7 rounded-3xl border backdrop-blur-sm cursor-pointer transition-all duration-500 ${
                     activeStep === idx
-                      ? 'bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-purple-400/70 shadow-2xl shadow-purple-500/30 scale-[1.02]'
-                      : 'bg-slate-900/40 border-purple-500/20 hover:border-purple-400/50 hover:bg-slate-900/60 hover:scale-[1.01]'
+                      ? `scale-[1.02] ${
+                          isDark
+                            ? "bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-purple-400/70 shadow-2xl shadow-purple-500/30"
+                            : "bg-gradient-to-br from-white/90 to-white/70 border-purple-400/70 shadow-2xl shadow-purple-500/20"
+                        }`
+                      : `${
+                          isDark
+                            ? "bg-slate-900/40 border-purple-500/20 hover:border-purple-400/50 hover:bg-slate-900/60"
+                            : "bg-white/40 border-purple-300/20 hover:border-purple-300/50 hover:bg-white/60"
+                        } hover:scale-[1.01]`
                   }`}
                 >
                   <div className="flex items-start gap-5">
@@ -179,12 +219,18 @@ export default function HowItWorksPage() {
                         <span className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                           {step.number}
                         </span>
-                        <h3 className="text-xl font-bold text-white group-hover:text-purple-300 transition-colors">{step.title}</h3>
+                        <h3 className={`text-xl font-bold group-hover:text-purple-300 transition-colors ${
+                          isDark ? "text-white" : "text-gray-900"
+                        }`}>{step.title}</h3>
                       </div>
-                      <p className="text-gray-300 mb-4 leading-relaxed">{step.description}</p>
+                      <p className={`mb-4 leading-relaxed ${
+                        isDark ? "text-gray-300" : "text-gray-600"
+                      }`}>{step.description}</p>
                       <div className="space-y-2.5">
                         {step.details.map((detail, i) => (
-                          <div key={i} className="flex items-center gap-2.5 text-sm text-gray-200 group-hover:text-white transition-colors">
+                          <div key={i} className={`flex items-center gap-2.5 text-sm transition-colors ${
+                            isDark ? "text-gray-200 group-hover:text-white" : "text-gray-700 group-hover:text-gray-900"
+                          }`}>
                             <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
                             <span className="font-medium">{detail}</span>
                           </div>
@@ -198,29 +244,43 @@ export default function HowItWorksPage() {
 
             {/* Step Visualization */}
             <div className="relative lg:sticky lg:top-24">
-              <div className="bg-gradient-to-br from-slate-900/90 via-purple-900/30 to-slate-900/90 backdrop-blur-2xl border-2 border-purple-500/40 rounded-[2rem] p-10 shadow-2xl shadow-purple-500/20">
+              <div className={`backdrop-blur-2xl border-2 rounded-[2rem] p-10 shadow-2xl ${
+                isDark
+                  ? "bg-gradient-to-br from-slate-900/90 via-purple-900/30 to-slate-900/90 border-purple-500/40 shadow-purple-500/20"
+                  : "bg-gradient-to-br from-white/90 via-purple-50/30 to-white/90 border-purple-300/40 shadow-purple-300/20"
+              }`}>
                 <div className="text-center mb-8">
                   <div className="text-8xl mb-6 animate-bounce" style={{ animationDuration: '2s' }}>{steps[activeStep].image}</div>
-                  <div className={`w-24 h-24 bg-gradient-to-br ${steps[activeStep].color} rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-purple-500/40 animate-pulse`}>
+                  <div className={`w-24 h-24 bg-gradient-to-br ${steps[activeStep].color} rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl ${
+                    isDark ? "shadow-purple-500/40" : "shadow-purple-300/40"
+                  } animate-pulse`}>
                     <div className="text-white text-3xl font-black">
                       {steps[activeStep].number}
                     </div>
                   </div>
-                  <h3 className="text-3xl font-black text-white mb-3">
+                  <h3 className={`text-3xl font-black mb-3 ${
+                    isDark ? "text-white" : "text-gray-900"
+                  }`}>
                     {steps[activeStep].title}
                   </h3>
-                  <p className="text-gray-300 text-lg leading-relaxed">
+                  <p className={`text-lg leading-relaxed ${
+                    isDark ? "text-gray-300" : "text-gray-600"
+                  }`}>
                     {steps[activeStep].description}
                   </p>
                 </div>
 
                 {/* Step Visualization */}
                 <div className="space-y-5">
-                  <div className="flex justify-between text-sm font-semibold text-gray-300">
+                  <div className={`flex justify-between text-sm font-semibold ${
+                    isDark ? "text-gray-300" : "text-gray-600"
+                  }`}>
                     <span>Start</span>
                     <span>Complete</span>
                   </div>
-                  <div className="relative w-full bg-slate-800/80 rounded-full h-3 overflow-hidden shadow-inner">
+                  <div className={`relative w-full rounded-full h-3 overflow-hidden shadow-inner ${
+                    isDark ? "bg-slate-800/80" : "bg-gray-200/80"
+                  }`}>
                     <div 
                       className="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 rounded-full transition-all duration-700 shadow-lg shadow-purple-500/50"
                       style={{ width: `${(activeStep + 1) * 25}%` }}
@@ -234,7 +294,7 @@ export default function HowItWorksPage() {
                   </div>
                 </div>
 
-                {/*  Demo CTA */}
+                {/* Demo CTA */}
                 <button className="w-full mt-8 py-4 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 text-white rounded-2xl font-bold hover:shadow-2xl hover:shadow-purple-500/60 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3 group">
                   <Play className="w-6 h-6 group-hover:scale-125 transition-transform" />
                   <span className="text-lg">Watch {steps[activeStep].title} Demo</span>
@@ -244,33 +304,59 @@ export default function HowItWorksPage() {
           </div>
         </div>
 
-        {/*  Key Features */}
+        {/* Key Features */}
         <div className="mb-24">
-          <h2 className="text-4xl font-black text-white text-center mb-4">
+          <h2 className={`text-4xl font-black text-center mb-4 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}>
             Why Choose
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent"> SkillBridge?</span>
           </h2>
-          <p className="text-gray-300 text-center text-lg mb-16 max-w-2xl mx-auto">
+          <p className={`text-center text-lg mb-16 max-w-2xl mx-auto ${
+            isDark ? "text-gray-300" : "text-gray-600"
+          }`}>
             Experience the power of AI-driven career transformation with cutting-edge features
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, idx) => (
               <div 
                 key={idx}
-                className="group relative p-8 bg-gradient-to-br from-slate-900/80 to-slate-800/80 backdrop-blur-md border border-purple-500/30 rounded-3xl hover:border-purple-400/60 hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 hover:-translate-y-2 overflow-hidden"
+                className={`group relative p-8 backdrop-blur-sm border rounded-3xl transition-all duration-500 hover:-translate-y-2 overflow-hidden ${
+                  isDark
+                    ? "bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30 hover:border-purple-400/60 hover:shadow-2xl hover:shadow-purple-500/30"
+                    : "bg-gradient-to-br from-white/80 to-white/60 border-purple-300/30 hover:border-purple-300/60 hover:shadow-2xl hover:shadow-purple-300/30"
+                }`}
               >
                 {/* Animated background gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/0 via-pink-600/0 to-purple-600/0 group-hover:from-purple-600/10 group-hover:via-pink-600/10 group-hover:to-purple-600/10 transition-all duration-500"></div>
+                <div className={`absolute inset-0 transition-all duration-500 ${
+                  isDark
+                    ? "bg-gradient-to-br from-purple-600/0 via-pink-600/0 to-purple-600/0 group-hover:from-purple-600/10 group-hover:via-pink-600/10 group-hover:to-purple-600/10"
+                    : "bg-gradient-to-br from-purple-100/0 via-pink-100/0 to-purple-100/0 group-hover:from-purple-100/50 group-hover:via-pink-100/50 group-hover:to-purple-100/50"
+                }`}></div>
                 
                 <div className="relative z-10">
-                  <div className="w-14 h-14 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg">
-                    <div className="text-purple-300 group-hover:text-purple-200 transition-colors">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg ${
+                    isDark
+                      ? "bg-gradient-to-br from-purple-500/30 to-pink-500/30"
+                      : "bg-gradient-to-br from-purple-100 to-pink-100"
+                  }`}>
+                    <div className={`transition-colors ${
+                      isDark ? "text-purple-300 group-hover:text-purple-200" : "text-purple-500 group-hover:text-purple-600"
+                    }`}>
                       {feature.icon}
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors">{feature.title}</h3>
-                  <p className="text-gray-300 text-sm mb-4 leading-relaxed">{feature.description}</p>
-                  <div className="inline-block px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full">
+                  <h3 className={`text-xl font-bold mb-3 group-hover:text-purple-300 transition-colors ${
+                    isDark ? "text-white" : "text-gray-900"
+                  }`}>{feature.title}</h3>
+                  <p className={`text-sm mb-4 leading-relaxed ${
+                    isDark ? "text-gray-300" : "text-gray-600"
+                  }`}>{feature.description}</p>
+                  <div className={`inline-block px-4 py-2 rounded-full ${
+                    isDark
+                      ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20"
+                      : "bg-gradient-to-r from-purple-100 to-pink-100"
+                  }`}>
                     <span className="text-sm font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                       {feature.stat}
                     </span>
@@ -283,28 +369,62 @@ export default function HowItWorksPage() {
 
         {/* Trust Indicators */}
         <div className="mb-24">
-          <div className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 backdrop-blur-2xl border border-purple-500/30 rounded-[2rem] p-12 shadow-xl">
+          <div className={`backdrop-blur-2xl border rounded-[2rem] p-12 shadow-xl ${
+            isDark
+              ? "bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-purple-500/30"
+              : "bg-gradient-to-br from-white/80 to-white/60 border-purple-300/30"
+          }`}>
             <div className="grid md:grid-cols-3 gap-10">
               <div className="text-center group">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-3xl flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <Shield className="w-10 h-10 text-purple-300" />
+                <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg ${
+                  isDark
+                    ? "bg-gradient-to-br from-purple-500/30 to-pink-500/30"
+                    : "bg-gradient-to-br from-purple-100 to-pink-100"
+                }`}>
+                  <Shield className={`w-10 h-10 ${
+                    isDark ? "text-purple-300" : "text-purple-500"
+                  }`} />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Verified Skills</h3>
-                <p className="text-gray-300 leading-relaxed">Industry-recognized certifications and project verification</p>
+                <h3 className={`text-2xl font-bold mb-3 ${
+                  isDark ? "text-white" : "text-gray-900"
+                }`}>Verified Skills</h3>
+                <p className={`leading-relaxed ${
+                  isDark ? "text-gray-300" : "text-gray-600"
+                }`}>Industry-recognized certifications and project verification</p>
               </div>
               <div className="text-center group">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-3xl flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <Globe className="w-10 h-10 text-purple-300" />
+                <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg ${
+                  isDark
+                    ? "bg-gradient-to-br from-purple-500/30 to-pink-500/30"
+                    : "bg-gradient-to-br from-purple-100 to-pink-100"
+                }`}>
+                  <Globe className={`w-10 h-10 ${
+                    isDark ? "text-purple-300" : "text-purple-500"
+                  }`} />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Global Opportunities</h3>
-                <p className="text-gray-300 leading-relaxed">Connect with companies worldwide through our partner network</p>
+                <h3 className={`text-2xl font-bold mb-3 ${
+                  isDark ? "text-white" : "text-gray-900"
+                }`}>Global Opportunities</h3>
+                <p className={`leading-relaxed ${
+                  isDark ? "text-gray-300" : "text-gray-600"
+                }`}>Connect with companies worldwide through our partner network</p>
               </div>
               <div className="text-center group">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-3xl flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <Users className="w-10 h-10 text-purple-300" />
+                <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg ${
+                  isDark
+                    ? "bg-gradient-to-br from-purple-500/30 to-pink-500/30"
+                    : "bg-gradient-to-br from-purple-100 to-pink-100"
+                }`}>
+                  <Users className={`w-10 h-10 ${
+                    isDark ? "text-purple-300" : "text-purple-500"
+                  }`} />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Community Support</h3>
-                <p className="text-gray-300 leading-relaxed">Learn with peers and get mentorship from industry experts</p>
+                <h3 className={`text-2xl font-bold mb-3 ${
+                  isDark ? "text-white" : "text-gray-900"
+                }`}>Community Support</h3>
+                <p className={`leading-relaxed ${
+                  isDark ? "text-gray-300" : "text-gray-600"
+                }`}>Learn with peers and get mentorship from industry experts</p>
               </div>
             </div>
           </div>
@@ -312,7 +432,7 @@ export default function HowItWorksPage() {
 
         {/* CTA Section */}
         <div className="text-center">
-          <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-purple-600 rounded-[2rem] p-12 md:p-16 relative overflow-hidden shadow-2xl">
+          <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-pink-600 to-purple-600 rounded-[2rem] p-12 md:p-16 shadow-2xl">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30" />
             <div className="relative z-10">
               <h2 className="text-4xl md:text-5xl font-black text-white mb-5">

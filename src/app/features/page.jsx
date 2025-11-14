@@ -7,9 +7,11 @@ import {
   Code, BookOpen, Laptop, MessageSquare, GitBranch,
   Smartphone, Database, Cloud, Lock, Heart
 } from 'lucide-react';
-
+import { useSelector } from 'react-redux';
 export default function FeaturesPage() {
   const [activeCategory, setActiveCategory] = useState('ai');
+  const theme = useSelector((state) => state.theme.mode);
+  const isDark = theme === "dark";
 
   const categories = [
     { id: 'ai', name: 'AI Powered', icon: <Brain className="w-5 h-5" /> },
@@ -219,41 +221,73 @@ export default function FeaturesPage() {
     }
   ];
 
-  return (
-    <div className="min-h-screen bg-slate-950 pt-20 pb-12">
+ return (
+    <div className={`min-h-screen pt-20 pb-12 transition-colors duration-300 ${
+      isDark 
+        ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white" 
+        : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50 text-gray-900"
+    }`}>
       {/* Background Pattern */}
-      <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjAzIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30 pointer-events-none" />
+      <div 
+        className={`fixed inset-0 pointer-events-none transition-opacity duration-300 ${
+          isDark 
+            ? "bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIwLjUiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"
+            : "bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgxMDIsMTE2LDE0OSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIwLjUiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20"
+        }`}
+      />
 
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl animate-pulse ${
+          isDark ? "bg-purple-500/10" : "bg-purple-500/5"
+        }`}></div>
+        <div className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full blur-3xl animate-pulse delay-1000 ${
+          isDark ? "bg-pink-500/10" : "bg-pink-500/5"
+        }`}></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 rounded-full mb-6 backdrop-blur-sm">
-            <Rocket className="w-4 h-4 text-purple-400" />
-            <span className="text-sm font-medium text-purple-300">Powerful Features</span>
+          <div className={`inline-flex items-center gap-2 px-4 py-2 border rounded-full mb-6 backdrop-blur-sm ${
+            isDark
+              ? "bg-purple-500/20 border-purple-500/30"
+              : "bg-purple-100/80 border-purple-300/30"
+          }`}>
+            <Rocket className={`w-4 h-4 ${isDark ? "text-purple-400" : "text-purple-600"}`} />
+            <span className={`text-sm font-medium ${
+              isDark ? "text-purple-300" : "text-purple-700"
+            }`}>Powerful Features</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+          <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}>
             Everything You Need to
             <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Succeed</span>
           </h1>
           
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
+          <p className={`text-xl max-w-3xl mx-auto mb-8 ${
+            isDark ? "text-gray-400" : "text-gray-600"
+          }`}>
             Discover how SkillBridge's AI-powered platform transforms your learning journey and accelerates your career growth
           </p>
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center p-4 bg-slate-900/50 backdrop-blur-sm border border-purple-500/20 rounded-xl">
+              <div key={index} className={`text-center p-4 backdrop-blur-sm border rounded-xl ${
+                isDark
+                  ? "bg-slate-900/50 border-purple-500/20"
+                  : "bg-white/80 border-purple-300/20"
+              }`}>
                 <div className="flex justify-center mb-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center">
-                    <div className="text-purple-400">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    isDark
+                      ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20"
+                      : "bg-gradient-to-br from-purple-100 to-pink-100"
+                  }`}>
+                    <div className={isDark ? "text-purple-400" : "text-purple-600"}>
                       {stat.icon}
                     </div>
                   </div>
@@ -261,7 +295,9 @@ export default function FeaturesPage() {
                 <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                   {stat.value}
                 </div>
-                <div className="text-gray-400 text-sm">{stat.label}</div>
+                <div className={`text-sm ${
+                  isDark ? "text-gray-400" : "text-gray-600"
+                }`}>{stat.label}</div>
               </div>
             ))}
           </div>
@@ -276,7 +312,11 @@ export default function FeaturesPage() {
               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
                 activeCategory === category.id
                   ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50'
-                  : 'bg-slate-800 text-gray-400 hover:text-white hover:bg-slate-700 border border-slate-700'
+                  : `${
+                      isDark
+                        ? 'bg-slate-800 text-gray-400 hover:text-white hover:bg-slate-700 border border-slate-700'
+                        : 'bg-white text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-300'
+                    }`
               }`}
             >
               {category.icon}
@@ -290,7 +330,11 @@ export default function FeaturesPage() {
           {features[activeCategory].map((feature, index) => (
             <div
               key={index}
-              className="group bg-slate-900/50 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-500 hover:-translate-y-2"
+              className={`group backdrop-blur-sm border rounded-2xl p-6 transition-all duration-500 hover:-translate-y-2 ${
+                isDark
+                  ? "bg-slate-900/50 border-purple-500/20 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-500/20"
+                  : "bg-white/80 border-purple-300/20 hover:border-purple-300/50 hover:shadow-xl hover:shadow-purple-300/20"
+              }`}
             >
               {/* Feature Header */}
               <div className="flex items-start justify-between mb-4">
@@ -303,17 +347,23 @@ export default function FeaturesPage() {
               </div>
 
               {/* Feature Content */}
-              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors">
+              <h3 className={`text-xl font-bold mb-3 group-hover:text-purple-300 transition-colors ${
+                isDark ? "text-white" : "text-gray-900"
+              }`}>
                 {feature.title}
               </h3>
-              <p className="text-gray-400 mb-6 leading-relaxed">
+              <p className={`mb-6 leading-relaxed ${
+                isDark ? "text-gray-400" : "text-gray-600"
+              }`}>
                 {feature.description}
               </p>
 
               {/* Highlights */}
               <div className="space-y-2 mb-6">
                 {feature.highlights.map((highlight, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm text-gray-300">
+                  <div key={i} className={`flex items-center gap-2 text-sm ${
+                    isDark ? "text-gray-300" : "text-gray-700"
+                  }`}>
                     <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
                     {highlight}
                   </div>
@@ -321,7 +371,11 @@ export default function FeaturesPage() {
               </div>
 
               {/* CTA */}
-              <button className="w-full py-2.5 bg-slate-800 text-white rounded-lg font-semibold hover:bg-slate-700 transition-all border border-slate-700 flex items-center justify-center gap-2 group-hover:border-purple-500/40">
+              <button className={`w-full py-2.5 rounded-lg font-semibold transition-all border flex items-center justify-center gap-2 group-hover:border-purple-500/40 ${
+                isDark
+                  ? "bg-slate-800 text-white border-slate-700 hover:bg-slate-700"
+                  : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+              }`}>
                 Learn More
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
@@ -332,11 +386,15 @@ export default function FeaturesPage() {
         {/* Testimonials Section */}
         <div className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            <h2 className={`text-3xl sm:text-4xl font-bold mb-4 ${
+              isDark ? "text-white" : "text-gray-900"
+            }`}>
               Loved by
               <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Thousands</span>
             </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            <p className={`text-xl max-w-2xl mx-auto ${
+              isDark ? "text-gray-400" : "text-gray-600"
+            }`}>
               See how SkillBridge has transformed careers and accelerated learning journeys
             </p>
           </div>
@@ -345,18 +403,34 @@ export default function FeaturesPage() {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="bg-slate-900/50 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6 hover:border-purple-500/40 transition-all duration-300"
+                className={`backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 ${
+                  isDark
+                    ? "bg-slate-900/50 border-purple-500/20 hover:border-purple-500/40"
+                    : "bg-white/80 border-purple-300/20 hover:border-purple-300/40"
+                }`}
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center border border-purple-500/30">
-                    <span className="text-purple-300 font-bold text-sm">{testimonial.avatar}</span>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${
+                    isDark
+                      ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500/30"
+                      : "bg-gradient-to-br from-purple-100 to-pink-100 border-purple-300/30"
+                  }`}>
+                    <span className={`font-bold text-sm ${
+                      isDark ? "text-purple-300" : "text-purple-600"
+                    }`}>{testimonial.avatar}</span>
                   </div>
                   <div>
-                    <div className="text-white font-semibold">{testimonial.name}</div>
-                    <div className="text-gray-400 text-sm">{testimonial.role} at {testimonial.company}</div>
+                    <div className={`font-semibold ${
+                      isDark ? "text-white" : "text-gray-900"
+                    }`}>{testimonial.name}</div>
+                    <div className={`text-sm ${
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    }`}>{testimonial.role} at {testimonial.company}</div>
                   </div>
                 </div>
-                <p className="text-gray-300 mb-4 leading-relaxed">"{testimonial.content}"</p>
+                <p className={`mb-4 leading-relaxed ${
+                  isDark ? "text-gray-300" : "text-gray-700"
+                }`}>"{testimonial.content}"</p>
                 <div className="flex items-center gap-1">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
@@ -370,7 +444,11 @@ export default function FeaturesPage() {
         {/* CTA Section */}
         <div className="text-center">
           <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-purple-600 rounded-3xl p-12 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30" />
+            <div className={`absolute inset-0 ${
+              isDark
+                ? "bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"
+                : "bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjIpIiBzdHJva2Utd2lkdGg9IjAuNSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-20"
+            }`} />
             <div className="relative z-10">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 Ready to Experience These Features?
