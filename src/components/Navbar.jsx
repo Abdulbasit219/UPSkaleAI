@@ -29,6 +29,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "@/store/slices/themeSlice";
+import { useSession, signOut } from "next-auth/react";
+// import { User } from 'next-auth';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,42 +44,13 @@ const Navbar = () => {
   const userDropdownRef = useRef(null);
   const userButtonRef = useRef(null);
 
+  const { data, status } = useSession();
+  const user = data?.user;
+
   // Redux theme
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Close user dropdown when route changes
-  useEffect(() => {
-    setIsUserDropdownOpen(false);
-  }, [pathname]); // This will run every time the pathname changes
-
-  // Close user dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Check if click is outside both the dropdown and the button
-      if (
-        isUserDropdownOpen &&
-        userDropdownRef.current &&
-        userButtonRef.current &&
-        !userDropdownRef.current.contains(event.target) &&
-        !userButtonRef.current.contains(event.target)
-      ) {
-        setIsUserDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isUserDropdownOpen]);
 
   const handleMouseLeave = () => {
     const timeout = setTimeout(() => {
@@ -96,6 +69,19 @@ const Navbar = () => {
 
   const toggleUserDropdown = () => {
     setIsUserDropdownOpen(!isUserDropdownOpen);
+  };
+
+  const isActiveLink = (href) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
+
+  const isResourcesActive = () => {
+    const mainNavHrefs = mainNavItems.map((item) => item.href);
+    return resourcesItems.some(
+      (item) =>
+        pathname.startsWith(item.href) && !mainNavHrefs.includes(item.href)
+    );
   };
 
   const mainNavItems = [
@@ -181,22 +167,42 @@ const Navbar = () => {
     },
     {
       name: "Sign Out",
-      href: "/sign-out",
       icon: <LogOut className="w-4 h-4" />,
+      onClick: () => signOut({ callbackUrl: "/" }),
     },
   ];
 
-  const isActiveLink = (href) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  const isResourcesActive = () => {
-    const mainNavHrefs = mainNavItems.map(item => item.href);
-    return resourcesItems.some((item) => 
-      pathname.startsWith(item.href) && !mainNavHrefs.includes(item.href)
-    );
-  };
+  // Close user dropdown when route changes
+  useEffect(() => {
+    setIsUserDropdownOpen(false);
+  }, [pathname]); // This will run every time the pathname changes
+
+  // Close user dropdown when clicking outsidFe
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if click is outside both the dropdown and the button
+      if (
+        isUserDropdownOpen &&
+        userDropdownRef.current &&
+        userButtonRef.current &&
+        !userDropdownRef.current.contains(event.target) &&
+        !userButtonRef.current.contains(event.target)
+      ) {
+        setIsUserDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isUserDropdownOpen]);
 
   return (
     <>
@@ -394,84 +400,107 @@ const Navbar = () => {
                 )}
               </button>
 
-              <Link
-                href="/sign-in"
-                className={`px-6 py-2.5 transition-colors duration-300 font-medium rounded-xl border ${
-                  isDark
-                    ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
-                }`}
-              >
-                Sign In
-              </Link>
-
-              {/* User Dropdown */}
-              <div className="relative" ref={userDropdownRef}>
-                <button
-                  ref={userButtonRef}
-                  onClick={toggleUserDropdown}
-                  className={`flex items-center gap-2 px-3 py-2 transition-colors duration-300 rounded-xl border ${
+              {/* sign in button for desktop  */}
+              {status === "unauthenticated" && (
+                <Link
+                  href="/sign-in"
+                  className={`px-6 py-2.5 transition-colors duration-300 font-medium rounded-xl border ${
                     isDark
                       ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
                   }`}
                 >
-                  <div
-                    className={`w-9 h-9 bg-gradient-to-br rounded-xl flex items-center justify-center border ${
-                      isDark
-                        ? "from-purple-500/20 to-pink-500/20 border-purple-500/30"
-                        : "from-purple-100 to-pink-100 border-purple-300/30"
-                    }`}
-                  >
-                    <User className="w-4 h-4 text-purple-400" />
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 ${isUserDropdownOpen ? "rotate-180" : ""}`}
-                  />
-                </button>
+                  Sign In
+                </Link>
+              )}
 
-                {isUserDropdownOpen && (
-                  <div
-                    className={`absolute right-0 mt-2 w-56 backdrop-blur-xl border rounded-xl shadow-2xl py-2 animate-in fade-in-0 zoom-in-95 ${
+              {/* User Dropdown */}
+              {status === "authenticated" && (
+                <div className="relative" ref={userDropdownRef}>
+                  <button
+                    ref={userButtonRef}
+                    onClick={toggleUserDropdown}
+                    className={`flex items-center gap-2 px-3 py-2 transition-colors duration-300 rounded-xl border ${
                       isDark
-                        ? "bg-slate-900/98 border-purple-500/30 shadow-purple-500/20"
-                        : "bg-white/98 border-purple-300/30 shadow-purple-300/20"
+                        ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
                     }`}
                   >
                     <div
-                      className={`px-4 py-3 border-b ${isDark ? "border-purple-500/10" : "border-purple-300/10"}`}
+                      className={`w-9 h-9 bg-gradient-to-br rounded-xl flex items-center justify-center border ${
+                        isDark
+                          ? "from-purple-500/20 to-pink-500/20 border-purple-500/30"
+                          : "from-purple-100 to-pink-100 border-purple-300/30"
+                      }`}
                     >
-                      <p
-                        className={`text-sm font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-                      >
-                        Welcome Back!
-                      </p>
-                      <p
-                        className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                      >
-                        Ready to learn?
-                      </p>
+                      <User className="w-4 h-4 text-purple-400" />
                     </div>
-                    <div className="py-2">
-                      {userMenuItems.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 mx-2 rounded-lg ${
-                            isDark
-                              ? "text-gray-300 hover:text-white hover:bg-purple-500/10"
-                              : "text-gray-600 hover:text-gray-900 hover:bg-purple-50"
-                          }`}
-                          onClick={() => setIsUserDropdownOpen(false)}
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-300 ${isUserDropdownOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+
+                  {isUserDropdownOpen && (
+                    <div
+                      className={`absolute right-0 mt-2 w-56 backdrop-blur-xl border rounded-xl shadow-2xl py-2 animate-in fade-in-0 zoom-in-95 ${
+                        isDark
+                          ? "bg-slate-900/98 border-purple-500/30 shadow-purple-500/20"
+                          : "bg-white/98 border-purple-300/30 shadow-purple-300/20"
+                      }`}
+                    >
+                      <div
+                        className={`px-4 py-3 border-b ${isDark ? "border-purple-500/10" : "border-purple-300/10"}`}
+                      >
+                        <p
+                          className={`text-sm font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
                         >
-                          <div className="text-purple-400">{item.icon}</div>
-                          {item.name}
-                        </Link>
-                      ))}
+                          Welcome Back!
+                        </p>
+                        <p
+                          className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                        >
+                          Ready to learn?
+                        </p>
+                      </div>
+                      <div className="py-2">
+                        {userMenuItems.map((item) =>
+                          item.onClick ? (
+                            <button
+                              key={item.name}
+                              onClick={() => {
+                                item.onClick();
+                                setIsUserDropdownOpen(false);
+                              }}
+                              className={`w-full text-left flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 mx-2 rounded-lg ${
+                                isDark
+                                  ? "text-gray-300 hover:text-white hover:bg-purple-500/10"
+                                  : "text-gray-600 hover:text-gray-900 hover:bg-purple-50"
+                              }`}
+                            >
+                              <div className="text-purple-400">{item.icon}</div>
+                              {item.name}
+                            </button>
+                          ) : (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 mx-2 rounded-lg ${
+                                isDark
+                                  ? "text-gray-300 hover:text-white hover:bg-purple-500/10"
+                                  : "text-gray-600 hover:text-gray-900 hover:bg-purple-50"
+                              }`}
+                              onClick={() => setIsUserDropdownOpen(false)}
+                            >
+                              <div className="text-purple-400">{item.icon}</div>
+                              {item.name}
+                            </Link>
+                          )
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -596,38 +625,51 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Auth Buttons */}
-            <div
-              className={`pt-4 border-t space-y-3 ${isDark ? "border-purple-500/20" : "border-purple-300/20"}`}
-            >
-              <Link
-                href="/sign-in"
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setIsUserDropdownOpen(false);
-                }}
+            {/* Auth Buttons for mobiles */}
+            {status === "unauthenticated" ? (
+              <div
+                className={`pt-4 border-t space-y-3 ${isDark ? "border-purple-500/20" : "border-purple-300/20"}`}
+              >
+                <Link
+                  href="/sign-in"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsUserDropdownOpen(false);
+                  }}
+                  className={`flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-medium transition-colors duration-300 border ${
+                    isDark
+                      ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
+                  }`}
+                >
+                  <User className="w-4 h-4" />
+                  Sign In
+                </Link>
+
+                <Link
+                  href="/signup"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsUserDropdownOpen(false);
+                  }}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
+                >
+                  <Zap className="w-4 h-4" />
+                  Get Started Free
+                </Link>
+              </div>
+            ) : (
+              <button
                 className={`flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-medium transition-colors duration-300 border ${
                   isDark
                     ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
                 }`}
+                onClick={() => signOut({ callbackUrl: "/" })}
               >
-                <User className="w-4 h-4" />
-                Sign In
-              </Link>
-
-              <Link
-                href="/signup"
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setIsUserDropdownOpen(false);
-                }}
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
-              >
-                <Zap className="w-4 h-4" />
-                Get Started Free
-              </Link>
-            </div>
+                sign out
+              </button>
+            )}
           </div>
         </div>
       </nav>
