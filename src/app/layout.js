@@ -28,6 +28,7 @@ export default function RootLayout({ children }) {
       <AuthProvider>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          suppressHydrationWarning
         >
           <Navbar />
           {children}
