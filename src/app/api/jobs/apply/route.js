@@ -65,10 +65,13 @@ export async function POST(request) {
       );
     }
 
+    // Get user ID from session 
+    const userId = session.user.id || session.user._id || session.user.sub;
+    
     // Check if user already applied
     const existingApplication = await JobApplication.findOne({
       job: jobId,
-      user: session.user.id,
+      user: userId,
     });
 
     if (existingApplication) {
@@ -84,7 +87,7 @@ export async function POST(request) {
     // Create application
     const application = await JobApplication.create({
       job: jobId,
-      user: session.user.id,
+      user: userId,
       coverLetter,
       resume,
       answers,

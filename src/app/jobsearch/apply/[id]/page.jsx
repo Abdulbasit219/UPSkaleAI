@@ -29,30 +29,25 @@ import {
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import Link from "next/link";
+import axios from "axios";
 
-export default function QuickApplyPage() {
+export default function QuickApplyPage({ params }) {
+  const { id } = React.use(params);
   const [currentStep, setCurrentStep] = useState(1);
+  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
-    // Personal Info
-    fullName: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    phone: "+1 (555) 123-4567",
-    location: "San Francisco, CA",
-
-    // Application
-    coverLetter:
-      "I'm excited to apply for the Senior React Developer position at TechInnovate Inc. With my 3+ years of experience in React and modern web technologies, I believe I would be a great fit for your team...",
-    salaryExpectation: "$140,000",
-    availability: "2 weeks",
-
-    // Attachments
+    fullName: "",
+    email: "",
+    phone: "",
+    location: "",
+    coverLetter: "",
+    salaryExpectation: "",
+    availability: "",
     resume: null,
     portfolio: "",
-    github: "github.com/alexjohnson",
-    linkedin: "linkedin.com/in/alexjohnson",
-
-    // Preferences
-    remoteOk: true,
+    github: "",
+    linkedin: "",
+    remoteOk: false,
     relocationOk: false,
   });
   const theme = useSelector((state) => state.theme.mode);
@@ -91,20 +86,94 @@ export default function QuickApplyPage() {
     }));
   };
 
-  const handleFileUpload = (event, field) => {
+  const handleFileUpload = async (event, field) => {
     const file = event.target.files[0];
     if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: file,
-      }));
+      if (field === "resume") {
+        setIsUploading(true);
+        const uploadData = new FormData();
+        uploadData.append("file", file);
+
+        try {
+          const response = await axios.post("/api/upload", uploadData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+
+          setFormData((prev) => ({
+            ...prev,
+            resume: response.data.url,
+            resumeName: file.name,
+          }));
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          alert("Failed to upload resume. Please try again.");
+        } finally {
+          setIsUploading(false);
+        }
+      }
     }
   };
 
-  const handleSubmit = () => {
-    // Handle form submission
-    console.log("Application submitted:", formData);
-    setCurrentStep(5); // Success step
+  const validateStep = (step) => {
+    switch (step) {
+      case 1:
+        if (!formData.fullName || !formData.email || !formData.phone || !formData.location) {
+          alert("Please fill in all required personal information fields.");
+          return false;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+          alert("Please enter a valid email address.");
+          return false;
+        }
+        return true;
+      case 2:
+        if (!formData.coverLetter || formData.coverLetter.length < 50) {
+          alert("Cover letter must be at least 50 characters long.");
+          return false;
+        }
+        return true;
+      case 3:
+        if (!formData.resume) {
+          alert("Please upload your resume.");
+          return false;
+        }
+        return true;
+      default:
+        return true;
+    }
+  };
+
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length));
+    }
+  };
+
+  const handlePrevious = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post("/api/jobs/apply", {
+        jobId: id,
+        coverLetter: formData.coverLetter,
+        resume: formData.resume,
+        notes: `Name: ${formData.fullName}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nLocation: ${formData.location}\nSalary Expectation: ${formData.salaryExpectation}\nAvailability: ${formData.availability}\nGitHub: ${formData.github}\nLinkedIn: ${formData.linkedin}\nPortfolio: ${formData.portfolio}\nRemote OK: ${formData.remoteOk}\nRelocation OK: ${formData.relocationOk}`,
+      });
+
+      if (response.data.success) {
+        setCurrentStep(5); // Success step
+      } else {
+        alert(response.data.message || "Failed to submit application");
+      }
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      alert(
+        error.response?.data?.message ||
+          "Failed to submit application. Please try again."
+      );
+    }
   };
 
   const progress = (currentStep / steps.length) * 100;
@@ -629,11 +698,16 @@ export default function QuickApplyPage() {
                       >
                         Choose File
                       </label>
-                      {formData.resume && (
+                      {isUploading && (
+                        <div className="mt-4 text-center text-purple-500">
+                          Uploading...
+                        </div>
+                      )}
+                      {formData.resume && !isUploading && (
                         <div className="mt-4 flex items-center justify-center gap-2 text-green-400">
                           <CheckCircle className="w-4 h-4" />
                           <span className="text-sm">
-                            {formData.resume.name}
+                            {formData.resumeName || "Resume Uploaded"}
                           </span>
                         </div>
                       )}
@@ -987,7 +1061,7 @@ export default function QuickApplyPage() {
                 >
                   {currentStep > 1 ? (
                     <button
-                      onClick={() => setCurrentStep(currentStep - 1)}
+                      onClick={handlePrevious}
                       className={`px-6 py-3 rounded-xl font-semibold transition-all border ${
                         isDark
                           ? "bg-slate-800 text-white border-slate-700 hover:bg-slate-700"
@@ -1002,7 +1076,7 @@ export default function QuickApplyPage() {
 
                   {currentStep < steps.length ? (
                     <button
-                      onClick={() => setCurrentStep(currentStep + 1)}
+                      onClick={handleNext}
                       className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-2"
                     >
                       Continue

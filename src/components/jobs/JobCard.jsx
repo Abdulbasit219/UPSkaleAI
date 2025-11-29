@@ -202,7 +202,7 @@ const JobCard = ({ job, isDark, isSaved, onSave }) => (
             Details
           </Link>
           <Link
-            href={`/jobsearch/apply`}
+            href={`/jobsearch/apply/${job.id}`}
             className="px-4 py-1.5 sm:px-6 sm:py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg sm:rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-1 sm:gap-2 text-xs sm:text-sm hover:scale-105"
           >
             Apply Now
