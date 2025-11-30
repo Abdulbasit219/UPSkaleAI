@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState,useEffect  } from "react";
+import { useParams } from "next/navigation";
 import {
   ArrowLeft,
   Send,
@@ -26,6 +27,7 @@ import {
   Target,
   Star,
   Shield,
+  IdCardLanyard,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import Link from "next/link";
@@ -52,25 +54,24 @@ export default function QuickApplyPage({ params }) {
   });
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
+  
+  const [jobDetails, setJobDetails] = useState(null);
 
-  const jobDetails = {
-    title: "Senior React Developer",
-    company: "TechInnovate Inc.",
-    location: "San Francisco, CA / Remote",
-    type: "Full-time",
-    salary: "$120K - $160K",
-    posted: "2 hours ago",
-    match: 95,
-    skills: ["React", "TypeScript", "Node.js", "AWS", "GraphQL"],
-    description:
-      "We're looking for a passionate Senior React Developer to join our growing team. You'll work on building scalable web applications and collaborate with cross-functional teams.",
-    requirements: [
-      "5+ years of React experience",
-      "Strong TypeScript knowledge",
-      "Experience with modern frontend tools",
-      "Bachelor's in Computer Science or equivalent",
-    ],
+  const getJobDetails = async () => {
+    if (!id) return;
+    try {
+      const response = await axios.get(`/api/jobs/${id}`);
+      if (response.data.success) {
+        setJobDetails(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching job details:", error);
+    }
   };
+  
+  useEffect(() => {
+    getJobDetails();
+  }, [id]);
 
   const steps = [
     { number: 1, title: "Personal Info", icon: <User className="w-4 h-4" /> },
@@ -155,8 +156,7 @@ export default function QuickApplyPage({ params }) {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("/api/jobs/apply", {
-        jobId: id,
+      const response = await axios.post("/api/jobs/apply", {jobId: id,
         coverLetter: formData.coverLetter,
         resume: formData.resume,
         notes: `Name: ${formData.fullName}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nLocation: ${formData.location}\nSalary Expectation: ${formData.salaryExpectation}\nAvailability: ${formData.availability}\nGitHub: ${formData.github}\nLinkedIn: ${formData.linkedin}\nPortfolio: ${formData.portfolio}\nRemote OK: ${formData.remoteOk}\nRelocation OK: ${formData.relocationOk}`,
@@ -215,7 +215,7 @@ export default function QuickApplyPage({ params }) {
                     isDark ? "text-white" : "text-gray-900"
                   }`}
                 >
-                  {jobDetails.title}
+                  {jobDetails?.title}
                 </span>{" "}
                 at{" "}
                 <span
@@ -223,7 +223,7 @@ export default function QuickApplyPage({ params }) {
                     isDark ? "text-white" : "text-gray-900"
                   }`}
                 >
-                  {jobDetails.company}
+                  {jobDetails?.company}
                 </span>{" "}
                 has been submitted successfully.
               </p>
@@ -293,19 +293,19 @@ export default function QuickApplyPage({ params }) {
               >
                 <div className="flex items-center gap-1">
                   <Building className="w-4 h-4" />
-                  {jobDetails.company}
+                  {jobDetails?.company || "Loading..."}
                 </div>
                 <div className="flex items-center gap-1">
                   <Target className="w-4 h-4 text-green-400" />
-                  {jobDetails.match}% Match
+                  {jobDetails?.match || 0}% Match
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  {jobDetails.posted}
+                  {jobDetails?.posted || "Recently"}
                 </div>
               </div>
             </div>
-            <div className="w-24"></div> {/* Spacer for alignment */}
+            <div className="w-24"></div> 
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
@@ -1113,10 +1113,10 @@ export default function QuickApplyPage({ params }) {
                       isDark ? "text-white" : "text-gray-900"
                     }`}
                   >
-                    {jobDetails.title}
+                    {jobDetails?.title || "Loading..."}
                   </h2>
                   <p className={isDark ? "text-gray-400" : "text-gray-600"}>
-                    {jobDetails.company}
+                    {jobDetails?.company || "Loading..."}
                   </p>
                 </div>
 
@@ -1132,7 +1132,7 @@ export default function QuickApplyPage({ params }) {
                       Match Score
                     </span>
                     <span className="text-green-400 font-bold">
-                      {jobDetails.match}%
+                      {jobDetails?.match || 0}%
                     </span>
                   </div>
                   <div
@@ -1146,7 +1146,7 @@ export default function QuickApplyPage({ params }) {
                       Location
                     </span>
                     <span className={isDark ? "text-white" : "text-gray-900"}>
-                      {jobDetails.location}
+                      {jobDetails?.location || "N/A"}
                     </span>
                   </div>
                   <div
@@ -1160,7 +1160,7 @@ export default function QuickApplyPage({ params }) {
                       Type
                     </span>
                     <span className={isDark ? "text-white" : "text-gray-900"}>
-                      {jobDetails.type}
+                      {jobDetails?.type || "N/A"}
                     </span>
                   </div>
                   <div
@@ -1174,7 +1174,7 @@ export default function QuickApplyPage({ params }) {
                       Salary
                     </span>
                     <span className={isDark ? "text-white" : "text-gray-900"}>
-                      {jobDetails.salary}
+                      {jobDetails?.salary || "N/A"}
                     </span>
                   </div>
                 </div>
@@ -1188,7 +1188,7 @@ export default function QuickApplyPage({ params }) {
                     Required Skills
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {jobDetails.skills.map((skill, index) => (
+                    {jobDetails?.skills?.map((skill, index) => (
                       <span
                         key={index}
                         className={`px-3 py-1 rounded-full text-sm border ${

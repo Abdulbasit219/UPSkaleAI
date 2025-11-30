@@ -656,20 +656,22 @@ export default function JobDetailsPage() {
 
                 <div className="space-y-2 sm:space-y-3">
                   <Link
-                    href={`/jobsearch/apply`}
+                    href={`/jobsearch/apply/${jobId}`}
                     className="w-full py-2.5 sm:py-3 md:py-3.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg sm:rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center justify-center gap-1 sm:gap-2 hover:scale-105 text-sm sm:text-base"
                   >
                     <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                     Quick Apply
                   </Link>
-                  <button className={`w-full py-2.5 sm:py-3 md:py-3.5 rounded-lg sm:rounded-xl font-semibold transition-all border flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base ${
+                  <Link 
+                     href={`/chat`}
+                  className={`w-full py-2.5 sm:py-3 md:py-3.5 rounded-lg sm:rounded-xl font-semibold transition-all border flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base ${
                     isDark
                       ? 'bg-slate-800 text-white border-slate-700 hover:bg-slate-700'
                       : 'bg-white text-gray-900 border-gray-300 hover:bg-gray-100'
                   }`}>
                     <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                     Contact Recruiter
-                  </button>
+                  </Link>
                 </div>
 
                 <div className={`mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg sm:rounded-xl border ${
