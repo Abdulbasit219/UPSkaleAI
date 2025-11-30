@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import Link from "next/link";
+import { jobsApi } from "@/lib/api.config";
 
 // Import Components
 import PostJobModal from "@/components/company/PostJobModal";
@@ -53,10 +54,9 @@ export default function SkillBridgeJobs() {
   const getJobs = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/jobs");
-      const data = await response.json();
-      if (data.success) {
-        setJobs(data.data.jobs || []);
+      const response = await jobsApi.getAll();
+      if (response.data.success) {
+        setJobs(response.data.data.jobs || []);
       }
     } catch (error) {
       console.error("Error fetching jobs:", error);

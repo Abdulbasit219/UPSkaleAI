@@ -37,6 +37,7 @@ import {
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { useParams } from "next/navigation";
+import { jobsApi } from "@/lib/api.config";
 
 export default function JobDetailsPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -47,13 +48,13 @@ export default function JobDetailsPage() {
   const { id: jobId } = useParams();
   const isDark = theme === 'dark';
 
-  const getJobDetails = async () => {
+ const getJobDetails = async () => {
+    if (!jobId) return;
     try {
       setLoading(true);
-      const response = await fetch(`/api/jobs/${jobId}`);
-      const data = await response.json();
-      if (data.success) {
-        setJob(data.data || null);
+      const response = await jobsApi.getById(jobId);
+      if (response.data.success) {
+        setJob(response.data.data);
       }
     } catch (error) {
       console.error("Error fetching job details:", error);

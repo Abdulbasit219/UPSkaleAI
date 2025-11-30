@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import Link from "next/link";
-import axios from "axios";
+import { jobsApi } from "@/lib/api.config";
 
 export default function QuickApplyPage({ params }) {
   const { id } = React.use(params);
@@ -54,13 +54,12 @@ export default function QuickApplyPage({ params }) {
   });
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
-  
   const [jobDetails, setJobDetails] = useState(null);
 
   const getJobDetails = async () => {
     if (!id) return;
     try {
-      const response = await axios.get(`/api/jobs/${id}`);
+      const response = await jobsApi.getById(id);
       if (response.data.success) {
         setJobDetails(response.data.data);
       }
@@ -68,7 +67,7 @@ export default function QuickApplyPage({ params }) {
       console.error("Error fetching job details:", error);
     }
   };
-  
+
   useEffect(() => {
     getJobDetails();
   }, [id]);
@@ -96,9 +95,7 @@ export default function QuickApplyPage({ params }) {
         uploadData.append("file", file);
 
         try {
-          const response = await axios.post("/api/upload", uploadData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
+          const response = await jobsApi.uploadResume(uploadData);
 
           setFormData((prev) => ({
             ...prev,
@@ -156,7 +153,7 @@ export default function QuickApplyPage({ params }) {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("/api/jobs/apply", {jobId: id,
+      const response = await jobsApi.apply({jobId: id,
         coverLetter: formData.coverLetter,
         resume: formData.resume,
         notes: `Name: ${formData.fullName}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nLocation: ${formData.location}\nSalary Expectation: ${formData.salaryExpectation}\nAvailability: ${formData.availability}\nGitHub: ${formData.github}\nLinkedIn: ${formData.linkedin}\nPortfolio: ${formData.portfolio}\nRemote OK: ${formData.remoteOk}\nRelocation OK: ${formData.relocationOk}`,
