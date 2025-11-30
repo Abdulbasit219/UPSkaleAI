@@ -179,6 +179,49 @@ Get AI-matched jobs for user (requires authentication).
 }
 ```
 
+### 12. GET /api/company/jobs
+Get all jobs posted by the logged-in company user (requires authentication).
+
+**Query Parameters:**
+- `status` (enum): active, closed, draft, all
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      /* job object */
+      "posted": "2 days ago",
+      "applicants": 15
+    }
+  ]
+}
+```
+
+### 13. GET /api/company/applications
+Get all applications submitted to jobs posted by the company (requires authentication).
+
+**Query Parameters:**
+- `status` (enum): all, pending, reviewing, shortlisted, rejected, accepted
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "...",
+      "job": { /* populated job object */ },
+      "user": { /* populated user object */ },
+      "status": "pending",
+      "coverLetter": "...",
+      "appliedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
 ## Error Responses
 
 All endpoints return consistent error responses:
