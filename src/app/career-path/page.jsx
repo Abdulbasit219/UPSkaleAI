@@ -34,6 +34,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { useSelector } from "react-redux";
+import SharedCTABanner from "@/components/ui/CTABanner";
 
 export default function CareerPathPage() {
   const [activePath, setActivePath] = useState("frontend");
@@ -400,10 +401,14 @@ export default function CareerPathPage() {
                     <div
                       className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 bg-gradient-to-br ${path.color} rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0`}
                     >
-                      <div className="text-white text-sm sm:text-base">{path.icon}</div>
+                      <div className="text-white text-sm sm:text-base">
+                        {path.icon}
+                      </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-xs sm:text-sm truncate">{path.name}</div>
+                      <div className="font-semibold text-xs sm:text-sm truncate">
+                        {path.name}
+                      </div>
                       <div
                         className={`text-xs mt-0.5 ${isDark ? "text-gray-400" : "text-gray-600"} hidden xs:block`}
                       >
@@ -464,7 +469,9 @@ export default function CareerPathPage() {
                   >
                     Confidence
                   </span>
-                  <span className="text-green-400 font-semibold text-xs sm:text-sm">92%</span>
+                  <span className="text-green-400 font-semibold text-xs sm:text-sm">
+                    92%
+                  </span>
                 </div>
               </div>
               <button className="w-full mt-3 sm:mt-4 py-2 sm:py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg sm:rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center justify-center gap-1 sm:gap-2 text-sm">
@@ -801,34 +808,24 @@ export default function CareerPathPage() {
           </div>
         </div>
 
-        {/* CTA Section */}
-        <div className="mt-12 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-3xl p-8 md:p-12 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20" />
-          <div className="relative z-10 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4">
-              <Brain className="w-4 h-4 text-white" />
-              <span className="text-sm font-medium text-white">
-                AI Career Assessment
-              </span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ready to Start Your Journey?
-            </h2>
-            <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-              Take our AI-powered assessment to get a personalized career path
-              tailored to your skills and goals
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-white text-purple-600 rounded-xl font-bold hover:shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-2">
-                <Sparkles className="w-5 h-5" />
-                Start Career Assessment
-              </button>
-              <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-                <Download className="w-5 h-5" />
-                Download Roadmap
-              </button>
-            </div>
-          </div>
+        <div className="mt-12 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+          <SharedCTABanner
+            isDark={isDark}
+            className="rounded-[2rem] shadow-2xl"
+            title="Ready to Start Your Journey?"
+            subtitle="Take our AI-powered assessment to get a personalized career path tailored to your skills and goals."
+            primaryBtn={{
+              text: "Start Career Assessment",
+              icon: (
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              ),
+              onClick: () => {},
+            }}
+            secondaryBtn={{
+              text: " Download Roadmap",
+              onClick: () => {},
+            }}
+          />
         </div>
       </div>
     </div>
