@@ -11,14 +11,12 @@ import {
   User,
   Building2,
   Briefcase,
-  Search,
-  Filter,
-  X,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
 } from "lucide-react";
+import StatsCard from "@/components/admin/StatsCard";
+import PageHeader from "@/components/admin/PageHeader";
+import SearchFilterBar from "@/components/admin/SearchFilterBar";
+import AdminTable from "@/components/admin/AdminTable";
+import DetailModal from "@/components/admin/DetailModal";
 
 // Mock reported items data
 const reportedItems = [
@@ -245,21 +243,146 @@ export default function Moderation() {
     setShowDetailModal(true);
   };
 
+  const reportColumns = [
+    {
+      header: "Reported Item",
+      accessor: "reportedItem",
+      render: (report) => {
+        const TypeIcon = getTypeIcon(report.type);
+        return (
+          <div className="flex items-center gap-3">
+            <div
+              className={`p-2 rounded-lg ${
+                isDark ? "bg-purple-500/20" : "bg-purple-100"
+              }`}
+            >
+              <TypeIcon className="w-5 h-5 text-purple-500" />
+            </div>
+            <div>
+              <p
+                className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}
+              >
+                {report.reportedItem}
+              </p>
+              <p
+                className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}
+              >
+                {report.reason}
+              </p>
+            </div>
+          </div>
+        );
+      },
+    },
+    { header: "Reported By", accessor: "reportedBy" },
+    { header: "Date", accessor: "date" },
+    {
+      header: "Severity",
+      accessor: "severity",
+      render: (report) => (
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getSeverityColor(
+            report.severity
+          )}`}
+        >
+          {report.severity}
+        </span>
+      ),
+    },
+    {
+      header: "Status",
+      accessor: "status",
+      render: (report) => (
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
+            report.status
+          )}`}
+        >
+          {report.status}
+        </span>
+      ),
+    },
+  ];
+
+  const disputeColumns = [
+    {
+      header: "Dispute",
+      accessor: "title",
+      render: (dispute) => (
+        <div>
+          <p
+            className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}
+          >
+            {dispute.title}
+          </p>
+          <p
+            className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}
+          >
+            {dispute.type}
+          </p>
+        </div>
+      ),
+    },
+    { header: "Complainant", accessor: "complainant" },
+    { header: "Respondent", accessor: "respondent" },
+    { header: "Date", accessor: "date" },
+    {
+      header: "Status",
+      accessor: "status",
+      render: (dispute) => (
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
+            dispute.status
+          )}`}
+        >
+          {dispute.status.replace("_", " ")}
+        </span>
+      ),
+    },
+  ];
+
+  const actions = (item) => (
+    <div className="flex items-center justify-end gap-2">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleViewDetails(item);
+        }}
+        className={`p-2 rounded-lg transition-all ${
+          isDark
+            ? "bg-purple-500/20 text-purple-400 hover:bg-purple-500/30"
+            : "bg-purple-100 text-purple-600 hover:bg-purple-200"
+        }`}
+      >
+        <Eye className="w-4 h-4" />
+      </button>
+      <button
+        className={`p-2 rounded-lg transition-all ${
+          isDark
+            ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
+            : "bg-green-100 text-green-600 hover:bg-green-200"
+        }`}
+      >
+        <CheckCircle className="w-4 h-4" />
+      </button>
+      <button
+        className={`p-2 rounded-lg transition-all ${
+          isDark
+            ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+            : "bg-red-100 text-red-600 hover:bg-red-200"
+        }`}
+      >
+        <XCircle className="w-4 h-4" />
+      </button>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div>
-        <h1
-          className={`text-3xl font-bold ${
-            isDark ? "text-white" : "text-gray-900"
-          }`}
-        >
-          Moderation Tools
-        </h1>
-        <p className={`mt-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-          Manage reports, disputes, and platform moderation
-        </p>
-      </div>
+      <PageHeader
+        title="Moderation Tools"
+        description="Manage reports, disputes, and platform moderation"
+      />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -284,44 +407,7 @@ export default function Moderation() {
           },
           { label: "Critical Issues", value: "3", icon: XCircle, color: "red" },
         ].map((stat, index) => (
-          <div
-            key={index}
-            className={`rounded-xl border backdrop-blur-xl p-6 ${
-              isDark
-                ? "bg-slate-900/50 border-purple-500/20"
-                : "bg-white/80 border-purple-300/20"
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p
-                  className={`text-sm ${
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  }`}
-                >
-                  {stat.label}
-                </p>
-                <p
-                  className={`mt-2 text-2xl font-bold ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
-                  {stat.value}
-                </p>
-              </div>
-              <stat.icon
-                className={`w-8 h-8 ${
-                  stat.color === "yellow"
-                    ? "text-yellow-500"
-                    : stat.color === "orange"
-                      ? "text-orange-500"
-                      : stat.color === "green"
-                        ? "text-green-500"
-                        : "text-red-500"
-                }`}
-              />
-            </div>
-          </div>
+          <StatsCard key={index} {...stat} />
         ))}
       </div>
 
@@ -333,7 +419,9 @@ export default function Moderation() {
             : "bg-white/80 border-purple-300/20"
         }`}
       >
-        <div className="flex border-b ${isDark ? 'border-purple-500/20' : 'border-purple-300/20'}">
+        <div
+          className={`flex border-b ${isDark ? "border-purple-500/20" : "border-purple-300/20"}`}
+        >
           <button
             onClick={() => setActiveTab("reports")}
             className={`flex-1 px-6 py-4 text-sm font-semibold transition-all ${
@@ -366,300 +454,86 @@ export default function Moderation() {
           </button>
         </div>
 
-        {/* Filters */}
-        <div className="p-6 border-b ${isDark ? 'border-purple-500/20' : 'border-purple-300/20'}">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search
-                className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${
-                  isDark ? "text-gray-400" : "text-gray-500"
-                }`}
-              />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg transition-all outline-none ${
-                  isDark
-                    ? "bg-slate-800 border-purple-500/30 text-white placeholder:text-gray-400"
-                    : "bg-white border-purple-300/30 text-gray-900 placeholder:text-gray-500"
-                }`}
-              />
-            </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className={`px-4 py-3 border rounded-lg transition-all outline-none ${
-                isDark
-                  ? "bg-slate-800 border-purple-500/30 text-white"
-                  : "bg-white border-purple-300/30 text-gray-900"
-              }`}
-            >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="investigating">Investigating</option>
-              <option value="resolved">Resolved</option>
-              <option value="dismissed">Dismissed</option>
-            </select>
-          </div>
+        {/* Filters and Search */}
+        <div className="p-6">
+          <SearchFilterBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            searchPlaceholder="Search..."
+            filters={[
+              { value: "all", label: "All Status" },
+              { value: "pending", label: "Pending" },
+              { value: "investigating", label: "Investigating" },
+              { value: "resolved", label: "Resolved" },
+              { value: "dismissed", label: "Dismissed" },
+            ]}
+            activeFilter={statusFilter}
+            onFilterChange={setStatusFilter}
+          />
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="px-6 pb-6">
           {activeTab === "reports" ? (
-            <div className="space-y-4">
-              {filteredReports.map((report) => {
-                const TypeIcon = getTypeIcon(report.type);
-                return (
-                  <div
-                    key={report.id}
-                    className={`p-4 rounded-lg border transition-all hover:scale-[1.01] ${
-                      isDark
-                        ? "bg-slate-800/50 border-purple-500/10"
-                        : "bg-purple-50/50 border-purple-300/10"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-start gap-4 flex-1">
-                        <div
-                          className={`p-3 rounded-lg ${
-                            isDark ? "bg-purple-500/20" : "bg-purple-100"
-                          }`}
-                        >
-                          <TypeIcon className="w-6 h-6 text-purple-500" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h4
-                              className={`font-semibold ${
-                                isDark ? "text-white" : "text-gray-900"
-                              }`}
-                            >
-                              {report.reportedItem}
-                            </h4>
-                            <span
-                              className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getSeverityColor(
-                                report.severity
-                              )}`}
-                            >
-                              {report.severity}
-                            </span>
-                          </div>
-                          <p
-                            className={`text-sm mb-2 ${
-                              isDark ? "text-gray-400" : "text-gray-600"
-                            }`}
-                          >
-                            <strong>Reason:</strong> {report.reason}
-                          </p>
-                          <p
-                            className={`text-sm mb-2 ${
-                              isDark ? "text-gray-400" : "text-gray-600"
-                            }`}
-                          >
-                            {report.description}
-                          </p>
-                          <div className="flex items-center gap-4 text-xs">
-                            <span
-                              className={`${
-                                isDark ? "text-gray-400" : "text-gray-600"
-                              }`}
-                            >
-                              Reported by: {report.reportedBy}
-                            </span>
-                            <span
-                              className={`${
-                                isDark ? "text-gray-400" : "text-gray-600"
-                              }`}
-                            >
-                              {report.date}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-                            report.status
-                          )}`}
-                        >
-                          {report.status}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleViewDetails(report)}
-                            className={`p-2 rounded-lg transition-all ${
-                              isDark
-                                ? "bg-purple-500/20 text-purple-400 hover:bg-purple-500/30"
-                                : "bg-purple-100 text-purple-600 hover:bg-purple-200"
-                            }`}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            className={`p-2 rounded-lg transition-all ${
-                              isDark
-                                ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
-                                : "bg-green-100 text-green-600 hover:bg-green-200"
-                            }`}
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                          </button>
-                          <button
-                            className={`p-2 rounded-lg transition-all ${
-                              isDark
-                                ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
-                                : "bg-red-100 text-red-600 hover:bg-red-200"
-                            }`}
-                          >
-                            <XCircle className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <AdminTable
+              columns={reportColumns}
+              data={filteredReports}
+              actions={actions}
+              onRowClick={handleViewDetails}
+            />
           ) : (
-            <div className="space-y-4">
-              {filteredDisputes.map((dispute) => (
-                <div
-                  key={dispute.id}
-                  className={`p-4 rounded-lg border transition-all hover:scale-[1.01] ${
-                    isDark
-                      ? "bg-slate-800/50 border-purple-500/10"
-                      : "bg-purple-50/50 border-purple-300/10"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <h4
-                        className={`font-semibold mb-2 ${
-                          isDark ? "text-white" : "text-gray-900"
-                        }`}
-                      >
-                        {dispute.title}
-                      </h4>
-                      <p
-                        className={`text-sm mb-2 ${
-                          isDark ? "text-gray-400" : "text-gray-600"
-                        }`}
-                      >
-                        {dispute.description}
-                      </p>
-                      <div className="flex items-center gap-4 text-xs">
-                        <span
-                          className={`${
-                            isDark ? "text-gray-400" : "text-gray-600"
-                          }`}
-                        >
-                          <strong>Complainant:</strong> {dispute.complainant}
-                        </span>
-                        <span
-                          className={`${
-                            isDark ? "text-gray-400" : "text-gray-600"
-                          }`}
-                        >
-                          <strong>Respondent:</strong> {dispute.respondent}
-                        </span>
-                        <span
-                          className={`${
-                            isDark ? "text-gray-400" : "text-gray-600"
-                          }`}
-                        >
-                          {dispute.date}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-                          dispute.status
-                        )}`}
-                      >
-                        {dispute.status.replace("_", " ")}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          className={`p-2 rounded-lg transition-all ${
-                            isDark
-                              ? "bg-purple-500/20 text-purple-400 hover:bg-purple-500/30"
-                              : "bg-purple-100 text-purple-600 hover:bg-purple-200"
-                          }`}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          className={`p-2 rounded-lg transition-all ${
-                            isDark
-                              ? "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
-                              : "bg-blue-100 text-blue-600 hover:bg-blue-200"
-                          }`}
-                        >
-                          <MessageSquare className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <AdminTable
+              columns={disputeColumns}
+              data={filteredDisputes}
+              actions={actions}
+              onRowClick={handleViewDetails}
+            />
           )}
         </div>
       </div>
 
       {/* Detail Modal */}
-      {showDetailModal && selectedItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div
-            className={`w-full max-w-2xl rounded-xl border backdrop-blur-xl ${
-              isDark
-                ? "bg-slate-900 border-purple-500/20"
-                : "bg-white border-purple-300/20"
-            }`}
-          >
-            <div
-              className={`flex items-center justify-between p-6 border-b ${
-                isDark ? "border-purple-500/20" : "border-purple-300/20"
-              }`}
-            >
-              <h2
-                className={`text-2xl font-bold ${
+      <DetailModal
+        isOpen={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        title="Report Details"
+        maxWidth="max-w-2xl"
+        footer={
+          <div className="flex gap-3 w-full">
+            <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500/20 text-green-500 rounded-lg hover:bg-green-500/30 transition-all">
+              <CheckCircle className="w-4 h-4" />
+              Resolve
+            </button>
+            <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 text-red-500 rounded-lg hover:bg-red-500/30 transition-all">
+              <XCircle className="w-4 h-4" />
+              Dismiss
+            </button>
+            <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 text-blue-500 rounded-lg hover:bg-blue-500/30 transition-all">
+              <AlertTriangle className="w-4 h-4" />
+              Investigate
+            </button>
+          </div>
+        }
+      >
+        {selectedItem && (
+          <div className="space-y-4">
+            <div>
+              <h3
+                className={`text-lg font-semibold mb-2 ${
                   isDark ? "text-white" : "text-gray-900"
                 }`}
               >
-                Report Details
-              </h2>
-              <button
-                onClick={() => setShowDetailModal(false)}
-                className={`p-2 rounded-lg transition-all ${
-                  isDark
-                    ? "hover:bg-slate-800 text-gray-400"
-                    : "hover:bg-gray-100 text-gray-600"
-                }`}
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <h3
-                  className={`text-lg font-semibold mb-2 ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
+                {selectedItem.reportedItem || selectedItem.title}
+              </h3>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
+                    selectedItem.status
+                  )}`}
                 >
-                  {selectedItem.reportedItem}
-                </h3>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-                      selectedItem.status
-                    )}`}
-                  >
-                    {selectedItem.status}
-                  </span>
+                  {selectedItem.status.replace("_", " ")}
+                </span>
+                {selectedItem.severity && (
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getSeverityColor(
                       selectedItem.severity
@@ -667,16 +541,18 @@ export default function Moderation() {
                   >
                     {selectedItem.severity} severity
                   </span>
-                </div>
+                )}
               </div>
+            </div>
 
-              <div
-                className={`rounded-lg border p-4 ${
-                  isDark
-                    ? "bg-slate-800/50 border-purple-500/20"
-                    : "bg-purple-50/50 border-purple-300/20"
-                }`}
-              >
+            <div
+              className={`rounded-lg border p-4 ${
+                isDark
+                  ? "bg-slate-800/50 border-purple-500/20"
+                  : "bg-purple-50/50 border-purple-300/20"
+              }`}
+            >
+              {selectedItem.reason && (
                 <p
                   className={`text-sm font-semibold mb-2 ${
                     isDark ? "text-white" : "text-gray-900"
@@ -684,73 +560,56 @@ export default function Moderation() {
                 >
                   Reason: {selectedItem.reason}
                 </p>
-                <p
-                  className={`text-sm ${
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  }`}
-                >
-                  {selectedItem.description}
-                </p>
-              </div>
-
-              {selectedItem.details && (
-                <div
-                  className={`rounded-lg border p-4 ${
-                    isDark
-                      ? "bg-slate-800/50 border-purple-500/20"
-                      : "bg-purple-50/50 border-purple-300/20"
-                  }`}
-                >
-                  <h4
-                    className={`font-semibold mb-3 ${
-                      isDark ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    Item Details
-                  </h4>
-                  <div className="space-y-2">
-                    {Object.entries(selectedItem.details).map(
-                      ([key, value]) => (
-                        <div key={key} className="flex items-center gap-2">
-                          <span
-                            className={`text-sm font-medium capitalize ${
-                              isDark ? "text-gray-400" : "text-gray-600"
-                            }`}
-                          >
-                            {key}:
-                          </span>
-                          <span
-                            className={`text-sm ${
-                              isDark ? "text-white" : "text-gray-900"
-                            }`}
-                          >
-                            {value}
-                          </span>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
               )}
-
-              <div className="flex gap-3 pt-4">
-                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500/20 text-green-500 rounded-lg hover:bg-green-500/30 transition-all">
-                  <CheckCircle className="w-4 h-4" />
-                  Resolve
-                </button>
-                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 text-red-500 rounded-lg hover:bg-red-500/30 transition-all">
-                  <XCircle className="w-4 h-4" />
-                  Dismiss
-                </button>
-                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 text-blue-500 rounded-lg hover:bg-blue-500/30 transition-all">
-                  <AlertTriangle className="w-4 h-4" />
-                  Investigate
-                </button>
-              </div>
+              <p
+                className={`text-sm ${
+                  isDark ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
+                {selectedItem.description}
+              </p>
             </div>
+
+            {selectedItem.details && (
+              <div
+                className={`rounded-lg border p-4 ${
+                  isDark
+                    ? "bg-slate-800/50 border-purple-500/20"
+                    : "bg-purple-50/50 border-purple-300/20"
+                }`}
+              >
+                <h4
+                  className={`font-semibold mb-3 ${
+                    isDark ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  Item Details
+                </h4>
+                <div className="space-y-2">
+                  {Object.entries(selectedItem.details).map(([key, value]) => (
+                    <div key={key} className="flex items-center gap-2">
+                      <span
+                        className={`text-sm font-medium capitalize ${
+                          isDark ? "text-gray-400" : "text-gray-600"
+                        }`}
+                      >
+                        {key}:
+                      </span>
+                      <span
+                        className={`text-sm ${
+                          isDark ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        {value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </DetailModal>
     </div>
   );
 }

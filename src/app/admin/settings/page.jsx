@@ -3,17 +3,17 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import {
   Shield,
-  Users,
   Tag,
   Briefcase,
-  Settings as SettingsIcon,
   Plus,
   Edit2,
   Trash2,
   Save,
   X,
-  CheckCircle,
 } from "lucide-react";
+import PageHeader from "@/components/admin/PageHeader";
+import AdminTable from "@/components/admin/AdminTable";
+import DetailModal from "@/components/admin/DetailModal";
 
 // Mock data
 const adminRoles = [
@@ -119,30 +119,132 @@ export default function Settings() {
     { id: "tags", name: "Tags", icon: Tag },
   ];
 
+  const roleColumns = [
+    {
+      header: "Role Name",
+      accessor: "name",
+      render: (role) => {
+        const colors = getColorClasses(role.color);
+        return (
+          <div className="flex items-center gap-3">
+            <div
+              className={`p-2 rounded-lg ${colors.bg} border ${colors.border}`}
+            >
+              <Shield className={`w-5 h-5 ${colors.text}`} />
+            </div>
+            <span
+              className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}
+            >
+              {role.name}
+            </span>
+          </div>
+        );
+      },
+    },
+    { header: "Users", accessor: "userCount" },
+    {
+      header: "Permissions",
+      accessor: "permissions",
+      render: (role) => (
+        <span className={`${isDark ? "text-gray-400" : "text-gray-600"}`}>
+          {role.permissions.join(", ")}
+        </span>
+      ),
+    },
+  ];
+
+  const skillColumns = [
+    {
+      header: "Category Name",
+      accessor: "name",
+      render: (skill) => {
+        const colors = getColorClasses(skill.color);
+        return (
+          <div className="flex items-center gap-3">
+            <div
+              className={`p-2 rounded-lg ${colors.bg} border ${colors.border}`}
+            >
+              <Tag className={`w-5 h-5 ${colors.text}`} />
+            </div>
+            <span
+              className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}
+            >
+              {skill.name}
+            </span>
+          </div>
+        );
+      },
+    },
+    { header: "Skill Count", accessor: "count" },
+  ];
+
+  const sectorColumns = [
+    {
+      header: "Sector Name",
+      accessor: "name",
+      render: (sector) => {
+        const colors = getColorClasses(sector.color);
+        return (
+          <div className="flex items-center gap-3">
+            <div
+              className={`p-2 rounded-lg ${colors.bg} border ${colors.border}`}
+            >
+              <Briefcase className={`w-5 h-5 ${colors.text}`} />
+            </div>
+            <span
+              className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}
+            >
+              {sector.name}
+            </span>
+          </div>
+        );
+      },
+    },
+    { header: "Job Count", accessor: "jobCount" },
+  ];
+
+  const actions = (item) => (
+    <div className="flex items-center justify-end gap-2">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setEditingItem(item);
+        }}
+        className={`p-2 rounded-lg transition-all ${
+          isDark
+            ? "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
+            : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+        }`}
+      >
+        <Edit2 className="w-4 h-4" />
+      </button>
+      <button
+        className={`p-2 rounded-lg transition-all ${
+          isDark
+            ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+            : "bg-red-100 text-red-600 hover:bg-red-200"
+        }`}
+      >
+        <Trash2 className="w-4 h-4" />
+      </button>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1
-            className={`text-3xl font-bold ${
-              isDark ? "text-white" : "text-gray-900"
-            }`}
+      <PageHeader
+        title="System Settings"
+        description="Manage platform configuration and categories"
+        actions={
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all"
           >
-            System Settings
-          </h1>
-          <p className={`mt-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-            Manage platform configuration and categories
-          </p>
-        </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          Add New
-        </button>
-      </div>
+            <Plus className="w-4 h-4" />
+            Add New
+          </button>
+        }
+      />
 
       {/* Tabs */}
       <div
@@ -153,7 +255,9 @@ export default function Settings() {
         }`}
       >
         <div
-          className={`flex overflow-x-auto border-b ${isDark ? "border-purple-500/20" : "border-purple-300/20"}`}
+          className={`flex overflow-x-auto border-b ${
+            isDark ? "border-purple-500/20" : "border-purple-300/20"
+          }`}
         >
           {tabs.map((tab) => (
             <button
@@ -175,204 +279,30 @@ export default function Settings() {
 
         {/* Content */}
         <div className="p-6">
-          {/* Admin Roles */}
           {activeTab === "roles" && (
-            <div className="space-y-4">
-              {adminRoles.map((role) => {
-                const colors = getColorClasses(role.color);
-                return (
-                  <div
-                    key={role.id}
-                    className={`p-4 rounded-lg border transition-all hover:scale-[1.01] ${
-                      isDark
-                        ? "bg-slate-800/50 border-purple-500/10"
-                        : "bg-purple-50/50 border-purple-300/10"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div
-                          className={`p-3 rounded-lg ${colors.bg} border ${colors.border}`}
-                        >
-                          <Shield className={`w-6 h-6 ${colors.text}`} />
-                        </div>
-                        <div>
-                          <h4
-                            className={`font-semibold ${
-                              isDark ? "text-white" : "text-gray-900"
-                            }`}
-                          >
-                            {role.name}
-                          </h4>
-                          <p
-                            className={`text-sm ${
-                              isDark ? "text-gray-400" : "text-gray-600"
-                            }`}
-                          >
-                            {role.userCount} users • Permissions:{" "}
-                            {role.permissions.join(", ")}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setEditingItem(role)}
-                          className={`p-2 rounded-lg transition-all ${
-                            isDark
-                              ? "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
-                              : "bg-blue-100 text-blue-600 hover:bg-blue-200"
-                          }`}
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          className={`p-2 rounded-lg transition-all ${
-                            isDark
-                              ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
-                              : "bg-red-100 text-red-600 hover:bg-red-200"
-                          }`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <AdminTable
+              columns={roleColumns}
+              data={adminRoles}
+              actions={actions}
+            />
           )}
 
-          {/* Skills */}
           {activeTab === "skills" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {skillCategories.map((category) => {
-                const colors = getColorClasses(category.color);
-                return (
-                  <div
-                    key={category.id}
-                    className={`p-4 rounded-lg border transition-all hover:scale-[1.02] ${
-                      isDark
-                        ? "bg-slate-800/50 border-purple-500/10"
-                        : "bg-purple-50/50 border-purple-300/10"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`p-2 rounded-lg ${colors.bg} border ${colors.border}`}
-                        >
-                          <Tag className={`w-5 h-5 ${colors.text}`} />
-                        </div>
-                        <div>
-                          <h4
-                            className={`font-semibold ${
-                              isDark ? "text-white" : "text-gray-900"
-                            }`}
-                          >
-                            {category.name}
-                          </h4>
-                          <p
-                            className={`text-sm ${
-                              isDark ? "text-gray-400" : "text-gray-600"
-                            }`}
-                          >
-                            {category.count} skills
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          className={`p-2 rounded-lg transition-all ${
-                            isDark
-                              ? "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
-                              : "bg-blue-100 text-blue-600 hover:bg-blue-200"
-                          }`}
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          className={`p-2 rounded-lg transition-all ${
-                            isDark
-                              ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
-                              : "bg-red-100 text-red-600 hover:bg-red-200"
-                          }`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <AdminTable
+              columns={skillColumns}
+              data={skillCategories}
+              actions={actions}
+            />
           )}
 
-          {/* Sectors */}
           {activeTab === "sectors" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {jobSectors.map((sector) => {
-                const colors = getColorClasses(sector.color);
-                return (
-                  <div
-                    key={sector.id}
-                    className={`p-4 rounded-lg border transition-all hover:scale-[1.02] ${
-                      isDark
-                        ? "bg-slate-800/50 border-purple-500/10"
-                        : "bg-purple-50/50 border-purple-300/10"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`p-2 rounded-lg ${colors.bg} border ${colors.border}`}
-                        >
-                          <Briefcase className={`w-5 h-5 ${colors.text}`} />
-                        </div>
-                        <div>
-                          <h4
-                            className={`font-semibold ${
-                              isDark ? "text-white" : "text-gray-900"
-                            }`}
-                          >
-                            {sector.name}
-                          </h4>
-                          <p
-                            className={`text-sm ${
-                              isDark ? "text-gray-400" : "text-gray-600"
-                            }`}
-                          >
-                            {sector.jobCount} jobs
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          className={`p-2 rounded-lg transition-all ${
-                            isDark
-                              ? "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
-                              : "bg-blue-100 text-blue-600 hover:bg-blue-200"
-                          }`}
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          className={`p-2 rounded-lg transition-all ${
-                            isDark
-                              ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
-                              : "bg-red-100 text-red-600 hover:bg-red-200"
-                          }`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <AdminTable
+              columns={sectorColumns}
+              data={jobSectors}
+              actions={actions}
+            />
           )}
 
-          {/* Tags */}
           {activeTab === "tags" && (
             <div className="flex flex-wrap gap-3">
               {platformTags.map((tag) => (
@@ -403,6 +333,7 @@ export default function Settings() {
                   </span>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
+                      onClick={() => setEditingItem(tag)}
                       className={`p-1 rounded transition-all ${
                         isDark
                           ? "hover:bg-blue-500/20 text-blue-400"
@@ -429,116 +360,94 @@ export default function Settings() {
       </div>
 
       {/* Add/Edit Modal */}
-      {(showAddModal || editingItem) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div
-            className={`w-full max-w-md rounded-xl border backdrop-blur-xl ${
-              isDark
-                ? "bg-slate-900 border-purple-500/20"
-                : "bg-white border-purple-300/20"
-            }`}
-          >
-            <div
-              className={`flex items-center justify-between p-6 border-b ${
-                isDark ? "border-purple-500/20" : "border-purple-300/20"
+      <DetailModal
+        isOpen={showAddModal || !!editingItem}
+        onClose={() => {
+          setShowAddModal(false);
+          setEditingItem(null);
+        }}
+        title={editingItem ? "Edit Item" : "Add New Item"}
+        maxWidth="max-w-md"
+        footer={
+          <div className="flex gap-3 w-full">
+            <button
+              onClick={() => {
+                setShowAddModal(false);
+                setEditingItem(null);
+              }}
+              className={`flex-1 px-4 py-2 border rounded-lg transition-all ${
+                isDark
+                  ? "bg-slate-800 border-purple-500/30 text-white hover:bg-slate-700"
+                  : "bg-white border-purple-300/30 text-gray-900 hover:bg-gray-50"
               }`}
             >
-              <h2
-                className={`text-xl font-bold ${
-                  isDark ? "text-white" : "text-gray-900"
-                }`}
-              >
-                {editingItem ? "Edit Item" : "Add New Item"}
-              </h2>
-              <button
-                onClick={() => {
-                  setShowAddModal(false);
-                  setEditingItem(null);
-                }}
-                className={`p-2 rounded-lg transition-all ${
-                  isDark
-                    ? "hover:bg-slate-800 text-gray-400"
-                    : "hover:bg-gray-100 text-gray-600"
-                }`}
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label
-                  className={`block text-sm font-medium mb-2 ${
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  }`}
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter name..."
-                  className={`w-full px-4 py-3 border rounded-lg transition-all outline-none ${
-                    isDark
-                      ? "bg-slate-800 border-purple-500/30 text-white placeholder:text-gray-400"
-                      : "bg-white border-purple-300/30 text-gray-900 placeholder:text-gray-500"
-                  }`}
-                />
-              </div>
-              {activeTab === "roles" && (
-                <div>
-                  <label
-                    className={`block text-sm font-medium mb-2 ${
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    }`}
-                  >
-                    Permissions
-                  </label>
-                  <div className="space-y-2">
-                    {["view", "edit", "delete", "moderate", "reports"].map(
-                      (perm) => (
-                        <label
-                          key={perm}
-                          className="flex items-center gap-2 cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            className="w-4 h-4 rounded border-purple-500 text-purple-500 focus:ring-purple-500"
-                          />
-                          <span
-                            className={`text-sm capitalize ${
-                              isDark ? "text-gray-400" : "text-gray-600"
-                            }`}
-                          >
-                            {perm}
-                          </span>
-                        </label>
-                      )
-                    )}
-                  </div>
-                </div>
-              )}
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={() => {
-                    setShowAddModal(false);
-                    setEditingItem(null);
-                  }}
-                  className={`flex-1 px-4 py-2 border rounded-lg transition-all ${
-                    isDark
-                      ? "bg-slate-800 border-purple-500/30 text-white hover:bg-slate-700"
-                      : "bg-white border-purple-300/30 text-gray-900 hover:bg-gray-50"
-                  }`}
-                >
-                  Cancel
-                </button>
-                <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all">
-                  <Save className="w-4 h-4" />
-                  Save
-                </button>
-              </div>
-            </div>
+              Cancel
+            </button>
+            <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all">
+              <Save className="w-4 h-4" />
+              Save
+            </button>
           </div>
+        }
+      >
+        <div className="space-y-4">
+          <div>
+            <label
+              className={`block text-sm font-medium mb-2 ${
+                isDark ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
+              Name
+            </label>
+            <input
+              type="text"
+              placeholder="Enter name..."
+              defaultValue={editingItem?.name || ""}
+              className={`w-full px-4 py-3 border rounded-lg transition-all outline-none ${
+                isDark
+                  ? "bg-slate-800 border-purple-500/30 text-white placeholder:text-gray-400"
+                  : "bg-white border-purple-300/30 text-gray-900 placeholder:text-gray-500"
+              }`}
+            />
+          </div>
+          {activeTab === "roles" && (
+            <div>
+              <label
+                className={`block text-sm font-medium mb-2 ${
+                  isDark ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
+                Permissions
+              </label>
+              <div className="space-y-2">
+                {["view", "edit", "delete", "moderate", "reports"].map(
+                  (perm) => (
+                    <label
+                      key={perm}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        defaultChecked={editingItem?.permissions?.includes(
+                          perm
+                        )}
+                        className="w-4 h-4 rounded border-purple-500 text-purple-500 focus:ring-purple-500"
+                      />
+                      <span
+                        className={`text-sm capitalize ${
+                          isDark ? "text-gray-400" : "text-gray-600"
+                        }`}
+                      >
+                        {perm}
+                      </span>
+                    </label>
+                  )
+                )}
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </DetailModal>
     </div>
   );
 }

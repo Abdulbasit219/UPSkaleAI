@@ -6,9 +6,6 @@ import {
   Users,
   Building2,
   Briefcase,
-  ArrowUpRight,
-  ArrowDownRight,
-  Calendar,
   Download,
 } from "lucide-react";
 import {
@@ -28,6 +25,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import StatsCard from "@/components/admin/StatsCard";
+import PageHeader from "@/components/admin/PageHeader";
+import AdminTable from "@/components/admin/AdminTable";
 
 // Mock data for charts
 const userGrowthData = [
@@ -120,97 +120,61 @@ export default function Analytics() {
     },
   ];
 
-  const getColorClasses = (color) => {
-    const colors = {
-      purple: "text-purple-500",
-      green: "text-green-500",
-      pink: "text-pink-500",
-      blue: "text-blue-500",
-    };
-    return colors[color] || colors.purple;
-  };
+  const topCompaniesColumns = [
+    { header: "Company", accessor: "name" },
+    { header: "Job Posts", accessor: "jobs" },
+    { header: "Applications", accessor: "applications" },
+    { header: "Hires", accessor: "hires" },
+    {
+      header: "Success Rate",
+      accessor: "successRate",
+      render: (row) => (
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            isDark
+              ? "bg-green-500/20 text-green-400"
+              : "bg-green-100 text-green-700"
+          }`}
+        >
+          {((row.hires / row.applications) * 100).toFixed(1)}%
+        </span>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1
-            className={`text-3xl font-bold ${
-              isDark ? "text-white" : "text-gray-900"
-            }`}
-          >
-            Analytics & Reports
-          </h1>
-          <p className={`mt-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-            Track platform performance and user engagement
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            className={`px-4 py-2 border rounded-lg transition-all outline-none ${
-              isDark
-                ? "bg-slate-800 border-purple-500/30 text-white"
-                : "bg-white border-purple-300/30 text-gray-900"
-            }`}
-          >
-            <option value="7days">Last 7 Days</option>
-            <option value="30days">Last 30 Days</option>
-            <option value="6months">Last 6 Months</option>
-            <option value="1year">Last Year</option>
-          </select>
-          <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all">
-            <Download className="w-4 h-4" />
-            Export
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Analytics & Reports"
+        description="Track platform performance and user engagement"
+        actions={
+          <div className="flex items-center gap-3">
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+              className={`px-4 py-2 border rounded-lg transition-all outline-none ${
+                isDark
+                  ? "bg-slate-800 border-purple-500/30 text-white"
+                  : "bg-white border-purple-300/30 text-gray-900"
+              }`}
+            >
+              <option value="7days">Last 7 Days</option>
+              <option value="30days">Last 30 Days</option>
+              <option value="6months">Last 6 Months</option>
+              <option value="1year">Last Year</option>
+            </select>
+            <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all">
+              <Download className="w-4 h-4" />
+              Export
+            </button>
+          </div>
+        }
+      />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
-          <div
-            key={index}
-            className={`rounded-xl border backdrop-blur-xl p-6 ${
-              isDark
-                ? "bg-slate-900/50 border-purple-500/20"
-                : "bg-white/80 border-purple-300/20"
-            }`}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <stat.icon className={`w-8 h-8 ${getColorClasses(stat.color)}`} />
-              <div className="flex items-center gap-1">
-                {stat.trend === "up" ? (
-                  <ArrowUpRight className="w-4 h-4 text-green-500" />
-                ) : (
-                  <ArrowDownRight className="w-4 h-4 text-red-500" />
-                )}
-                <span
-                  className={`text-sm font-medium ${
-                    stat.trend === "up" ? "text-green-500" : "text-red-500"
-                  }`}
-                >
-                  {stat.change}
-                </span>
-              </div>
-            </div>
-            <p
-              className={`text-sm ${
-                isDark ? "text-gray-400" : "text-gray-600"
-              }`}
-            >
-              {stat.label}
-            </p>
-            <p
-              className={`text-3xl font-bold mt-2 ${
-                isDark ? "text-white" : "text-gray-900"
-              }`}
-            >
-              {stat.value}
-            </p>
-          </div>
+          <StatsCard key={index} {...stat} />
         ))}
       </div>
 
@@ -473,106 +437,7 @@ export default function Analytics() {
         >
           Top Performing Companies
         </h3>
-        <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full">
-            <thead>
-              <tr
-                className={`border-b ${
-                  isDark ? "border-purple-500/20" : "border-purple-300/20"
-                }`}
-              >
-                <th
-                  className={`text-left py-3 px-4 text-sm font-semibold ${
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  }`}
-                >
-                  Company
-                </th>
-                <th
-                  className={`text-left py-3 px-4 text-sm font-semibold ${
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  }`}
-                >
-                  Job Posts
-                </th>
-                <th
-                  className={`text-left py-3 px-4 text-sm font-semibold ${
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  }`}
-                >
-                  Applications
-                </th>
-                <th
-                  className={`text-left py-3 px-4 text-sm font-semibold ${
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  }`}
-                >
-                  Hires
-                </th>
-                <th
-                  className={`text-left py-3 px-4 text-sm font-semibold ${
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  }`}
-                >
-                  Success Rate
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {topCompanies.map((company, index) => (
-                <tr
-                  key={index}
-                  className={`border-b ${
-                    isDark ? "border-purple-500/10" : "border-purple-300/10"
-                  }`}
-                >
-                  <td
-                    className={`py-4 px-4 font-medium ${
-                      isDark ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    {company.name}
-                  </td>
-                  <td
-                    className={`py-4 px-4 ${
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    }`}
-                  >
-                    {company.jobs}
-                  </td>
-                  <td
-                    className={`py-4 px-4 ${
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    }`}
-                  >
-                    {company.applications}
-                  </td>
-                  <td
-                    className={`py-4 px-4 ${
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    }`}
-                  >
-                    {company.hires}
-                  </td>
-                  <td className="py-4 px-4">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        isDark
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-green-100 text-green-700"
-                      }`}
-                    >
-                      {((company.hires / company.applications) * 100).toFixed(
-                        1
-                      )}
-                      %
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <AdminTable columns={topCompaniesColumns} data={topCompanies} />
       </div>
     </div>
   );
