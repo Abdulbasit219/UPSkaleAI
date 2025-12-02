@@ -13,7 +13,7 @@ import {
   Trophy,
   Brain,
   ShieldCheck,
-    // TrendingUp,
+  // TrendingUp,
   // Star,
   Zap,
   BarChart3,
@@ -31,6 +31,7 @@ import {
   Star,
 } from "lucide-react";
 import { useSelector } from "react-redux";
+import CTABanner from "@/components/ui/CTABanner";
 
 export default function ATSResumeChecker() {
   const [file, setFile] = useState(null);
@@ -40,7 +41,7 @@ export default function ATSResumeChecker() {
   const [dragActive, setDragActive] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
-  
+
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
 
@@ -75,13 +76,13 @@ export default function ATSResumeChecker() {
     // Extract keywords from the analysis text
     const foundKeywords = extractKeywords(analysisText, "found");
     const missingKeywords = extractKeywords(analysisText, "missing");
-    
+
     // Parse sections from analysis
     const sections = parseSectionsFromAnalysis(analysisText, score);
-    
+
     // Generate statistics based on analysis
     const statistics = generateStatistics(analysisText);
-    
+
     return {
       overall: {
         score: score,
@@ -100,48 +101,74 @@ export default function ATSResumeChecker() {
 
   // Helper functions for parsing
   const extractKeywords = (text, type) => {
-    const lines = text.split('\n');
+    const lines = text.split("\n");
     const keywords = [];
     let inKeywordSection = false;
-    
+
     for (const line of lines) {
-      if (line.toLowerCase().includes('keywords found') || 
-          line.toLowerCase().includes('keywords missing')) {
+      if (
+        line.toLowerCase().includes("keywords found") ||
+        line.toLowerCase().includes("keywords missing")
+      ) {
         inKeywordSection = line.toLowerCase().includes(type);
         continue;
       }
-      
-      if (inKeywordSection && line.trim().startsWith('-')) {
-        const keyword = line.replace('-', '').trim();
-        if (keyword && !keyword.includes('FINAL THOUGHTS')) {
+
+      if (inKeywordSection && line.trim().startsWith("-")) {
+        const keyword = line.replace("-", "").trim();
+        if (keyword && !keyword.includes("FINAL THOUGHTS")) {
           keywords.push(keyword);
         }
       }
-      
+
       // Stop if we hit the next major section
-      if (inKeywordSection && 
-          (line.toLowerCase().includes('final thoughts') || 
-           line.toLowerCase().includes('keywords missing') && type === 'found')) {
+      if (
+        inKeywordSection &&
+        (line.toLowerCase().includes("final thoughts") ||
+          (line.toLowerCase().includes("keywords missing") && type === "found"))
+      ) {
         break;
       }
     }
-    
+
     // If no structured keywords found, generate some based on common terms
     if (keywords.length === 0) {
       return generateFallbackKeywords(type, text);
     }
-    
+
     return keywords.slice(0, 15); // Limit to 15 keywords
   };
 
   const generateFallbackKeywords = (type, text) => {
-    const commonTech = ["JavaScript", "React", "Node.js", "Python", "AWS", "Git", "Agile", "TypeScript"];
-    const commonSoft = ["Leadership", "Communication", "Teamwork", "Problem Solving", "Adaptability"];
-    
+    const commonTech = [
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Python",
+      "AWS",
+      "Git",
+      "Agile",
+      "TypeScript",
+    ];
+    const commonSoft = [
+      "Leadership",
+      "Communication",
+      "Teamwork",
+      "Problem Solving",
+      "Adaptability",
+    ];
+
     if (type === "found") {
       return commonTech.slice(0, 8).concat(commonSoft.slice(0, 4));
     } else {
-      return ["Kubernetes", "Microservices", "Cloud Computing", "DevOps", "CI/CD", "Docker"];
+      return [
+        "Kubernetes",
+        "Microservices",
+        "Cloud Computing",
+        "DevOps",
+        "CI/CD",
+        "Docker",
+      ];
     }
   };
 
@@ -154,9 +181,9 @@ export default function ATSResumeChecker() {
         icon: <Target className="w-5 h-5" />,
         details: "Based on keyword matching with job description",
         suggestions: [
-          'Add more job-specific keywords',
-          'Include technical skills from job description',
-          'Match your experience with required qualifications',
+          "Add more job-specific keywords",
+          "Include technical skills from job description",
+          "Match your experience with required qualifications",
         ],
       },
       {
@@ -194,11 +221,11 @@ export default function ATSResumeChecker() {
           "Add proficiency levels for key skills",
           "Include industry-specific tools",
         ],
-      }
+      },
     ];
 
     // Adjust scores based on actual analysis content
-    return baseSections.map(section => ({
+    return baseSections.map((section) => ({
       ...section,
       status: getStatusFromScore(section.score),
       details: getSectionDetails(section.name, analysisText) || section.details,
@@ -209,8 +236,8 @@ export default function ATSResumeChecker() {
     const detailsMap = {
       "Keyword Optimization": "Keywords matched with job requirements",
       "Formatting & Structure": "Resume structure analysis",
-      "Experience Details": "Professional experience evaluation", 
-      "Skills Section": "Skills alignment with job needs"
+      "Experience Details": "Professional experience evaluation",
+      "Skills Section": "Skills alignment with job needs",
     };
     return detailsMap[sectionName];
   };
@@ -218,7 +245,7 @@ export default function ATSResumeChecker() {
   const generateStatistics = (analysisText) => {
     const wordCount = analysisText.split(/\s+/).length;
     const bulletPoints = (analysisText.match(/-/g) || []).length;
-    
+
     return {
       totalWords: Math.min(800, Math.max(300, wordCount * 2)),
       bulletPoints: Math.max(12, bulletPoints),
@@ -235,8 +262,10 @@ export default function ATSResumeChecker() {
   };
 
   const getMessageFromScore = (score) => {
-    if (score >= 80) return "Your resume is highly ATS-optimized and ready for applications";
-    if (score >= 60) return "Your resume is ATS-friendly with room for improvement";
+    if (score >= 80)
+      return "Your resume is highly ATS-optimized and ready for applications";
+    if (score >= 60)
+      return "Your resume is ATS-friendly with room for improvement";
     return "Your resume needs significant optimization for ATS systems";
   };
 
@@ -268,10 +297,10 @@ export default function ATSResumeChecker() {
 
       // Parse the AI response into structured data for the UI
       const parsedResults = parseAnalysisResponse(
-        data.analysis, 
+        data.analysis,
         data.parsed.score
       );
-      
+
       setResults(parsedResults);
       setAnalyzed(true);
     } catch (err) {
@@ -314,98 +343,112 @@ export default function ATSResumeChecker() {
     return badges[status];
   };
   // Add these helper functions to parse the AI analysis
-const extractStrengths = (analysisText) => {
-  if (!analysisText) return [];
-  
-  const strengths = [];
-  const lines = analysisText.split('\n');
-  
-  for (const line of lines) {
-    const lowerLine = line.toLowerCase();
-    if (lowerLine.includes('strong') || 
-        lowerLine.includes('excellent') || 
-        lowerLine.includes('good') ||
-        lowerLine.includes('demonstrates') ||
-        lowerLine.includes('relevant')) {
-      if (line.length > 20 && !line.includes('KEYWORDS') && !line.includes('MISSING')) {
-        strengths.push(line.trim());
-      }
-    }
-  }
-  
-  // Fallback strengths if none detected
-  if (strengths.length === 0) {
-    return [
-      "Strong foundation in relevant technologies",
-      "Good technical capabilities demonstrated",
-      "Relevant experience in key areas"
-    ];
-  }
-  
-  return strengths.slice(0, 4);
-};
+  const extractStrengths = (analysisText) => {
+    if (!analysisText) return [];
 
-const extractImprovements = (analysisText) => {
-  if (!analysisText) return [];
-  
-  const improvements = [];
-  const lines = analysisText.split('\n');
-  
-  for (const line of lines) {
-    const lowerLine = line.toLowerCase();
-    if ((lowerLine.includes('lack') || 
-         lowerLine.includes('missing') || 
-         lowerLine.includes('improve') ||
-         lowerLine.includes('gap') ||
-         lowerLine.includes('benefit from')) &&
-        !line.includes('KEYWORDS FOUND')) {
-      if (line.length > 20) {
-        improvements.push(line.trim());
-      }
-    }
-  }
-  
-  // Fallback improvements if none detected
-  if (improvements.length === 0) {
-    return [
-      "Add more quantifiable achievements",
-      "Include missing technical skills",
-      "Highlight soft skills and methodologies"
-    ];
-  }
-  
-  return improvements.slice(0, 4);
-};
+    const strengths = [];
+    const lines = analysisText.split("\n");
 
-const extractRecommendations = (analysisText) => {
-  if (!analysisText) return [];
-  
-  const recommendations = [];
-  const finalThoughtsIndex = analysisText.toLowerCase().indexOf('final thoughts');
-  
-  if (finalThoughtsIndex !== -1) {
-    const finalSection = analysisText.slice(finalThoughtsIndex);
-    const lines = finalSection.split('\n').slice(1); // Skip "FINAL THOUGHTS" line
-    
     for (const line of lines) {
-      if (line.trim() && !line.includes('MATCH PERCENTAGE') && !line.includes('KEYWORDS')) {
-        recommendations.push(line.trim().replace(/^- /, '')); // Remove bullet points
+      const lowerLine = line.toLowerCase();
+      if (
+        lowerLine.includes("strong") ||
+        lowerLine.includes("excellent") ||
+        lowerLine.includes("good") ||
+        lowerLine.includes("demonstrates") ||
+        lowerLine.includes("relevant")
+      ) {
+        if (
+          line.length > 20 &&
+          !line.includes("KEYWORDS") &&
+          !line.includes("MISSING")
+        ) {
+          strengths.push(line.trim());
+        }
       }
     }
-  }
-  
-  // Fallback recommendations
-  if (recommendations.length === 0) {
-    return [
-      "Quantify achievements with metrics and numbers",
-      "Add missing technologies from job description",
-      "Highlight Agile/Scrum experience explicitly",
-      "Include testing frameworks and build tools"
-    ];
-  }
-  
-  return recommendations.slice(0, 4);
-};
+
+    // Fallback strengths if none detected
+    if (strengths.length === 0) {
+      return [
+        "Strong foundation in relevant technologies",
+        "Good technical capabilities demonstrated",
+        "Relevant experience in key areas",
+      ];
+    }
+
+    return strengths.slice(0, 4);
+  };
+
+  const extractImprovements = (analysisText) => {
+    if (!analysisText) return [];
+
+    const improvements = [];
+    const lines = analysisText.split("\n");
+
+    for (const line of lines) {
+      const lowerLine = line.toLowerCase();
+      if (
+        (lowerLine.includes("lack") ||
+          lowerLine.includes("missing") ||
+          lowerLine.includes("improve") ||
+          lowerLine.includes("gap") ||
+          lowerLine.includes("benefit from")) &&
+        !line.includes("KEYWORDS FOUND")
+      ) {
+        if (line.length > 20) {
+          improvements.push(line.trim());
+        }
+      }
+    }
+
+    // Fallback improvements if none detected
+    if (improvements.length === 0) {
+      return [
+        "Add more quantifiable achievements",
+        "Include missing technical skills",
+        "Highlight soft skills and methodologies",
+      ];
+    }
+
+    return improvements.slice(0, 4);
+  };
+
+  const extractRecommendations = (analysisText) => {
+    if (!analysisText) return [];
+
+    const recommendations = [];
+    const finalThoughtsIndex = analysisText
+      .toLowerCase()
+      .indexOf("final thoughts");
+
+    if (finalThoughtsIndex !== -1) {
+      const finalSection = analysisText.slice(finalThoughtsIndex);
+      const lines = finalSection.split("\n").slice(1); // Skip "FINAL THOUGHTS" line
+
+      for (const line of lines) {
+        if (
+          line.trim() &&
+          !line.includes("MATCH PERCENTAGE") &&
+          !line.includes("KEYWORDS")
+        ) {
+          recommendations.push(line.trim().replace(/^- /, "")); // Remove bullet points
+        }
+      }
+    }
+
+    // Fallback recommendations
+    if (recommendations.length === 0) {
+      return [
+        "Quantify achievements with metrics and numbers",
+        "Add missing technologies from job description",
+        "Highlight Agile/Scrum experience explicitly",
+        "Include testing frameworks and build tools",
+      ];
+    }
+
+    return recommendations.slice(0, 4);
+  };
 
   return (
     <div
@@ -791,7 +834,6 @@ const extractRecommendations = (analysisText) => {
                 </div>
               </div>
             </div>
-
             {/* Detailed Sections */}
             <div className="grid lg:grid-cols-2 gap-6">
               {results?.sections.map((section, idx) => (
@@ -867,7 +909,6 @@ const extractRecommendations = (analysisText) => {
                 </div>
               ))}
             </div>
-
             {/* Keywords Analysis */}
             <div className="grid md:grid-cols-2 gap-6">
               <div
@@ -928,7 +969,6 @@ const extractRecommendations = (analysisText) => {
                 </div>
               </div>
             </div>
-
             {/* Statistics */}
             <div
               className={`backdrop-blur-xl border rounded-2xl p-6 ${
@@ -995,7 +1035,6 @@ const extractRecommendations = (analysisText) => {
                 ))}
               </div>
             </div>
-
             {/* Full Analysis Text */}
             {/* <div
               className={`backdrop-blur-xl border rounded-2xl p-6 ${
@@ -1017,283 +1056,302 @@ const extractRecommendations = (analysisText) => {
               </div>
             </div> */}
             {/* AI Analysis Summary - Enhanced UI */}
-<div
-  className={`backdrop-blur-xl border rounded-2xl p-6 ${
-    isDark
-      ? "bg-slate-900/50 border-purple-500/20"
-      : "bg-white/80 border-purple-300/20"
-  }`}
->
-  <h3
-    className={`text-xl font-bold mb-6 flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}
-  >
-    <Brain className="w-6 h-6 text-purple-400" />
-    AI Analysis Summary
-  </h3>
-
-  {/* Match Percentage Card */}
-  <div className="grid md:grid-cols-3 gap-6 mb-8">
-    <div
-      className={`p-6 rounded-xl border ${
-        isDark
-          ? "bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/20"
-          : "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
-      }`}
-    >
-      <div className="flex items-center gap-3 mb-3">
-        <div
-          className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-            isDark ? "bg-green-500/20" : "bg-green-100"
-          }`}
-        >
-          <Target className="w-5 h-5 text-green-400" />
-        </div>
-        <span
-          className={`text-sm font-medium ${isDark ? "text-green-300" : "text-green-700"}`}
-        >
-          Match Score
-        </span>
-      </div>
-      <div
-        className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        {results?.overall.score}%
-      </div>
-      <div className={isDark ? "text-green-400" : "text-green-600"}>
-        {results?.overall.score >= 80 ? "Excellent match" : results?.overall.score >= 60 ? "Good match" : "Needs improvement"}
-      </div>
-    </div>
-
-    <div
-      className={`p-6 rounded-xl border ${
-        isDark
-          ? "bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/20"
-          : "bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200"
-      }`}
-    >
-      <div className="flex items-center gap-3 mb-3">
-        <div
-          className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-            isDark ? "bg-blue-500/20" : "bg-blue-100"
-          }`}
-        >
-          <CheckCircle2 className="w-5 h-5 text-blue-400" />
-        </div>
-        <span
-          className={`text-sm font-medium ${isDark ? "text-blue-300" : "text-blue-700"}`}
-        >
-          Keywords Found
-        </span>
-      </div>
-      <div
-        className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        {results?.keywords.found.length}
-      </div>
-      <div className={isDark ? "text-blue-400" : "text-blue-600"}>
-        Strong keyword presence
-      </div>
-    </div>
-
-    <div
-      className={`p-6 rounded-xl border ${
-        isDark
-          ? "bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-500/20"
-          : "bg-gradient-to-br from-orange-50 to-red-50 border-orange-200"
-      }`}
-    >
-      <div className="flex items-center gap-3 mb-3">
-        <div
-          className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-            isDark ? "bg-orange-500/20" : "bg-orange-100"
-          }`}
-        >
-          <AlertCircle className="w-5 h-5 text-orange-400" />
-        </div>
-        <span
-          className={`text-sm font-medium ${isDark ? "text-orange-300" : "text-orange-700"}`}
-        >
-          Keywords Missing
-        </span>
-      </div>
-      <div
-        className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        {results?.keywords.missing.length}
-      </div>
-      <div className={isDark ? "text-orange-400" : "text-orange-600"}>
-        Opportunities for improvement
-      </div>
-    </div>
-  </div>
-
-  {/* Final Thoughts Section */}
-  <div className="space-y-6">
-    {/* Strengths */}
-    <div
-      className={`p-6 rounded-xl border ${
-        isDark
-          ? "bg-gradient-to-br from-green-500/5 to-emerald-500/5 border-green-500/20"
-          : "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
-      }`}
-    >
-      <div className="flex items-center gap-3 mb-4">
-        <div
-          className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-            isDark ? "bg-green-500/20" : "bg-green-100"
-          }`}
-        >
-          <TrendingUp className="w-4 h-4 text-green-400" />
-        </div>
-        <h4
-          className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-        >
-          Key Strengths
-        </h4>
-      </div>
-      <div className="space-y-3">
-        {extractStrengths(results?.rawAnalysis).map((strength, idx) => (
-          <div key={idx} className="flex items-start gap-3">
-            <CheckCircle2 className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
-            <span className={isDark ? "text-gray-300" : "text-gray-700"}>
-              {strength}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    {/* Improvement Areas */}
-    <div
-      className={`p-6 rounded-xl border ${
-        isDark
-          ? "bg-gradient-to-br from-orange-500/5 to-red-500/5 border-orange-500/20"
-          : "bg-gradient-to-br from-orange-50 to-red-50 border-orange-200"
-      }`}
-    >
-      <div className="flex items-center gap-3 mb-4">
-        <div
-          className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-            isDark ? "bg-orange-500/20" : "bg-orange-100"
-          }`}
-        >
-          <AlertTriangle className="w-4 h-4 text-orange-400" />
-        </div>
-        <h4
-          className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-        >
-          Areas for Improvement
-        </h4>
-      </div>
-      <div className="space-y-3">
-        {extractImprovements(results?.rawAnalysis).map((improvement, idx) => (
-          <div key={idx} className="flex items-start gap-3">
-            <Lightbulb className="w-4 h-4 text-orange-400 flex-shrink-0 mt-1" />
-            <span className={isDark ? "text-gray-300" : "text-gray-700"}>
-              {improvement}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    {/* Final Recommendations */}
-    <div
-      className={`p-6 rounded-xl border ${
-        isDark
-          ? "bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-500/20"
-          : "bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200"
-      }`}
-    >
-      <div className="flex items-center gap-3 mb-4">
-        <div
-          className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-            isDark ? "bg-purple-500/20" : "bg-purple-100"
-          }`}
-        >
-          <Sparkles className="w-4 h-4 text-purple-400" />
-        </div>
-        <h4
-          className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-        >
-          Final Recommendations
-        </h4>
-      </div>
-      <div className="space-y-3">
-        {extractRecommendations(results?.rawAnalysis).map((recommendation, idx) => (
-          <div key={idx} className="flex items-start gap-3">
-            <Star className="w-4 h-4 text-purple-400 flex-shrink-0 mt-1" />
-            <span className={isDark ? "text-gray-300" : "text-gray-700"}>
-              {recommendation}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    {/* Raw Analysis (Collapsible) */}
-    <div className="mt-6">
-      <details className="group">
-        <summary className="cursor-pointer list-none">
-          <div
-            className={`flex items-center justify-between p-4 rounded-lg border ${
-              isDark
-                ? "bg-slate-800/50 border-purple-500/30 hover:bg-slate-700/50"
-                : "bg-gray-50 border-purple-300/30 hover:bg-gray-100"
-            } transition-colors`}
-          >
-            <div className="flex items-center gap-3">
-              <FileText className="w-5 h-5 text-purple-400" />
-              <span
-                className={`font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+            <div
+              className={`backdrop-blur-xl border rounded-2xl p-6 ${
+                isDark
+                  ? "bg-slate-900/50 border-purple-500/20"
+                  : "bg-white/80 border-purple-300/20"
+              }`}
+            >
+              <h3
+                className={`text-xl font-bold mb-6 flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}
               >
-                View Full AI Analysis
-              </span>
-            </div>
-            <div className="transform group-open:rotate-180 transition-transform">
-              <ArrowRight className="w-5 h-5 text-purple-400" />
-            </div>
-          </div>
-        </summary>
-        <div
-          className={`mt-2 p-4 rounded-lg border ${
-            isDark
-              ? "bg-slate-800/30 border-purple-500/20"
-              : "bg-gray-50 border-purple-300/20"
-          }`}
-        >
-          <pre
-            className={`whitespace-pre-wrap text-sm font-sans ${
-              isDark ? "text-gray-300" : "text-gray-700"
-            }`}
-          >
-            {results?.rawAnalysis}
-          </pre>
-        </div>
-      </details>
-    </div>
-  </div>
-</div>
+                <Brain className="w-6 h-6 text-purple-400" />
+                AI Analysis Summary
+              </h3>
 
-            {/* CTA Banner */}
-            <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-3xl p-8 md:p-12 relative overflow-hidden">
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20" />
-              <div className="relative z-10 text-center">
-                <Crown className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Ready to optimize your resume?
-                </h2>
-                <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-                  Let our AI rewrite your resume to maximize ATS compatibility
-                  and get more interviews
-                </p>
-                <button className="px-8 py-4 bg-white text-purple-600 rounded-xl font-bold hover:shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-2 mx-auto">
-                  <Sparkles className="w-5 h-5" />
-                  Optimize with AI
-                  <ArrowRight className="w-5 h-5" />
-                </button>
+              {/* Match Percentage Card */}
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <div
+                  className={`p-6 rounded-xl border ${
+                    isDark
+                      ? "bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/20"
+                      : "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        isDark ? "bg-green-500/20" : "bg-green-100"
+                      }`}
+                    >
+                      <Target className="w-5 h-5 text-green-400" />
+                    </div>
+                    <span
+                      className={`text-sm font-medium ${isDark ? "text-green-300" : "text-green-700"}`}
+                    >
+                      Match Score
+                    </span>
+                  </div>
+                  <div
+                    className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
+                  >
+                    {results?.overall.score}%
+                  </div>
+                  <div className={isDark ? "text-green-400" : "text-green-600"}>
+                    {results?.overall.score >= 80
+                      ? "Excellent match"
+                      : results?.overall.score >= 60
+                        ? "Good match"
+                        : "Needs improvement"}
+                  </div>
+                </div>
+
+                <div
+                  className={`p-6 rounded-xl border ${
+                    isDark
+                      ? "bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/20"
+                      : "bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        isDark ? "bg-blue-500/20" : "bg-blue-100"
+                      }`}
+                    >
+                      <CheckCircle2 className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <span
+                      className={`text-sm font-medium ${isDark ? "text-blue-300" : "text-blue-700"}`}
+                    >
+                      Keywords Found
+                    </span>
+                  </div>
+                  <div
+                    className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
+                  >
+                    {results?.keywords.found.length}
+                  </div>
+                  <div className={isDark ? "text-blue-400" : "text-blue-600"}>
+                    Strong keyword presence
+                  </div>
+                </div>
+
+                <div
+                  className={`p-6 rounded-xl border ${
+                    isDark
+                      ? "bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-500/20"
+                      : "bg-gradient-to-br from-orange-50 to-red-50 border-orange-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        isDark ? "bg-orange-500/20" : "bg-orange-100"
+                      }`}
+                    >
+                      <AlertCircle className="w-5 h-5 text-orange-400" />
+                    </div>
+                    <span
+                      className={`text-sm font-medium ${isDark ? "text-orange-300" : "text-orange-700"}`}
+                    >
+                      Keywords Missing
+                    </span>
+                  </div>
+                  <div
+                    className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
+                  >
+                    {results?.keywords.missing.length}
+                  </div>
+                  <div
+                    className={isDark ? "text-orange-400" : "text-orange-600"}
+                  >
+                    Opportunities for improvement
+                  </div>
+                </div>
+              </div>
+
+              {/* Final Thoughts Section */}
+              <div className="space-y-6">
+                {/* Strengths */}
+                <div
+                  className={`p-6 rounded-xl border ${
+                    isDark
+                      ? "bg-gradient-to-br from-green-500/5 to-emerald-500/5 border-green-500/20"
+                      : "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                        isDark ? "bg-green-500/20" : "bg-green-100"
+                      }`}
+                    >
+                      <TrendingUp className="w-4 h-4 text-green-400" />
+                    </div>
+                    <h4
+                      className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                    >
+                      Key Strengths
+                    </h4>
+                  </div>
+                  <div className="space-y-3">
+                    {extractStrengths(results?.rawAnalysis).map(
+                      (strength, idx) => (
+                        <div key={idx} className="flex items-start gap-3">
+                          <CheckCircle2 className="w-4 h-4 text-green-400 flex-shrink-0 mt-1" />
+                          <span
+                            className={
+                              isDark ? "text-gray-300" : "text-gray-700"
+                            }
+                          >
+                            {strength}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Improvement Areas */}
+                <div
+                  className={`p-6 rounded-xl border ${
+                    isDark
+                      ? "bg-gradient-to-br from-orange-500/5 to-red-500/5 border-orange-500/20"
+                      : "bg-gradient-to-br from-orange-50 to-red-50 border-orange-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                        isDark ? "bg-orange-500/20" : "bg-orange-100"
+                      }`}
+                    >
+                      <AlertTriangle className="w-4 h-4 text-orange-400" />
+                    </div>
+                    <h4
+                      className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                    >
+                      Areas for Improvement
+                    </h4>
+                  </div>
+                  <div className="space-y-3">
+                    {extractImprovements(results?.rawAnalysis).map(
+                      (improvement, idx) => (
+                        <div key={idx} className="flex items-start gap-3">
+                          <Lightbulb className="w-4 h-4 text-orange-400 flex-shrink-0 mt-1" />
+                          <span
+                            className={
+                              isDark ? "text-gray-300" : "text-gray-700"
+                            }
+                          >
+                            {improvement}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Final Recommendations */}
+                <div
+                  className={`p-6 rounded-xl border ${
+                    isDark
+                      ? "bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-500/20"
+                      : "bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                        isDark ? "bg-purple-500/20" : "bg-purple-100"
+                      }`}
+                    >
+                      <Sparkles className="w-4 h-4 text-purple-400" />
+                    </div>
+                    <h4
+                      className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                    >
+                      Final Recommendations
+                    </h4>
+                  </div>
+                  <div className="space-y-3">
+                    {extractRecommendations(results?.rawAnalysis).map(
+                      (recommendation, idx) => (
+                        <div key={idx} className="flex items-start gap-3">
+                          <Star className="w-4 h-4 text-purple-400 flex-shrink-0 mt-1" />
+                          <span
+                            className={
+                              isDark ? "text-gray-300" : "text-gray-700"
+                            }
+                          >
+                            {recommendation}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Raw Analysis (Collapsible) */}
+                <div className="mt-6">
+                  <details className="group">
+                    <summary className="cursor-pointer list-none">
+                      <div
+                        className={`flex items-center justify-between p-4 rounded-lg border ${
+                          isDark
+                            ? "bg-slate-800/50 border-purple-500/30 hover:bg-slate-700/50"
+                            : "bg-gray-50 border-purple-300/30 hover:bg-gray-100"
+                        } transition-colors`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <FileText className="w-5 h-5 text-purple-400" />
+                          <span
+                            className={`font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                          >
+                            View Full AI Analysis
+                          </span>
+                        </div>
+                        <div className="transform group-open:rotate-180 transition-transform">
+                          <ArrowRight className="w-5 h-5 text-purple-400" />
+                        </div>
+                      </div>
+                    </summary>
+                    <div
+                      className={`mt-2 p-4 rounded-lg border ${
+                        isDark
+                          ? "bg-slate-800/30 border-purple-500/20"
+                          : "bg-gray-50 border-purple-300/20"
+                      }`}
+                    >
+                      <pre
+                        className={`whitespace-pre-wrap text-sm font-sans ${
+                          isDark ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
+                        {results?.rawAnalysis}
+                      </pre>
+                    </div>
+                  </details>
+                </div>
               </div>
             </div>
+            {/* CTA Banner */}
+            <CTABanner
+              badge={{
+                icon: <Crown className="w-4 h-4 text-white" />,
+                text: "Premium Feature",
+              }}
+              title="Ready to optimize your resume?"
+              subtitle="Let our AI rewrite your resume to maximize ATS compatibility and get more interviews"
+              primaryBtn={{
+                text: "Optimize with AI",
+                icon: <Sparkles className="w-5 h-5" />,
+                onClick: () => console.log("Optimize clicked"),
+              }}
+              isDark={isDark}
+            />
           </div>
         )}
       </div>
