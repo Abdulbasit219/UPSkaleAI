@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pydantic
+python-dotenv
+openai
+aiohttp
+motor
+sentence-transformers
+numpy
