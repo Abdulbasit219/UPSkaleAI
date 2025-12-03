@@ -2,36 +2,23 @@ import connectDB from "@/lib/connectDB";
 import AuthUser from "@/models/AuthUser";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
+import UserProfile from "@/models/UserProfile";
 
 export async function POST(req) {
   await connectDB();
 
   try {
-    const { username, email, password } = await req.json();
+    const { name, email, password } = await req.json();
 
-    // validate fields
-    if (!username || !email || !password) {
+    // Validate fields
+    if (!name || !email || !password) {
       return new Response(
         JSON.stringify({ message: "All fields are required" }),
         { status: 400 }
       );
     }
 
-    const existingVerifiedUserByUsername = await AuthUser.findOne({
-      username,
-      isVerified: true,
-    });
-
-    if (existingVerifiedUserByUsername) {
-      return Response.json(
-        {
-          success: false,
-          message: "Username is already taken",
-        },
-        { status: 400 }
-      );
-    }
-
+    // Check if email already exists
     const existingUserByEmail = await AuthUser.findOne({ email });
     let verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -45,33 +32,49 @@ export async function POST(req) {
           { status: 400 }
         );
       } else {
+        // Update unverified user
         const hashedPassword = await bcrypt.hash(password, 10);
+
         existingUserByEmail.password = hashedPassword;
         existingUserByEmail.verifyCode = verifyCode;
         existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000);
         await existingUserByEmail.save();
       }
     } else {
+      // Create new user
       const hashedPassword = await bcrypt.hash(password, 10);
+
       const expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + 1);
-      const newUser = await AuthUser({
-        username,
+
+      const newUser = await AuthUser.create({
+        name,
         email,
         password: hashedPassword,
         verifyCode,
         verifyCodeExpiry: expiryDate,
       });
 
-      await newUser.save();
+      // Create user profile
+      await UserProfile.create({
+        userId: newUser._id,
+        name: name,
+        avatar: "",
+        coverPhoto: "",
+        role: "",
+        location: "",
+        memberSince: newUser.createdAt.toISOString().split("T")[0],
+        bio: "",
+      });
     }
 
-    // send verification email
+    // Send verification email
     const emailResponse = await sendVerificationEmail(
       email,
-      username,
+      name,
       verifyCode
     );
+
     if (!emailResponse.success) {
       return Response.json(
         {

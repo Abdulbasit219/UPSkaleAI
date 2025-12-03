@@ -9,17 +9,18 @@ export const authOptions = {
       id: "credentials",
       name: "Credentials",
       credentials: {
-        identifier: { label: "Email or Username", type: "text" },
+        identifier: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         await connectDB();
         try {
           const user = await AuthUser.findOne({
-            $or: [
-              { email: credentials.identifier },
-              { username: credentials.identifier },
-            ],
+            // $or: [
+            //   { email: credentials.identifier },
+            //   { username: credentials.identifier },
+            // ],
+            email: credentials.identifier,
           });
 
           if (!user) {
@@ -51,7 +52,8 @@ export const authOptions = {
       if (user) {
         token._id = user._id?.toString();
         token.isVerified = user.isVerified;
-        token.username = user.username;
+        token.name = user.name;
+        token.email = user.email;
       }
       return token;
     },
@@ -59,7 +61,8 @@ export const authOptions = {
       if (token) {
         session.user._id = token._id;
         session.user.isVerified = token.isVerified;
-        session.user.username = token.username;
+        session.user.name = token.name;
+        session.user.email = token.email;
       }
       return session;
     },

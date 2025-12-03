@@ -33,7 +33,7 @@ const Page = () => {
 
     try {
       const response = await axios.post(`/api/verify-code`, {
-        username: params.username,
+        email: params.email,
         code: data.code,
       });
 
@@ -52,7 +52,7 @@ const Page = () => {
   const handleResendCode = async () => {
     try {
       const response = await axios.post(`/api/resend-code`, {
-        username: params.username,
+        username: params.email,
       });
       toast.success("Verification code resent to your email");
     } catch (error) {
@@ -119,9 +119,9 @@ return (
             }`}>
               We've sent a verification code to your email
             </p>
-            {params.username && (
+            {params.email && (
               <p className="text-purple-400 font-semibold mt-2">
-                @{params.username}
+                @{params.email}
               </p>
             )}
           </div>

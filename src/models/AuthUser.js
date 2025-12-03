@@ -2,17 +2,16 @@ import mongoose from "mongoose";
 
 const authUserSchema = new mongoose.Schema(
   {
-    username: {
-    type: String,
-    required: [true, 'Username is required'],
-    trim: true,
-    unique: true,
+    name: {
+      type: String,
+      required: [true, "Name is required"],
+      trim: true,
     },
     email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    match: [/.+\@.+\..+/, 'Please use a valid email address'],
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      match: [/.+\@.+\..+/, "Please use a valid email address"],
     },
     password: {
       type: String,
@@ -20,15 +19,15 @@ const authUserSchema = new mongoose.Schema(
     },
     isAdmin: {
       type: Boolean,
-      default: 0,
+      default: false,
     },
     verifyCode: {
       type: String,
-      required: [true, "Verify Code is required"],
+      required: true,
     },
     verifyCodeExpiry: {
       type: Date,
-      required: [true, "Verify Code Expiry is required"],
+      required: true,
     },
     isVerified: {
       type: Boolean,

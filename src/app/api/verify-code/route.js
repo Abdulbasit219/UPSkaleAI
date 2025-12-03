@@ -5,12 +5,10 @@ export async function POST(request) {
   await connectDB();
 
   try {
-    const { username, code } = await request.json();
+    const { email, code } = await request.json();
 
-    const decodedUsername = decodeURIComponent(username);
-    const user = await AuthUser.findOne({
-      username: decodedUsername,
-    });
+    const decodedEmail = decodeURIComponent(email);
+    const user = await AuthUser.findOne({ email: decodedEmail });
 
     if (!user) {
       return Response.json(

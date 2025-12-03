@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   ArrowRight,
   Sparkles,
@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import Navbar from "@/components/Navbar";
+import axios from "axios";
 
 export default function SkillBridgeLanding() {
   const theme = useSelector((state) => state.theme.mode);
@@ -65,6 +66,18 @@ export default function SkillBridgeLanding() {
     { value: "95%", label: "Success Rate" },
     { value: "2K+", label: "Opportunities" },
   ];
+
+  const updateStreak = async () => {
+    try {
+      await axios.post("/api/user/profile/streak");
+    } catch (error) {
+      console.log("Streak update failed:", error);
+    }
+  };
+
+  useEffect(() => {
+    updateStreak();
+  }, []);
 
   return (
     <>
