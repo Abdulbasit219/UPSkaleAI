@@ -1,72 +1,10 @@
 import React, { useState } from "react";
 import SkillCard from "./SkillCard";
-// import AddSkillModal from "./AddSkillModal";
 import { BarChart3, Plus } from "lucide-react";
+import AddSkillModal from "./AddSkillModal";
 
-const SkillList = ({ isDark }) => {
+const SkillList = ({ isDark, handleAddSkill, skills }) => {
   const [openSkillsModal, setOpenSkillsModal] = useState(false);
-
-  const skills = [
-    {
-      id: 1,
-      name: "HTML/CSS",
-      icon: "code",
-      level: "Expert",
-      progress: 100,
-      lastPracticed: "Today",
-    },
-    {
-      id: 2,
-      name: "JavaScript",
-      icon: "javascript",
-      level: "Advanced",
-      progress: 100,
-      lastPracticed: "Yesterday",
-    },
-    {
-      id: 3,
-      name: "React.js",
-      icon: "react",
-      level: "Advanced",
-      progress: 100,
-      lastPracticed: "2 days ago",
-    },
-    {
-      id: 4,
-      name: "Node.js",
-      icon: "node",
-      level: "Intermediate",
-      progress: 100,
-      lastPracticed: "1 week ago",
-    },
-    {
-      id: 5,
-      name: "MongoDB",
-      icon: "database",
-      level: "Intermediate",
-      progress: 100,
-      lastPracticed: "5 days ago",
-    },
-    {
-      id: 6,
-      name: "Express.js",
-      icon: "server",
-      level: "Intermediate",
-      progress: 100,
-      lastPracticed: "3 days ago",
-    },
-  ];
-
-  const [newSkill, setNewSkill] = useState({
-    name: "",
-    level: "",
-  });
-
-  const handleAddSkill = () => {
-    setSkills([...skills, newSkill]);
-    setNewSkill({ name: "", level: "" });
-    setOpenSkillsModal(false);
-  };
 
   return (
     <div
@@ -89,7 +27,7 @@ const SkillList = ({ isDark }) => {
 
         <button
           onClick={() => setOpenSkillsModal(true)}
-          className={`px-4 py-2 text-sm rounded-lg border flex items-center gap-2 font-semibold hover:scale-105 ${
+          className={`px-4 py-2 text-sm rounded-lg border flex items-center gap-2 font-semibold hover:scale-105 cursor-pointer ${
             isDark
               ? "bg-purple-500/20 text-purple-300 border-purple-500/20 hover:bg-purple-500/30"
               : "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200"
@@ -106,15 +44,14 @@ const SkillList = ({ isDark }) => {
         ))}
       </div>
 
-      {/* MODAL */}
-      {/* <AddSkillModal
-        open={openSkillsModal}
-        setOpen={setOpenSkillsModal}
-        newSkill={newSkill}
-        setNewSkill={setNewSkill}
-        handleAddSkill={handleAddSkill}
-        isDark={isDark}
-      /> */}
+      {openSkillsModal && (
+        <AddSkillModal
+          openSkillsModal={openSkillsModal}
+          setOpenSkillsModal={setOpenSkillsModal}
+          isDark={isDark}
+          handleAddSkill={handleAddSkill}
+        />
+      )}
     </div>
   );
 };

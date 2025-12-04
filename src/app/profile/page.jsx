@@ -13,7 +13,6 @@ import {
   Sparkles,
   ChevronRight,
   BookOpen,
-  BarChart3,
   Flame,
 } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -137,7 +136,36 @@ export default function ProfilePage() {
     setShowProjectModal(true);
   };
 
-  const handleAddSkill = () => {};
+  const handleAddSkill = async (skillData) => {
+
+    
+
+    if (!skillData?.skillName || !user?._id) {
+      toast.error("Skill name or session missing");
+      return;
+    }
+
+    console.log("Data from modal:", skillData);
+    try {
+      const response = await axios.post("/api/user/profile/skills", {
+        userId: user?._id,
+        skillName: skillData?.skillName,
+        level: skillData.level,
+        lastPracticed: skillData.lastPracticed,
+      });
+
+      if (response.data.success) {
+        toast.success("Skill added successfully!");
+
+        return true;
+      }
+    } catch (error) {
+      console.error("Axios Error:", error);
+
+      toast.error(error.response?.data?.message || "Something went wrong");
+      return false;
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -147,7 +175,7 @@ export default function ProfilePage() {
 
   if (loading) return <div>Loading...</div>;
 
-  // console.log(profile);
+  console.log(profile);
 
   const stats = [
     {
@@ -213,6 +241,15 @@ export default function ProfilePage() {
       color: "text-pink-400",
     },
   ];
+
+  // {
+  //     id: 6,
+  //     name: "Express.js",
+  //     icon: "server",
+  //     level: "Intermediate",
+  //     progress: 100,
+  //     lastPracticed: "3 days ago",
+  //   }
 
   return (
     <div
@@ -376,8 +413,11 @@ export default function ProfilePage() {
             </div>
 
             {/* Skills & Expertise */}
-            {/* Skill List */}
-            <SkillList isDark={isDark} />
+            <SkillList
+              isDark={isDark}
+              handleAddSkill={handleAddSkill}
+              skills={profile?.skills}
+            />
 
             <ProjectPortfolio
               profile={profile}
@@ -686,17 +726,6 @@ export default function ProfilePage() {
           editData={selectedProject}
         />
         // onSuccess={refreshProfile} />
-      )}
-
-      {openSkillsModal && (
-        <AddSkillModal
-          openSkillsModal={openSkillsModal}
-          setOpenSkillsModal={setOpenSkillsModal}
-          isDark={isDark}
-          newSkill={newSkill}
-          setNewSkill={setNewSkill}
-          handleAddSkill={handleAddSkill}
-        />
       )}
     </div>
   );

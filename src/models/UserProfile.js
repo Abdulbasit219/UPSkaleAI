@@ -11,8 +11,7 @@ const ProjectSchema = new mongoose.Schema({
 });
 
 const SkillSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  icon: { type: String, default: "💡" }, 
+  skillName: { type: String, required: true },
   level: { type: String, default: "Beginner" }, 
   progress: { type: Number, default: 0 },
   lastPracticed: { type: String, default: null }                

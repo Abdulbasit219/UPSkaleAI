@@ -8,16 +8,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-import React from "react";
+import React, { useState } from "react";
 
 const AddSkillModal = ({
   openSkillsModal,
   setOpenSkillsModal,
   isDark,
-  newSkill,
-  setNewSkill,
   handleAddSkill,
 }) => {
+  const [localSkill, setLocalSkill] = useState({
+    skillName: "",
+    level: "",
+    lastPracticed: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setLocalSkill((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = () => {
+    handleAddSkill(localSkill)
+    setLocalSkill({ name: "", level: "", lastPracticed: "" });
+    setOpenSkillsModal(false)
+  }
+
   return (
     <Dialog open={openSkillsModal} onOpenChange={setOpenSkillsModal}>
       <DialogContent
@@ -31,34 +47,32 @@ const AddSkillModal = ({
           <Input
             placeholder="Skill Name (e.g., React, Node.js)"
             className={`${isDark ? "bg-slate-800 text-white" : ""}`}
-            // value={newSkill.name}
-            // onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })}
+            name="skillName"
+            value={localSkill.skillName}
+            onChange={handleInputChange}
           />
 
           <Input
             placeholder="Skill Level (Beginner / Intermediate / Expert)"
+            name="level"
+            value={localSkill.level}
+            onChange={handleInputChange}
             className={`${isDark ? "bg-slate-800 text-white" : ""}`}
-            // value={newSkill.level}
-            // onChange={(e) =>
-            //   setNewSkill({ ...newSkill, level: e.target.value })
-            // }
           />
 
           <Input
             placeholder="lastPracticed"
+            name="lastPracticed"
+            value={localSkill.lastPracticed}
             type="text"
+            onChange={handleInputChange}
             className={`${isDark ? "bg-slate-800 text-white" : ""}`}
-            // value={newSkill.progress}
-            // onChange={(e) =>
-            //   setNewSkill({ ...newSkill, progress: Number(e.target.value) })
-            // }
           />
-
         </div>
 
         <DialogFooter>
           <Button
-            onClick={handleAddSkill}
+            onClick={handleSubmit}
             className="bg-gradient-to-r from-purple-500 cursor-pointer to-pink-500 text-white"
           >
             Add Skill
