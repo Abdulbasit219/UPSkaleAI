@@ -1,7 +1,7 @@
-import CoverPhoto from "./CoverPhoto";
-import Avatar from "./Avatar";
+import CoverPhoto from "./headerSection/CoverPhoto";
+import Avatar from "./headerSection/Avatar";
 import UserInfo from "./UserInfo";
-import ActionButtons from "./ActionButtons";
+import ActionButtons from "./headerSection/ActionButtons";
 
 const ProfileHeader = ({
   profile,

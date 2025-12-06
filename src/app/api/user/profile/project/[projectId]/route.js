@@ -16,8 +16,6 @@ export async function PUT(req, { params }) {
 
   const userId = session.user._id;
 
-  // const userId = "6922ad85960624dadd579169";
-
   const { projectId } = await params;
 
   const { title, description, techStack, projectLink, githubLink } =
@@ -40,6 +38,15 @@ export async function PUT(req, { params }) {
           "projects.$.techStack": techStack,
           "projects.$.projectLink": projectLink,
           "projects.$.githubLink": githubLink,
+        },
+
+        $push: {
+          recentActivity: {
+            action: `Updated project details: ${title}`,
+            icon: "Pencil", 
+            color: "text-orange-400", 
+            timestamp: new Date(),
+          },
         },
       },
       { new: true }

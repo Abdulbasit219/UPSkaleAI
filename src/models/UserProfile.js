@@ -12,9 +12,16 @@ const ProjectSchema = new mongoose.Schema({
 
 const SkillSchema = new mongoose.Schema({
   skillName: { type: String, required: true },
-  level: { type: String, default: "Beginner" }, 
+  level: { type: String, default: "Beginner" },
   progress: { type: Number, default: 0 },
-  lastPracticed: { type: String, default: null }                
+  lastPracticed: { type: String, default: null },
+});
+
+const RecentActivitySchema = new mongoose.Schema({
+  action: { type: String },
+  icon: { type: String },
+  color: { type: String },
+  timestamp: { type: Date, default: Date.now },
 });
 
 const UserProfileSchema = new mongoose.Schema(
@@ -52,6 +59,11 @@ const UserProfileSchema = new mongoose.Schema(
     // skills
     skills: { type: [SkillSchema], default: [] },
 
+    // recentActivity
+    recentActivity: { type: [RecentActivitySchema], default: [] },
+
+    // recommendation
+    areasOfInterest: { type: [String], default: [] },
   },
   { timestamps: true }
 );
@@ -61,41 +73,3 @@ const UserProfile =
   mongoose.model("UserProfile", UserProfileSchema);
 
 export default UserProfile;
-
-// // Stats Section
-// // stats: {
-// //   skillsMastered: { type: Number, default: 0 },
-// //   streak: { type: Number, default: 0 },
-// //   projects: { type: Number, default: 0 },
-// //   careerReady: { type: Number, default: 0 },
-// // },
-
-// // Skills Section
-// skills: {
-//   mastered: { type: Array, default: [] },
-//   inProgress: { type: Array, default: [] },
-//   recommended: { type: Array, default: [] },
-// },
-
-// // Projects Section
-// projects: { type: Array, default: [] },
-
-// // Achievements
-// achievements: { type: Array, default: [] },
-
-// // Recent Activity
-// activity: { type: Array, default: [] },
-
-// // Streak data
-// streakData: { type: Array, default: [] },
-
-// // Quick stats
-// quickStats: {
-//   totalLearningHours: { type: Number, default: 0 },
-//   certificates: { type: Number, default: 0 },
-//   forumContributions: { type: Number, default: 0 },
-//   peerReviews: { type: Number, default: 0 },
-// },
-
-// // Recommended Content
-// recommended: { type: Array, default: [] },

@@ -5,11 +5,7 @@ import {
   Target,
   Briefcase,
   Book,
-  Code,
-  Award,
-  TrendingUp,
   CheckCircle,
-  Clock,
   Sparkles,
   ChevronRight,
   BookOpen,
@@ -29,20 +25,16 @@ import ProjectPortfolio from "@/components/profile/ProjectPortfolio";
 import StatsGrid from "@/components/profile/StatsGrid";
 import LearningStreakCard from "@/components/profile/LearningStreakCard";
 import AchievementsCard from "@/components/profile/AchievementsCard";
-import QuickStats from "@/components/profile/QuickStats";
-import AddSkillModal from "@/components/profile/skills/AddSkillModal";
 import SkillList from "@/components/profile/skills/SkillList";
+import RecentActivityCard from "@/components/profile/recentActivity/RecentActivityCard";
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState("mastered");
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [streak, setStreak] = useState([]);
-  const [openSkillsModal, setOpenSkillsModal] = useState(false);
-  const [newSkill, setNewSkill] = useState();
 
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
@@ -111,12 +103,12 @@ export default function ProfilePage() {
     }
   };
 
-  const deleteProject = async (projectId) => {
+  const deleteProject = async (projectId, projectTitle) => {
     if (!projectId) return;
 
     try {
       const res = await axios.delete("/api/user/profile/project", {
-        data: { projectId },
+        data: { projectId, projectTitle },
       });
 
       if (res.data.success) {
@@ -137,15 +129,10 @@ export default function ProfilePage() {
   };
 
   const handleAddSkill = async (skillData) => {
-
-    
-
     if (!skillData?.skillName || !user?._id) {
       toast.error("Skill name or session missing");
       return;
     }
-
-    console.log("Data from modal:", skillData);
     try {
       const response = await axios.post("/api/user/profile/skills", {
         userId: user?._id,
@@ -156,12 +143,10 @@ export default function ProfilePage() {
 
       if (response.data.success) {
         toast.success("Skill added successfully!");
-
         return true;
       }
     } catch (error) {
       console.error("Axios Error:", error);
-
       toast.error(error.response?.data?.message || "Something went wrong");
       return false;
     }
@@ -174,8 +159,6 @@ export default function ProfilePage() {
   }, [user]);
 
   if (loading) return <div>Loading...</div>;
-
-  console.log(profile);
 
   const stats = [
     {
@@ -208,48 +191,6 @@ export default function ProfilePage() {
       color: "from-green-500 to-emerald-500",
     },
   ];
-
-  const recentActivity = [
-    {
-      action: "Completed React Advanced course",
-      time: "2 hours ago",
-      icon: <Book className="w-4 h-4" />,
-      color: "text-green-400",
-    },
-    {
-      action: "Leveled up JavaScript to Advanced",
-      time: "1 day ago",
-      icon: <TrendingUp className="w-4 h-4" />,
-      color: "text-blue-400",
-    },
-    {
-      action: "Published E-Commerce Project",
-      time: "2 days ago",
-      icon: <Code className="w-4 h-4" />,
-      color: "text-purple-400",
-    },
-    {
-      action: "Earned Fast Learner badge",
-      time: "3 days ago",
-      icon: <Award className="w-4 h-4" />,
-      color: "text-yellow-400",
-    },
-    {
-      action: "Started Node.js Backend course",
-      time: "5 days ago",
-      icon: <BookOpen className="w-4 h-4" />,
-      color: "text-pink-400",
-    },
-  ];
-
-  // {
-  //     id: 6,
-  //     name: "Express.js",
-  //     icon: "server",
-  //     level: "Intermediate",
-  //     progress: 100,
-  //     lastPracticed: "3 days ago",
-  //   }
 
   return (
     <div
@@ -558,60 +499,10 @@ export default function ProfilePage() {
             />
 
             {/* Recent Activity */}
-            <div
-              className={`backdrop-blur-sm border rounded-xl p-6 transition-colors ${
-                isDark
-                  ? "bg-gradient-to-br from-slate-900/80 to-slate-900/40 border-purple-500/20 hover:border-purple-500/30"
-                  : "bg-gradient-to-br from-white/80 to-white/40 border-purple-300/20 hover:border-purple-300/30"
-              }`}
-            >
-              <h3
-                className={`text-xl font-bold mb-4 flex items-center gap-2 ${
-                  isDark ? "text-white" : "text-gray-900"
-                }`}
-              >
-                <Clock className="w-5 h-5 text-purple-400" />
-                Recent Activity
-              </h3>
-              <div className="space-y-3">
-                {recentActivity.map((activity, index) => (
-                  <div
-                    key={index}
-                    className={`flex items-start gap-3 p-3 rounded-lg transition-colors group cursor-pointer ${
-                      isDark ? "hover:bg-slate-800/50" : "hover:bg-gray-100/50"
-                    }`}
-                  >
-                    <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform ${
-                        isDark ? "bg-slate-800" : "bg-gray-100"
-                      } ${activity.color}`}
-                    >
-                      {activity.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p
-                        className={`text-sm font-medium ${
-                          isDark ? "text-white" : "text-gray-900"
-                        }`}
-                      >
-                        {activity.action}
-                      </p>
-                      <p
-                        className={`text-xs mt-0.5 ${
-                          isDark ? "text-gray-500" : "text-gray-400"
-                        }`}
-                      >
-                        {activity.time}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <button className="w-full mt-4 py-2 text-purple-400 hover:text-purple-300 transition-colors text-sm font-semibold flex items-center justify-center gap-1 hover:gap-2">
-                View All Activity
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+            <RecentActivityCard
+              recentActivity={profile?.recentActivity}
+              isDark={isDark}
+            />
 
             {/* Achievements */}
             <AchievementsCard
@@ -619,9 +510,6 @@ export default function ProfilePage() {
               profile={profile}
               badgeStyles={badgeStyles}
             />
-
-            {/* Quick Stats */}
-            <QuickStats isDark={isDark} />
 
             {/* Recommended for You */}
             <div
@@ -705,6 +593,8 @@ export default function ProfilePage() {
                 ))}
               </div>
             </div>
+
+            
           </div>
         </div>
       </div>

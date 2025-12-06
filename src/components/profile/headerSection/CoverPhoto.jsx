@@ -4,15 +4,17 @@ import React from "react";
 
 const CoverPhoto = ({ profile, isDark, coverInputRef, handleCoverChange }) => {
   return (
-    <div className="h-48 lg:h-64 rounded-xl relative overflow-hidden group">
+    <div className="h-48 lg:h-64 rounded-xl relative overflow-hidden group cursor-pointer">
       {profile?.coverPhoto ? (
-        <Image
-          src={profile.coverPhoto}
-          alt="Cover Photo"
-          fill
-          className="object-cover"
-          priority
-        />
+        <a href={profile.coverPhoto} target="_blank">
+          <Image
+            src={profile.coverPhoto}
+            alt="Cover Photo"
+            fill
+            className="object-cover"
+            priority
+          />
+        </a>
       ) : (
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500"></div>
       )}

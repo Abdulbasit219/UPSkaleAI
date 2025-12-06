@@ -43,6 +43,13 @@ export async function PUT(req) {
 
     updateBadges(profile);
 
+    profile.recentActivity.push({
+      action: `Added a new project: ${title}`,
+      icon: "Briefcase",
+      color: "text-blue-500",
+      timestamp: new Date(),
+    });
+
     await profile.save();
 
     return Response.json({
@@ -73,7 +80,7 @@ export async function DELETE(req) {
   const userId = session.user._id;
 
   try {
-    const { projectId } = await req.json();
+    const { projectId, projectTitle } = await req.json();
 
     if (!projectId) {
       return Response.json(
@@ -84,7 +91,17 @@ export async function DELETE(req) {
 
     const updatedProfile = await UserProfile.findOneAndUpdate(
       { userId },
-      { $pull: { projects: { _id: projectId } } },
+      {
+        $pull: { projects: { _id: projectId } },
+        $push: {
+          recentActivity: {
+            action: `Deleted project: ${projectTitle}`,
+            icon: "Trash",
+            color: "text-red-500",
+            timestamp: new Date(),
+          },
+        },
+      },
       { new: true }
     );
 

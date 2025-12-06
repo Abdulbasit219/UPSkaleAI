@@ -8,8 +8,6 @@ export async function POST(req) {
 
     const { userId, skillName, level, lastPracticed } = await req.json();
 
-    console.log(userId, skillName, level, lastPracticed)
-
     if (!userId || !skillName) {
       return NextResponse.json(
         { success: false, message: "userId and skill name are required" },
@@ -25,8 +23,18 @@ export async function POST(req) {
 
     const updatedProfile = await UserProfile.findOneAndUpdate(
       { userId: userId },
-      { $push: { skills: newSkill } },
-      { new: true }
+      {
+        $push: {
+          skills: newSkill,
+          recentActivity: {
+            action: `Added a new skill: ${skillName}`,
+            icon: "Star",
+            color: "text-yellow-400",
+            timestamp: new Date(),
+          },
+        },
+      },
+      { new: true, runValidators: true }
     );
 
     if (!updatedProfile) {

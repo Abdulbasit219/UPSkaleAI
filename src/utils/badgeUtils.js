@@ -3,15 +3,6 @@ export const updateBadges = (profile) => {
 
   const projectCounts = profile.projects.length;
 
-  // badges = badges.filter(
-  //   (b) =>
-  //     ![
-  //       "First Project Badge",
-  //       "Growing Builder Badge",
-  //       "Project Master Badge",
-  //     ].includes(b)
-  // );
-
   if (projectCounts === 1) {
     badges.push("First Project Badge");
   } else if (projectCounts === 2) {

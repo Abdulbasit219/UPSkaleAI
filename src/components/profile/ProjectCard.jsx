@@ -43,7 +43,7 @@ const ProjectCard = ({ project, isDark, deleteProject, handleEdit }) => {
                 ? "bg-slate-900/80 text-white"
                 : "bg-white/80 text-gray-700"
             }`}
-            onClick={() => deleteProject(project._id)}
+            onClick={() => deleteProject(project._id, project.title)}
           >
             <Trash className="w-4 h-4" />
           </button>

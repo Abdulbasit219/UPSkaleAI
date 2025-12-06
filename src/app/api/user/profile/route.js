@@ -17,8 +17,7 @@ export async function GET() {
   }
 
   const userId = session.user._id;
-  // const userId = "69216016faa3e29f3439fbb2"
-
+ 
   try {
     let profile = await UserProfile.findOne({ userId });
 
@@ -54,7 +53,6 @@ export async function PUT(req) {
   }
 
   const userId = session.user._id;
-  // const userId = "6922ad85960624dadd579169";
   const contentType = req.headers.get("content-type");
 
   try {
@@ -65,23 +63,21 @@ export async function PUT(req) {
       const location = form.get("location");
       const bio = form.get("bio");
 
-      const avatarFile = form.get("avatar"); // file or null
-      const coverFile = form.get("coverPhoto"); // file or null
+      const avatarFile = form.get("avatar");
+      const coverFile = form.get("coverPhoto");
 
       let updateData = {};
-      // Only update text fields if they exist
+
       if (name) updateData.name = name;
       if (role) updateData.role = role;
       if (location) updateData.location = location;
       if (bio) updateData.bio = bio;
 
-      // Update avatar only if file is selected
       if (avatarFile && avatarFile.size > 0) {
         const uploadedAvatar = await UploadImage(avatarFile, "avatars");
         updateData.avatar = uploadedAvatar.secure_url;
       }
 
-      // Update cover only if file is selected
       if (coverFile && coverFile.size > 0) {
         const uploadedCover = await UploadImage(coverFile, "covers");
         updateData.coverPhoto = uploadedCover.secure_url;
@@ -100,7 +96,6 @@ export async function PUT(req) {
       });
     }
   } catch (error) {
-    console.error("Profile update error:", error);
     return Response.json(
       {
         success: false,
@@ -111,5 +106,3 @@ export async function PUT(req) {
     );
   }
 }
-
-
