@@ -1,42 +1,36 @@
 import React from "react";
-import {
-  Briefcase,
-  Users,
-  FileText,
-  Calendar,
-  ArrowUp,
-} from "lucide-react";
+import { Briefcase, Users, FileText, Calendar, ArrowUp } from "lucide-react";
 
-const StatsGrid = ({ isDark, isMobile }) => {
+const StatsGrid = ({ isDark, isMobile, stats: statsData }) => {
   const stats = [
     {
       title: "Active Jobs",
-      value: "12",
-      change: "+2 this week",
+      value: statsData?.activeJobs?.toString() || "0",
+      change: `+${statsData?.activeJobs || 0} total`,
       icon: Briefcase,
       color: "purple",
       trend: "up",
     },
     {
       title: "Total Applications",
-      value: "248",
-      change: "+45 this week",
+      value: statsData?.totalApplications?.toString() || "0",
+      change: `+${statsData?.applicationsThisWeek || 0} this week`,
       icon: FileText,
       color: "blue",
       trend: "up",
     },
     {
       title: "Interviews Scheduled",
-      value: "18",
-      change: "+5 this week",
+      value: statsData?.interviewsScheduled?.toString() || "0",
+      change: `${statsData?.interviewsScheduled || 0} pending`,
       icon: Calendar,
       color: "green",
       trend: "up",
     },
     {
       title: "Hired This Month",
-      value: "6",
-      change: "+2 from last month",
+      value: statsData?.hiredThisMonth?.toString() || "0",
+      change: `${statsData?.hiredThisMonth || 0} this month`,
       icon: Users,
       color: "pink",
       trend: "up",
@@ -54,11 +48,13 @@ const StatsGrid = ({ isDark, isMobile }) => {
   };
 
   return (
-    <div className={`grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8`}>
+    <div
+      className={`grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8`}
+    >
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         const gradient = getGradient(stat.color);
-        
+
         return (
           <div
             key={index}
@@ -72,27 +68,31 @@ const StatsGrid = ({ isDark, isMobile }) => {
               <div
                 className={`p-2 md:p-3 rounded-lg md:rounded-xl bg-gradient-to-r ${gradient} shadow-lg group-hover:scale-110 transition-transform duration-500`}
               >
-                <Icon className={`${isMobile ? 'w-4 h-4' : 'w-6 h-6'} text-white`} />
+                <Icon
+                  className={`${isMobile ? "w-4 h-4" : "w-6 h-6"} text-white`}
+                />
               </div>
               <div className="flex items-center gap-1 text-green-500 text-xs md:text-sm font-bold">
-                <ArrowUp className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
-                <span>{stat.change.split(' ')[0]}</span>
+                <ArrowUp className={`${isMobile ? "w-3 h-3" : "w-4 h-4"}`} />
+                <span>{stat.change.split(" ")[0]}</span>
               </div>
             </div>
-            
+
             <h3
-              className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold mb-1 md:mb-2 bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}
+              className={`${isMobile ? "text-xl" : "text-3xl"} font-bold mb-1 md:mb-2 bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}
             >
               {stat.value}
             </h3>
             <p
-              className={`${isMobile ? 'text-xs' : 'text-sm'} font-semibold ${
+              className={`${isMobile ? "text-xs" : "text-sm"} font-semibold ${
                 isDark ? "text-gray-400" : "text-gray-600"
               } mb-1`}
             >
               {stat.title}
             </p>
-            <p className={`${isMobile ? 'text-xs' : 'text-xs'} text-green-500 font-medium`}>
+            <p
+              className={`${isMobile ? "text-xs" : "text-xs"} text-green-500 font-medium`}
+            >
               {stat.change}
             </p>
 

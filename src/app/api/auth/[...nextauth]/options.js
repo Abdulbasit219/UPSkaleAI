@@ -36,7 +36,14 @@ export const authOptions = {
           );
 
           if (isPasswordCorrect) {
-            return user;
+            return {
+              _id: user._id,
+              username: user.username,
+              email: user.email,
+              isVerified: user.isVerified,
+              isAdmin: user.isAdmin,
+              role: user.role,
+            };
           } else {
             throw new Error("Incorrect Credentials");
           }
@@ -52,6 +59,8 @@ export const authOptions = {
         token._id = user._id?.toString();
         token.isVerified = user.isVerified;
         token.username = user.username;
+        token.role = user.role;
+        token.isAdmin = user.isAdmin;
       }
       return token;
     },
@@ -60,6 +69,8 @@ export const authOptions = {
         session.user._id = token._id;
         session.user.isVerified = token.isVerified;
         session.user.username = token.username;
+        session.user.role = token.role;
+        session.user.isAdmin = token.isAdmin;
       }
       return session;
     },

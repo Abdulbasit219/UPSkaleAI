@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   Users,
@@ -30,105 +30,56 @@ import StatsCard from "@/components/admin/StatsCard";
 import PageHeader from "@/components/admin/PageHeader";
 import AdminTable from "@/components/admin/AdminTable";
 
-// Mock data for charts
-const userGrowthData = [
-  { name: "Jan", users: 4000, companies: 2400 },
-  { name: "Feb", users: 3000, companies: 1398 },
-  { name: "Mar", users: 2000, companies: 9800 },
-  { name: "Apr", users: 2780, companies: 3908 },
-  { name: "May", users: 1890, companies: 4800 },
-  { name: "Jun", users: 2390, companies: 3800 },
-];
-
-const jobTrendsData = [
-  { name: "Jan", jobs: 2400 },
-  { name: "Feb", jobs: 1398 },
-  { name: "Mar", jobs: 9800 },
-  { name: "Apr", jobs: 3908 },
-  { name: "May", jobs: 4800 },
-  { name: "Jun", jobs: 3800 },
-];
-
-const categoryData = [
-  { name: "Tech", value: 400 },
-  { name: "Marketing", value: 300 },
-  { name: "Design", value: 300 },
-  { name: "Sales", value: 200 },
-];
-
-const COLORS = ["#a855f7", "#ec4899", "#3b82f6", "#22c55e"];
-
-const recentActivity = [
-  {
-    id: 1,
-    user: "John Doe",
-    action: "Registered as Candidate",
-    time: "2 mins ago",
-    status: "success",
-  },
-  {
-    id: 2,
-    user: "TechCorp Inc.",
-    action: "Posted a new job",
-    time: "15 mins ago",
-    status: "info",
-  },
-  {
-    id: 3,
-    user: "Sarah Smith",
-    action: "Reported a job post",
-    time: "1 hour ago",
-    status: "warning",
-  },
-  {
-    id: 4,
-    user: "Design Studio",
-    action: "Updated company profile",
-    time: "2 hours ago",
-    status: "success",
-  },
-];
-
-const pendingApprovals = [
-  {
-    id: 1,
-    name: "TechVision Solutions",
-    type: "Company Registration",
-    date: "2024-03-15",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    name: "Senior React Developer",
-    type: "Job Post",
-    date: "2024-03-14",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    name: "Creative Minds Agency",
-    type: "Company Registration",
-    date: "2024-03-14",
-    status: "Pending",
-  },
-];
-
 export default function AdminDashboard() {
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [statsData, setStatsData] = useState({
+    totalUsers: 0,
+    activeCompanies: 0,
+    totalJobs: 0,
+    pendingApprovals: 0,
+  });
+  const [userGrowthData, setUserGrowthData] = useState([]);
+  const [jobTrendsData, setJobTrendsData] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [pendingApprovals, setPendingApprovals] = useState([]);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await fetch("/api/admin/dashboard");
+        if (response.ok) {
+          const data = await response.json();
+          setStatsData(data.stats);
+          setUserGrowthData(data.userGrowthData || []);
+          setJobTrendsData(data.jobTrendsData || []);
+          setRecentActivity(data.recentActivity || []);
+          setPendingApprovals(data.pendingApprovals || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
   const stats = [
     {
       label: "Total Users",
-      value: "12,345",
-      change: "+12%",
+      value: statsData.totalUsers.toLocaleString(),
+      change: "+12%", // Keeping static for now as we don't have historical data for change yet
       trend: "up",
       icon: Users,
       color: "purple",
     },
     {
       label: "Active Companies",
-      value: "843",
+      value: statsData.activeCompanies.toLocaleString(),
       change: "+5%",
       trend: "up",
       icon: Building2,
@@ -136,7 +87,7 @@ export default function AdminDashboard() {
     },
     {
       label: "Total Jobs",
-      value: "2,567",
+      value: statsData.totalJobs.toLocaleString(),
       change: "+18%",
       trend: "up",
       icon: Briefcase,
@@ -144,7 +95,7 @@ export default function AdminDashboard() {
     },
     {
       label: "Pending Approvals",
-      value: "45",
+      value: statsData.pendingApprovals.toLocaleString(),
       change: "-2%",
       trend: "down",
       icon: Clock,
@@ -195,6 +146,14 @@ export default function AdminDashboard() {
       </button>
     </div>
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -252,13 +211,7 @@ export default function AdminDashboard() {
                   strokeWidth={2}
                   name="Users"
                 />
-                <Line
-                  type="monotone"
-                  dataKey="companies"
-                  stroke="#ec4899"
-                  strokeWidth={2}
-                  name="Companies"
-                />
+                {/* Companies line suppressed as we just have users for now in API */}
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -320,47 +273,55 @@ export default function AdminDashboard() {
             Recent Activity
           </h3>
           <div className="space-y-4">
-            {recentActivity.map((activity) => (
-              <div
-                key={activity.id}
-                className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
-                  isDark ? "hover:bg-slate-800/50" : "hover:bg-gray-50"
-                }`}
-              >
+            {recentActivity.length > 0 ? (
+              recentActivity.map((activity) => (
                 <div
-                  className={`w-2 h-2 mt-2 rounded-full ${
-                    activity.status === "success"
-                      ? "bg-green-500"
-                      : activity.status === "warning"
-                        ? "bg-yellow-500"
-                        : "bg-blue-500"
+                  key={activity.id}
+                  className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
+                    isDark ? "hover:bg-slate-800/50" : "hover:bg-gray-50"
                   }`}
-                />
-                <div>
-                  <p
-                    className={`text-sm font-medium ${
-                      isDark ? "text-white" : "text-gray-900"
+                >
+                  <div
+                    className={`w-2 h-2 mt-2 rounded-full ${
+                      activity.status === "success"
+                        ? "bg-green-500"
+                        : activity.status === "warning"
+                          ? "bg-yellow-500"
+                          : "bg-blue-500"
                     }`}
-                  >
-                    {activity.user}
-                  </p>
-                  <p
-                    className={`text-xs ${
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    }`}
-                  >
-                    {activity.action}
-                  </p>
-                  <p
-                    className={`text-[10px] mt-1 ${
-                      isDark ? "text-gray-500" : "text-gray-400"
-                    }`}
-                  >
-                    {activity.time}
-                  </p>
+                  />
+                  <div>
+                    <p
+                      className={`text-sm font-medium ${
+                        isDark ? "text-white" : "text-gray-900"
+                      }`}
+                    >
+                      {activity.user}
+                    </p>
+                    <p
+                      className={`text-xs ${
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      }`}
+                    >
+                      {activity.action}
+                    </p>
+                    <p
+                      className={`text-[10px] mt-1 ${
+                        isDark ? "text-gray-500" : "text-gray-400"
+                      }`}
+                    >
+                      {new Date(activity.time).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p
+                className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+              >
+                No recent activity.
+              </p>
+            )}
           </div>
         </div>
 

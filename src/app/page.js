@@ -1,15 +1,14 @@
 "use client";
 import React from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import {
-  ArrowRight,
-  Sparkles,
-  TrendingUp,
   Target,
   Award,
   Briefcase,
   BarChart3,
   CheckCircle2,
+  TrendingUp,
+  ArrowRight,
   Zap,
   Brain,
   Rocket,
@@ -321,7 +320,7 @@ export default function SkillBridgeLanding() {
               subtitle="Join thousands of learners who are already building their dream careers with AI-powered guidance"
               primaryBtn={{
                 text: "Get Started Free",
-                onClick: () => router.push('/signup')
+                onClick: () => router.push("/signup"),
               }}
             />
           </div>

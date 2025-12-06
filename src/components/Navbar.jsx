@@ -24,11 +24,14 @@ import {
   FileUser,
   Building2,
   Sun,
+  Shield,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "@/store/slices/themeSlice";
+import { useSession, signOut } from "next-auth/react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -37,6 +40,8 @@ const Navbar = () => {
   const [closingTimeout, setClosingTimeout] = useState(null);
   const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session, status } = useSession();
 
   // Refs for detecting outside clicks
   const userDropdownRef = useRef(null);
@@ -56,12 +61,11 @@ const Navbar = () => {
   // Close user dropdown when route changes
   useEffect(() => {
     setIsUserDropdownOpen(false);
-  }, [pathname]); // This will run every time the pathname changes
+  }, [pathname]);
 
   // Close user dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside both the dropdown and the button
       if (
         isUserDropdownOpen &&
         userDropdownRef.current &&
@@ -96,6 +100,11 @@ const Navbar = () => {
 
   const toggleUserDropdown = () => {
     setIsUserDropdownOpen(!isUserDropdownOpen);
+  };
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
   };
 
   const mainNavItems = [
@@ -149,42 +158,89 @@ const Navbar = () => {
       icon: <FileUser className="w-4 h-4" />,
       description: "Build resume with AI",
     },
-    // {
-    //   name: "Analytics",
-    //   href: "/analytics",
-    //   icon: <BarChart3 className="w-4 h-4" />,
-    //   description: "Track your progress",
-    // },
   ];
 
-  const userMenuItems = [
-    {
-      name: "Dashboard",
-      href: "/dashboardd",
-      icon: <Sparkles className="w-4 h-4" />,
-    },
-    { name: "Profile", href: "/profile", icon: <User className="w-4 h-4" /> },
-    {
-      name: "Pricing",
-      href: "/pricing",
-      icon: <DollarSign className="w-4 h-4" />,
-    },
-    {
-      name: "How it works",
-      href: "/how-it-works",
-      icon: <HelpCircle className="w-4 h-4" />,
-    },
-    {
-      name: "Settings",
-      href: "/settings",
-      icon: <Settings className="w-4 h-4" />,
-    },
-    {
-      name: "Sign Out",
-      href: "/sign-out",
-      icon: <LogOut className="w-4 h-4" />,
-    },
-  ];
+  // Role-based menu items
+  const getRoleBasedMenuItems = () => {
+    if (!session) return [];
+
+    const role = session.user.role;
+
+    switch (role) {
+      case "Admin":
+        return [
+          {
+            name: "Admin Dashboard",
+            href: "/admin",
+            icon: <Shield className="w-4 h-4" />,
+          },
+          {
+            name: "Users Management",
+            href: "/admin/users",
+            icon: <Users className="w-4 h-4" />,
+          },
+          {
+            name: "Companies",
+            href: "/admin/companies",
+            icon: <Building2 className="w-4 h-4" />,
+          },
+          {
+            name: "Jobs",
+            href: "/admin/jobs",
+            icon: <Briefcase className="w-4 h-4" />,
+          },
+          {
+            name: "Settings",
+            href: "/settings",
+            icon: <Settings className="w-4 h-4" />,
+          },
+        ];
+      case "Company":
+        return [
+          {
+            name: "Company Dashboard",
+            href: "/company/dashboard",
+            icon: <Building2 className="w-4 h-4" />,
+          },
+          {
+            name: "Settings",
+            href: "/settings",
+            icon: <Settings className="w-4 h-4" />,
+          },
+        ];
+      case "Job Seeker":
+      default:
+        return [
+          {
+            name: "Dashboard",
+            href: "/dashboardd",
+            icon: <Sparkles className="w-4 h-4" />,
+          },
+          {
+            name: "Profile",
+            href: "/profile",
+            icon: <User className="w-4 h-4" />,
+          },
+          {
+            name: "Pricing",
+            href: "/pricing",
+            icon: <DollarSign className="w-4 h-4" />,
+          },
+          {
+            name: "How it works",
+            href: "/how-it-works",
+            icon: <HelpCircle className="w-4 h-4" />,
+          },
+          {
+            name: "Settings",
+            href: "/settings",
+            icon: <Settings className="w-4 h-4" />,
+          },
+        ];
+    }
+  };
+
+  const userMenuItems = getRoleBasedMenuItems();
 
   const isActiveLink = (href) => {
     if (href === "/") return pathname === "/";
@@ -192,10 +248,44 @@ const Navbar = () => {
   };
 
   const isResourcesActive = () => {
-    const mainNavHrefs = mainNavItems.map(item => item.href);
-    return resourcesItems.some((item) => 
-      pathname.startsWith(item.href) && !mainNavHrefs.includes(item.href)
+    const mainNavHrefs = mainNavItems.map((item) => item.href);
+    return resourcesItems.some(
+      (item) =>
+        pathname.startsWith(item.href) && !mainNavHrefs.includes(item.href)
     );
+  };
+
+  // Get user display name based on role
+  const getUserDisplayName = () => {
+    if (!session) return "Guest";
+    return (
+      session.user?.name ||
+      session.user?.username ||
+      session.user?.email?.split("@")[0] ||
+      "User"
+    );
+  };
+
+  // Get role badge color
+  const getRoleBadgeColor = () => {
+    if (!session) return "";
+    const role = session.user.role;
+
+    switch (role) {
+      case "Admin":
+        return isDark
+          ? "bg-red-500/20 text-red-300 border-red-500/40"
+          : "bg-red-100 text-red-700 border-red-300";
+      case "Company":
+        return isDark
+          ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
+          : "bg-blue-100 text-blue-700 border-blue-300";
+      case "Job Seeker":
+      default:
+        return isDark
+          ? "bg-green-500/20 text-green-300 border-green-500/40"
+          : "bg-green-100 text-green-700 border-green-300";
+    }
   };
 
   return (
@@ -394,84 +484,129 @@ const Navbar = () => {
                 )}
               </button>
 
-              <Link
-                href="/sign-in"
-                className={`px-6 py-2.5 transition-colors duration-300 font-medium rounded-xl border ${
-                  isDark
-                    ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
-                }`}
-              >
-                Sign In
-              </Link>
-
-              {/* User Dropdown */}
-              <div className="relative" ref={userDropdownRef}>
-                <button
-                  ref={userButtonRef}
-                  onClick={toggleUserDropdown}
-                  className={`flex items-center gap-2 px-3 py-2 transition-colors duration-300 rounded-xl border ${
-                    isDark
-                      ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
-                  }`}
-                >
-                  <div
-                    className={`w-9 h-9 bg-gradient-to-br rounded-xl flex items-center justify-center border ${
+              {/* Conditional Auth Buttons */}
+              {status === "loading" ? (
+                <div className="px-6 py-2.5 rounded-xl">
+                  <div className="animate-pulse h-4 w-16 bg-gray-300 rounded"></div>
+                </div>
+              ) : status === "authenticated" ? (
+                /* User Dropdown for authenticated users */
+                <div className="relative" ref={userDropdownRef}>
+                  <button
+                    ref={userButtonRef}
+                    onClick={toggleUserDropdown}
+                    className={`flex items-center gap-2 px-3 py-2 transition-colors duration-300 rounded-xl border ${
                       isDark
-                        ? "from-purple-500/20 to-pink-500/20 border-purple-500/30"
-                        : "from-purple-100 to-pink-100 border-purple-300/30"
-                    }`}
-                  >
-                    <User className="w-4 h-4 text-purple-400" />
-                  </div>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 ${isUserDropdownOpen ? "rotate-180" : ""}`}
-                  />
-                </button>
-
-                {isUserDropdownOpen && (
-                  <div
-                    className={`absolute right-0 mt-2 w-56 backdrop-blur-xl border rounded-xl shadow-2xl py-2 animate-in fade-in-0 zoom-in-95 ${
-                      isDark
-                        ? "bg-slate-900/98 border-purple-500/30 shadow-purple-500/20"
-                        : "bg-white/98 border-purple-300/30 shadow-purple-300/20"
+                        ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
                     }`}
                   >
                     <div
-                      className={`px-4 py-3 border-b ${isDark ? "border-purple-500/10" : "border-purple-300/10"}`}
+                      className={`w-9 h-9 bg-gradient-to-br rounded-xl flex items-center justify-center border ${
+                        isDark
+                          ? "from-purple-500/20 to-pink-500/20 border-purple-500/30"
+                          : "from-purple-100 to-pink-100 border-purple-300/30"
+                      }`}
                     >
+                      <User className="w-4 h-4 text-purple-400" />
+                    </div>
+                    <div className="hidden xl:block text-left">
                       <p
-                        className={`text-sm font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                        className={`text-sm font-medium ${isDark ? "text-white" : "text-gray-900"}`}
                       >
-                        Welcome Back!
+                        {getUserDisplayName()}
                       </p>
-                      <p
-                        className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                      >
-                        Ready to learn?
+                      <p className="text-xs text-gray-500">
+                        {session.user.role}
                       </p>
                     </div>
-                    <div className="py-2">
-                      {userMenuItems.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 mx-2 rounded-lg ${
-                            isDark
-                              ? "text-gray-300 hover:text-white hover:bg-purple-500/10"
-                              : "text-gray-600 hover:text-gray-900 hover:bg-purple-50"
-                          }`}
-                          onClick={() => setIsUserDropdownOpen(false)}
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-300 ${isUserDropdownOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+
+                  {isUserDropdownOpen && (
+                    <div
+                      className={`absolute right-0 mt-2 w-64 backdrop-blur-xl border rounded-xl shadow-2xl py-2 animate-in fade-in-0 zoom-in-95 ${
+                        isDark
+                          ? "bg-slate-900/98 border-purple-500/30 shadow-purple-500/20"
+                          : "bg-white/98 border-purple-300/30 shadow-purple-300/20"
+                      }`}
+                    >
+                      <div
+                        className={`px-4 py-3 border-b ${isDark ? "border-purple-500/10" : "border-purple-300/10"}`}
+                      >
+                        <p
+                          className={`text-sm font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
                         >
-                          <div className="text-purple-400">{item.icon}</div>
-                          {item.name}
-                        </Link>
-                      ))}
+                          {getUserDisplayName()}
+                        </p>
+                        <p
+                          className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                        >
+                          {session.user.email}
+                        </p>
+                        <div
+                          className={`mt-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor()}`}
+                        >
+                          {session.user.role}
+                        </div>
+                      </div>
+                      <div className="py-2">
+                        {userMenuItems.map((item) => (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 mx-2 rounded-lg ${
+                              isDark
+                                ? "text-gray-300 hover:text-white hover:bg-purple-500/10"
+                                : "text-gray-600 hover:text-gray-900 hover:bg-purple-50"
+                            }`}
+                            onClick={() => setIsUserDropdownOpen(false)}
+                          >
+                            <div className="text-purple-400">{item.icon}</div>
+                            {item.name}
+                          </Link>
+                        ))}
+                        <div
+                          className={`mx-2 my-2 border-t ${isDark ? "border-purple-500/10" : "border-purple-300/10"}`}
+                        ></div>
+                        <button
+                          onClick={handleSignOut}
+                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 mx-2 rounded-lg ${
+                            isDark
+                              ? "text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                              : "text-red-600 hover:text-red-700 hover:bg-red-50"
+                          }`}
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              ) : (
+                /* Sign In button for unauthenticated users */
+                <>
+                  <Link
+                    href="/sign-in"
+                    className={`px-6 py-2.5 transition-colors duration-300 font-medium rounded-xl border ${
+                      isDark
+                        ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
+                    }`}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -520,6 +655,44 @@ const Navbar = () => {
           } ${isMenuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}
         >
           <div className="px-4 py-6 space-y-3 max-h-[500px] overflow-y-auto">
+            {/* User Info (Mobile - if authenticated) */}
+            {status === "authenticated" && (
+              <div
+                className={`mb-4 p-4 rounded-xl border ${
+                  isDark
+                    ? "bg-slate-800/50 border-purple-500/20"
+                    : "bg-gray-50 border-purple-300/20"
+                }`}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div
+                    className={`w-12 h-12 bg-gradient-to-br rounded-xl flex items-center justify-center border ${
+                      isDark
+                        ? "from-purple-500/20 to-pink-500/20 border-purple-500/30"
+                        : "from-purple-100 to-pink-100 border-purple-300/30"
+                    }`}
+                  >
+                    <User className="w-6 h-6 text-purple-400" />
+                  </div>
+                  <div>
+                    <p
+                      className={`text-sm font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                    >
+                      {getUserDisplayName()}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {session.user.email}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor()}`}
+                >
+                  {session.user.role}
+                </div>
+              </div>
+            )}
+
             {/* Main Navigation Links */}
             <div className="space-y-2">
               {mainNavItems.map((item) => (
@@ -596,38 +769,84 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Auth Buttons */}
-            <div
-              className={`pt-4 border-t space-y-3 ${isDark ? "border-purple-500/20" : "border-purple-300/20"}`}
-            >
-              <Link
-                href="/sign-in"
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setIsUserDropdownOpen(false);
-                }}
-                className={`flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-medium transition-colors duration-300 border ${
-                  isDark
-                    ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
-                }`}
+            {/* User Menu Items (Mobile - if authenticated) */}
+            {status === "authenticated" && (
+              <div
+                className={`pt-3 border-t ${isDark ? "border-purple-500/20" : "border-purple-300/20"}`}
               >
-                <User className="w-4 h-4" />
-                Sign In
-              </Link>
+                <p
+                  className={`text-xs font-semibold uppercase tracking-wider mb-2 px-2 ${isDark ? "text-purple-300" : "text-purple-600"}`}
+                >
+                  Account
+                </p>
+                <div className="space-y-2">
+                  {userMenuItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        setIsUserDropdownOpen(false);
+                      }}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
+                        isDark
+                          ? "text-gray-300 hover:text-white hover:bg-white/5"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                      }`}
+                    >
+                      <div className="text-purple-400">{item.icon}</div>
+                      {item.name}
+                    </Link>
+                  ))}
+                  <button
+                    onClick={handleSignOut}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
+                      isDark
+                        ? "text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                        : "text-red-600 hover:text-red-700 hover:bg-red-50"
+                    }`}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            )}
 
-              <Link
-                href="/signup"
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setIsUserDropdownOpen(false);
-                }}
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
+            {/* Auth Buttons (Mobile - if not authenticated) */}
+            {status !== "authenticated" && (
+              <div
+                className={`pt-4 border-t space-y-3 ${isDark ? "border-purple-500/20" : "border-purple-300/20"}`}
               >
-                <Zap className="w-4 h-4" />
-                Get Started Free
-              </Link>
-            </div>
+                <Link
+                  href="/sign-in"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsUserDropdownOpen(false);
+                  }}
+                  className={`flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-medium transition-colors duration-300 border ${
+                    isDark
+                      ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
+                  }`}
+                >
+                  <User className="w-4 h-4" />
+                  Sign In
+                </Link>
+
+                <Link
+                  href="/signup"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsUserDropdownOpen(false);
+                  }}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
+                >
+                  <Zap className="w-4 h-4" />
+                  Get Started Free
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </nav>

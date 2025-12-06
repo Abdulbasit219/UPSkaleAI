@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   Download,
@@ -23,80 +23,6 @@ import SearchFilterBar from "@/components/admin/SearchFilterBar";
 import AdminTable from "@/components/admin/AdminTable";
 import DetailModal from "@/components/admin/DetailModal";
 
-// Mock user data
-const mockUsers = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1 234 567 8900",
-    location: "New York, USA",
-    joinDate: "2024-01-15",
-    status: "active",
-    role: "Job Seeker",
-    applications: 12,
-    resumeUploaded: true,
-    lastActive: "2 hours ago",
-    profileComplete: 95,
-  },
-  {
-    id: 2,
-    name: "Sarah Johnson",
-    email: "sarah.j@example.com",
-    phone: "+1 234 567 8901",
-    location: "San Francisco, USA",
-    joinDate: "2024-02-20",
-    status: "active",
-    role: "Job Seeker",
-    applications: 8,
-    resumeUploaded: true,
-    lastActive: "1 day ago",
-    profileComplete: 88,
-  },
-  {
-    id: 3,
-    name: "Mike Chen",
-    email: "mike.chen@example.com",
-    phone: "+1 234 567 8902",
-    location: "Seattle, USA",
-    joinDate: "2024-03-10",
-    status: "disabled",
-    role: "Job Seeker",
-    applications: 5,
-    resumeUploaded: false,
-    lastActive: "1 week ago",
-    profileComplete: 60,
-  },
-  {
-    id: 4,
-    name: "Emily Davis",
-    email: "emily.d@example.com",
-    phone: "+1 234 567 8903",
-    location: "Austin, USA",
-    joinDate: "2024-04-05",
-    status: "banned",
-    role: "Job Seeker",
-    applications: 3,
-    resumeUploaded: true,
-    lastActive: "2 weeks ago",
-    profileComplete: 45,
-  },
-  {
-    id: 5,
-    name: "Alex Rodriguez",
-    email: "alex.r@example.com",
-    phone: "+1 234 567 8904",
-    location: "Miami, USA",
-    joinDate: "2024-05-12",
-    status: "active",
-    role: "Job Seeker",
-    applications: 15,
-    resumeUploaded: true,
-    lastActive: "30 minutes ago",
-    profileComplete: 100,
-  },
-];
-
 const activityLogs = [
   { id: 1, action: "Profile updated", timestamp: "2024-12-02 10:30 AM" },
   {
@@ -117,7 +43,26 @@ export default function UserManagement() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showUserModal, setShowUserModal] = useState(false);
 
-  const filteredUsers = mockUsers.filter((user) => {
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("/api/admin/users");
+      const data = await response.json();
+      setUsers(data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+  console.log(users);
+
+  const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase());
@@ -270,18 +215,18 @@ export default function UserManagement() {
         {[
           {
             label: "Total Users",
-            value: "12,543",
+            value: users.length,
             icon: UserCheck,
             color: "purple",
           },
           {
             label: "Active Users",
-            value: "11,234",
+            value: users.length,
             icon: UserCheck,
             color: "green",
           },
-          { label: "Disabled", value: "1,234", icon: UserX, color: "yellow" },
-          { label: "Banned", value: "75", icon: Ban, color: "red" },
+          { label: "Disabled", value: "0", icon: UserX, color: "yellow" },
+          { label: "Banned", value: "0", icon: Ban, color: "red" },
         ].map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}

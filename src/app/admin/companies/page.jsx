@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   Download,
@@ -25,91 +25,91 @@ import AdminTable from "@/components/admin/AdminTable";
 import DetailModal from "@/components/admin/DetailModal";
 
 // Mock company data
-const mockCompanies = [
-  {
-    id: 1,
-    name: "TechVision Solutions",
-    logo: "TV",
-    industry: "Technology",
-    location: "San Francisco, USA",
-    website: "www.techvision.com",
-    email: "contact@techvision.com",
-    phone: "+1 234 567 8900",
-    registrationDate: "2024-01-15",
-    status: "approved",
-    employees: "500-1000",
-    jobPosts: 45,
-    verified: true,
-    description:
-      "Leading software development company specializing in AI and cloud solutions.",
-  },
-  {
-    id: 2,
-    name: "Digital Innovations Ltd",
-    logo: "DI",
-    industry: "Marketing",
-    location: "New York, USA",
-    website: "www.digitalinnovations.com",
-    email: "info@digitalinnovations.com",
-    phone: "+1 234 567 8901",
-    registrationDate: "2024-02-20",
-    status: "pending",
-    employees: "100-500",
-    jobPosts: 12,
-    verified: false,
-    description:
-      "Digital marketing agency helping brands grow their online presence.",
-  },
-  {
-    id: 3,
-    name: "Creative Minds Agency",
-    logo: "CM",
-    industry: "Design",
-    location: "Los Angeles, USA",
-    website: "www.creativeminds.com",
-    email: "hello@creativeminds.com",
-    phone: "+1 234 567 8902",
-    registrationDate: "2024-03-10",
-    status: "approved",
-    employees: "50-100",
-    jobPosts: 23,
-    verified: true,
-    description:
-      "Award-winning design agency creating stunning visual experiences.",
-  },
-  {
-    id: 4,
-    name: "Suspicious Corp",
-    logo: "SC",
-    industry: "Unknown",
-    location: "Unknown",
-    website: "www.suspicious.com",
-    email: "fake@suspicious.com",
-    phone: "+1 000 000 0000",
-    registrationDate: "2024-11-28",
-    status: "flagged",
-    employees: "1-10",
-    jobPosts: 0,
-    verified: false,
-    description: "Potentially fraudulent company.",
-  },
-  {
-    id: 5,
-    name: "Global Enterprises Inc",
-    logo: "GE",
-    industry: "Finance",
-    location: "Chicago, USA",
-    website: "www.globalenterprises.com",
-    email: "contact@globalenterprises.com",
-    phone: "+1 234 567 8904",
-    registrationDate: "2024-04-05",
-    status: "rejected",
-    employees: "1000+",
-    jobPosts: 0,
-    verified: false,
-    description: "International financial services company.",
-  },
-];
+// const companies = [
+//   {
+//     id: 1,
+//     name: "TechVision Solutions",
+//     logo: "TV",
+//     industry: "Technology",
+//     location: "San Francisco, USA",
+//     website: "www.techvision.com",
+//     email: "contact@techvision.com",
+//     phone: "+1 234 567 8900",
+//     registrationDate: "2024-01-15",
+//     status: "approved",
+//     employees: "500-1000",
+//     jobPosts: 45,
+//     verified: true,
+//     description:
+//       "Leading software development company specializing in AI and cloud solutions.",
+//   },
+//   {
+//     id: 2,
+//     name: "Digital Innovations Ltd",
+//     logo: "DI",
+//     industry: "Marketing",
+//     location: "New York, USA",
+//     website: "www.digitalinnovations.com",
+//     email: "info@digitalinnovations.com",
+//     phone: "+1 234 567 8901",
+//     registrationDate: "2024-02-20",
+//     status: "pending",
+//     employees: "100-500",
+//     jobPosts: 12,
+//     verified: false,
+//     description:
+//       "Digital marketing agency helping brands grow their online presence.",
+//   },
+//   {
+//     id: 3,
+//     name: "Creative Minds Agency",
+//     logo: "CM",
+//     industry: "Design",
+//     location: "Los Angeles, USA",
+//     website: "www.creativeminds.com",
+//     email: "hello@creativeminds.com",
+//     phone: "+1 234 567 8902",
+//     registrationDate: "2024-03-10",
+//     status: "approved",
+//     employees: "50-100",
+//     jobPosts: 23,
+//     verified: true,
+//     description:
+//       "Award-winning design agency creating stunning visual experiences.",
+//   },
+//   {
+//     id: 4,
+//     name: "Suspicious Corp",
+//     logo: "SC",
+//     industry: "Unknown",
+//     location: "Unknown",
+//     website: "www.suspicious.com",
+//     email: "fake@suspicious.com",
+//     phone: "+1 000 000 0000",
+//     registrationDate: "2024-11-28",
+//     status: "flagged",
+//     employees: "1-10",
+//     jobPosts: 0,
+//     verified: false,
+//     description: "Potentially fraudulent company.",
+//   },
+//   {
+//     id: 5,
+//     name: "Global Enterprises Inc",
+//     logo: "GE",
+//     industry: "Finance",
+//     location: "Chicago, USA",
+//     website: "www.globalenterprises.com",
+//     email: "contact@globalenterprises.com",
+//     phone: "+1 234 567 8904",
+//     registrationDate: "2024-04-05",
+//     status: "rejected",
+//     employees: "1000+",
+//     jobPosts: 0,
+//     verified: false,
+//     description: "International financial services company.",
+//   },
+// ];
 
 const verificationDocuments = [
   {
@@ -142,8 +142,67 @@ export default function CompanyManagement() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [showCompanyModal, setShowCompanyModal] = useState(false);
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({
+    totalCompanies: 0,
+    approvedCompanies: 0,
+    pendingCompanies: 0,
+    flaggedCompanies: 0,
+  });
 
-  const filteredCompanies = mockCompanies.filter((company) => {
+  const fetchCompanies = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/admin/companies");
+      const data = await response.json();
+      setCompanies(data);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch("/api/admin/companies/stats");
+      const data = await response.json();
+      setStats(data);
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+    }
+  };
+
+  const handleCompanyAction = async (companyId, action) => {
+    try {
+      const response = await fetch(`/api/admin/companies/${companyId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action }),
+      });
+
+      if (response.ok) {
+        // Refresh companies and stats
+        await fetchCompanies();
+        await fetchStats();
+        setShowCompanyModal(false);
+      } else {
+        console.error("Failed to update company");
+      }
+    } catch (error) {
+      console.error("Error updating company:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCompanies();
+    fetchStats();
+  }, []);
+
+  const filteredCompanies = companies.filter((company) => {
     const matchesSearch =
       company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       company.industry.toLowerCase().includes(searchQuery.toLowerCase());
@@ -261,6 +320,10 @@ export default function CompanyManagement() {
       {company.status === "pending" && (
         <>
           <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCompanyAction(company.id, "approve");
+            }}
             className={`p-2 rounded-lg transition-all ${
               isDark
                 ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
@@ -270,6 +333,10 @@ export default function CompanyManagement() {
             <CheckCircle className="w-4 h-4" />
           </button>
           <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCompanyAction(company.id, "reject");
+            }}
             className={`p-2 rounded-lg transition-all ${
               isDark
                 ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
@@ -281,6 +348,10 @@ export default function CompanyManagement() {
         </>
       )}
       <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleCompanyAction(company.id, "flag");
+        }}
         className={`p-2 rounded-lg transition-all ${
           isDark
             ? "bg-orange-500/20 text-orange-400 hover:bg-orange-500/30"
@@ -310,23 +381,28 @@ export default function CompanyManagement() {
         {[
           {
             label: "Total Companies",
-            value: "1,234",
+            value: stats.totalCompanies.toString(),
             icon: Building2,
             color: "purple",
           },
           {
             label: "Approved",
-            value: "1,089",
+            value: stats.approvedCompanies.toString(),
             icon: CheckCircle,
             color: "green",
           },
           {
             label: "Pending Approval",
-            value: "123",
+            value: stats.pendingCompanies.toString(),
             icon: AlertTriangle,
             color: "yellow",
           },
-          { label: "Flagged", value: "22", icon: Flag, color: "red" },
+          {
+            label: "Flagged",
+            value: stats.flaggedCompanies.toString(),
+            icon: Flag,
+            color: "red",
+          },
         ].map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
@@ -349,12 +425,29 @@ export default function CompanyManagement() {
       />
 
       {/* Companies Table */}
-      <AdminTable
-        columns={columns}
-        data={filteredCompanies}
-        actions={actions}
-        onRowClick={handleViewCompany}
-      />
+      {loading ? (
+        <div
+          className={`flex items-center justify-center py-12 rounded-lg border ${
+            isDark
+              ? "bg-slate-800/50 border-purple-500/20"
+              : "bg-white border-purple-300/20"
+          }`}
+        >
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+            <p className={isDark ? "text-gray-400" : "text-gray-600"}>
+              Loading companies...
+            </p>
+          </div>
+        </div>
+      ) : (
+        <AdminTable
+          columns={columns}
+          data={filteredCompanies}
+          actions={actions}
+          onRowClick={handleViewCompany}
+        />
+      )}
 
       {/* Company Detail Modal */}
       <DetailModal
@@ -366,22 +459,42 @@ export default function CompanyManagement() {
           <div className="flex flex-wrap gap-3">
             {selectedCompany?.status === "pending" ? (
               <>
-                <button className="flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-500 rounded-lg hover:bg-green-500/30 transition-all">
+                <button
+                  onClick={() =>
+                    handleCompanyAction(selectedCompany.id, "approve")
+                  }
+                  className="flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-500 rounded-lg hover:bg-green-500/30 transition-all"
+                >
                   <CheckCircle className="w-4 h-4" />
                   Approve Company
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-500 rounded-lg hover:bg-red-500/30 transition-all">
+                <button
+                  onClick={() =>
+                    handleCompanyAction(selectedCompany.id, "reject")
+                  }
+                  className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-500 rounded-lg hover:bg-red-500/30 transition-all"
+                >
                   <XCircle className="w-4 h-4" />
                   Reject Application
                 </button>
               </>
             ) : (
               <>
-                <button className="flex items-center gap-2 px-4 py-2 bg-orange-500/20 text-orange-500 rounded-lg hover:bg-orange-500/30 transition-all">
+                <button
+                  onClick={() =>
+                    handleCompanyAction(selectedCompany.id, "flag")
+                  }
+                  className="flex items-center gap-2 px-4 py-2 bg-orange-500/20 text-orange-500 rounded-lg hover:bg-orange-500/30 transition-all"
+                >
                   <Flag className="w-4 h-4" />
                   Flag Company
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-500 rounded-lg hover:bg-red-500/30 transition-all">
+                <button
+                  onClick={() =>
+                    handleCompanyAction(selectedCompany.id, "suspend")
+                  }
+                  className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-500 rounded-lg hover:bg-red-500/30 transition-all"
+                >
                   <XCircle className="w-4 h-4" />
                   Suspend Account
                 </button>

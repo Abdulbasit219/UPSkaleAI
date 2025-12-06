@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   Download,
@@ -15,96 +15,14 @@ import {
   Clock,
   Users,
   Calendar,
+  Plus,
 } from "lucide-react";
 import StatsCard from "@/components/admin/StatsCard";
 import PageHeader from "@/components/admin/PageHeader";
 import SearchFilterBar from "@/components/admin/SearchFilterBar";
 import AdminTable from "@/components/admin/AdminTable";
 import DetailModal from "@/components/admin/DetailModal";
-
-// Mock job data
-const mockJobs = [
-  {
-    id: 1,
-    title: "Senior React Developer",
-    company: "TechVision Solutions",
-    companyLogo: "TV",
-    location: "San Francisco, USA",
-    type: "Full-time",
-    salary: "$120k - $180k",
-    postedDate: "2024-12-01",
-    status: "active",
-    featured: true,
-    applications: 45,
-    views: 1234,
-    category: "Technology",
-    description: "We are looking for an experienced React developer...",
-  },
-  {
-    id: 2,
-    title: "Marketing Manager",
-    company: "Digital Innovations Ltd",
-    companyLogo: "DI",
-    location: "New York, USA",
-    type: "Full-time",
-    salary: "$90k - $120k",
-    postedDate: "2024-11-28",
-    status: "pending",
-    featured: false,
-    applications: 23,
-    views: 567,
-    category: "Marketing",
-    description: "Seeking a creative marketing manager to lead our team...",
-  },
-  {
-    id: 3,
-    title: "UX/UI Designer",
-    company: "Creative Minds Agency",
-    companyLogo: "CM",
-    location: "Los Angeles, USA",
-    type: "Contract",
-    salary: "$80k - $100k",
-    postedDate: "2024-11-25",
-    status: "active",
-    featured: true,
-    applications: 67,
-    views: 2345,
-    category: "Design",
-    description: "Join our award-winning design team...",
-  },
-  {
-    id: 4,
-    title: "Fake Job Posting",
-    company: "Suspicious Corp",
-    companyLogo: "SC",
-    location: "Unknown",
-    type: "Full-time",
-    salary: "$200k - $500k",
-    postedDate: "2024-11-30",
-    status: "hidden",
-    featured: false,
-    applications: 0,
-    views: 12,
-    category: "Unknown",
-    description: "Too good to be true offer...",
-  },
-  {
-    id: 5,
-    title: "Data Scientist",
-    company: "Global Enterprises Inc",
-    companyLogo: "GE",
-    location: "Chicago, USA",
-    type: "Full-time",
-    salary: "$110k - $150k",
-    postedDate: "2024-11-20",
-    status: "rejected",
-    featured: false,
-    applications: 12,
-    views: 345,
-    category: "Technology",
-    description: "Looking for a data scientist with ML experience...",
-  },
-];
+import PostJobModal from "@/components/company/PostJobModal";
 
 export default function JobManagement() {
   const theme = useSelector((state) => state.theme.mode);
@@ -113,8 +31,67 @@ export default function JobManagement() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedJob, setSelectedJob] = useState(null);
   const [showJobModal, setShowJobModal] = useState(false);
+  const [isPostJobModalOpen, setIsPostJobModalOpen] = useState(false);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({
+    totalJobs: 0,
+    activeJobs: 0,
+    pendingJobs: 0,
+    featuredJobs: 0,
+  });
 
-  const filteredJobs = mockJobs.filter((job) => {
+  const fetchJobs = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/admin/jobs");
+      const data = await response.json();
+      setJobs(data);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch("/api/admin/jobs/stats");
+      const data = await response.json();
+      setStats(data);
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+    }
+  };
+
+  const handleJobAction = async (jobId, action) => {
+    try {
+      const response = await fetch(`/api/admin/jobs/${jobId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action }),
+      });
+
+      if (response.ok) {
+        await fetchJobs();
+        await fetchStats();
+        setShowJobModal(false);
+      } else {
+        console.error("Failed to update job");
+      }
+    } catch (error) {
+      console.error("Error updating job:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+    fetchStats();
+  }, []);
+
+  const filteredJobs = jobs.filter((job) => {
     const matchesSearch =
       job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.company.toLowerCase().includes(searchQuery.toLowerCase());
@@ -128,18 +105,14 @@ export default function JobManagement() {
         return isDark
           ? "bg-green-500/20 text-green-400 border-green-500/30"
           : "bg-green-100 text-green-700 border-green-300";
-      case "pending":
+      case "draft":
         return isDark
           ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
           : "bg-yellow-100 text-yellow-700 border-yellow-300";
-      case "rejected":
+      case "closed":
         return isDark
           ? "bg-red-500/20 text-red-400 border-red-500/30"
           : "bg-red-100 text-red-700 border-red-300";
-      case "hidden":
-        return isDark
-          ? "bg-gray-500/20 text-gray-400 border-gray-500/30"
-          : "bg-gray-100 text-gray-700 border-gray-300";
       default:
         return isDark
           ? "bg-gray-500/20 text-gray-400 border-gray-500/30"
@@ -243,9 +216,13 @@ export default function JobManagement() {
       >
         <Eye className="w-4 h-4" />
       </button>
-      {job.status === "pending" && (
+      {job.status === "draft" && (
         <>
           <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleJobAction(job.id, "approve");
+            }}
             className={`p-2 rounded-lg transition-all ${
               isDark
                 ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
@@ -255,6 +232,10 @@ export default function JobManagement() {
             <CheckCircle className="w-4 h-4" />
           </button>
           <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleJobAction(job.id, "reject");
+            }}
             className={`p-2 rounded-lg transition-all ${
               isDark
                 ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
@@ -266,6 +247,10 @@ export default function JobManagement() {
         </>
       )}
       <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleJobAction(job.id, "hide");
+        }}
         className={`p-2 rounded-lg transition-all ${
           isDark
             ? "bg-gray-500/20 text-gray-400 hover:bg-gray-500/30"
@@ -283,10 +268,19 @@ export default function JobManagement() {
         title="Job Post Management"
         description="Manage and moderate all job postings"
         actions={
-          <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all">
-            <Download className="w-4 h-4" />
-            Export Jobs
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setIsPostJobModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Post Job
+            </button>
+            <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-purple-500/50 transition-all">
+              <Download className="w-4 h-4" />
+              Export Jobs
+            </button>
+          </div>
         }
       />
 
@@ -295,23 +289,28 @@ export default function JobManagement() {
         {[
           {
             label: "Total Jobs",
-            value: "3,456",
+            value: stats.totalJobs.toString(),
             icon: Briefcase,
             color: "purple",
           },
           {
             label: "Active Jobs",
-            value: "2,987",
+            value: stats.activeJobs.toString(),
             icon: CheckCircle,
             color: "green",
           },
           {
             label: "Pending Review",
-            value: "234",
+            value: stats.pendingJobs.toString(),
             icon: Clock,
             color: "yellow",
           },
-          { label: "Featured Jobs", value: "156", icon: Star, color: "pink" },
+          {
+            label: "Featured Jobs",
+            value: stats.featuredJobs.toString(),
+            icon: Star,
+            color: "pink",
+          },
         ].map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
@@ -325,21 +324,37 @@ export default function JobManagement() {
         filters={[
           { value: "all", label: "All Status" },
           { value: "active", label: "Active" },
-          { value: "pending", label: "Pending" },
-          { value: "rejected", label: "Rejected" },
-          { value: "hidden", label: "Hidden" },
+          { value: "draft", label: "Pending" },
+          { value: "closed", label: "Closed" },
         ]}
         activeFilter={statusFilter}
         onFilterChange={setStatusFilter}
       />
 
       {/* Jobs Table */}
-      <AdminTable
-        columns={columns}
-        data={filteredJobs}
-        actions={actions}
-        onRowClick={handleViewJob}
-      />
+      {loading ? (
+        <div
+          className={`flex items-center justify-center py-12 rounded-lg border ${
+            isDark
+              ? "bg-slate-800/50 border-purple-500/20"
+              : "bg-white border-purple-300/20"
+          }`}
+        >
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+            <p className={isDark ? "text-gray-400" : "text-gray-600"}>
+              Loading jobs...
+            </p>
+          </div>
+        </div>
+      ) : (
+        <AdminTable
+          columns={columns}
+          data={filteredJobs}
+          actions={actions}
+          onRowClick={handleViewJob}
+        />
+      )}
 
       {/* Job Detail Modal */}
       <DetailModal
@@ -349,19 +364,31 @@ export default function JobManagement() {
         maxWidth="max-w-4xl"
         footer={
           <div className="flex flex-wrap gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-500 rounded-lg hover:bg-green-500/30 transition-all">
+            <button
+              onClick={() => handleJobAction(selectedJob?.id, "approve")}
+              className="flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-500 rounded-lg hover:bg-green-500/30 transition-all"
+            >
               <CheckCircle className="w-4 h-4" />
               Approve Job
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-500 rounded-lg hover:bg-red-500/30 transition-all">
+            <button
+              onClick={() => handleJobAction(selectedJob?.id, "reject")}
+              className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-500 rounded-lg hover:bg-red-500/30 transition-all"
+            >
               <XCircle className="w-4 h-4" />
               Reject Job
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 text-yellow-500 rounded-lg hover:bg-yellow-500/30 transition-all">
+            <button
+              onClick={() => handleJobAction(selectedJob?.id, "feature")}
+              className="flex items-center gap-2 px-4 py-2 bg-yellow-500/20 text-yellow-500 rounded-lg hover:bg-yellow-500/30 transition-all"
+            >
               <Star className="w-4 h-4" />
-              Feature Job
+              {selectedJob?.featured ? "Unfeature" : "Feature"} Job
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-500/20 text-gray-500 rounded-lg hover:bg-gray-500/30 transition-all">
+            <button
+              onClick={() => handleJobAction(selectedJob?.id, "hide")}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-500/20 text-gray-500 rounded-lg hover:bg-gray-500/30 transition-all"
+            >
               <EyeOff className="w-4 h-4" />
               Hide Job
             </button>
@@ -517,7 +544,7 @@ export default function JobManagement() {
 
             {/* Description */}
             <div
-              className={`rounded-lg border p-4 ${
+              className={`rounded-lg border overflow-hidden p-4 ${
                 isDark
                   ? "bg-slate-800/50 border-purple-500/20"
                   : "bg-purple-50/50 border-purple-300/20"
@@ -583,6 +610,17 @@ export default function JobManagement() {
           </div>
         )}
       </DetailModal>
+
+      {/* Post Job Modal */}
+      <PostJobModal
+        isOpen={isPostJobModalOpen}
+        onClose={() => setIsPostJobModalOpen(false)}
+        isDark={isDark}
+        onJobPosted={() => {
+          fetchJobs();
+          fetchStats();
+        }}
+      />
     </div>
   );
 }
