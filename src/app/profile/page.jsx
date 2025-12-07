@@ -14,8 +14,8 @@ import {
 import { useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import EditProfileModal from "@/components/EditProfileModal";
-import AddProjectModal from "@/components/ProjectUpsertModal";
+import EditProfileModal from "@/components/profile/EditProfileModal";
+import AddProjectModal from "@/components/profile/ProjectUpsertModal";
 import { toast } from "sonner";
 import { badgeStyles } from "@/lib/badgeStyles";
 import { generateResume } from "@/utils/generateResume";

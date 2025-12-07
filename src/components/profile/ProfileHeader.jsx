@@ -14,6 +14,7 @@ const ProfileHeader = ({
   setIsEditOpen,
   generateResume,
 }) => {
+
   return (
     <div className="relative mb-8">
       <CoverPhoto

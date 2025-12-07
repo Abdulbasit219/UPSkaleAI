@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Textarea } from "./ui/textarea";
+import { Textarea } from "../ui/textarea";
 
 export default function EditProfileModal({
   profile,
