@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState,useEffect  } from "react";
+import { useParams } from "next/navigation";
 import {
   ArrowLeft,
   Send,
@@ -26,56 +27,50 @@ import {
   Target,
   Star,
   Shield,
+  IdCardLanyard,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import Link from "next/link";
+import { jobsApi } from "@/lib/api.config";
 
-export default function QuickApplyPage() {
+export default function QuickApplyPage({ params }) {
+  const { id } = React.use(params);
   const [currentStep, setCurrentStep] = useState(1);
+  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
-    // Personal Info
-    fullName: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    phone: "+1 (555) 123-4567",
-    location: "San Francisco, CA",
-
-    // Application
-    coverLetter:
-      "I'm excited to apply for the Senior React Developer position at TechInnovate Inc. With my 3+ years of experience in React and modern web technologies, I believe I would be a great fit for your team...",
-    salaryExpectation: "$140,000",
-    availability: "2 weeks",
-
-    // Attachments
+    fullName: "",
+    email: "",
+    phone: "",
+    location: "",
+    coverLetter: "",
+    salaryExpectation: "",
+    availability: "",
     resume: null,
     portfolio: "",
-    github: "github.com/alexjohnson",
-    linkedin: "linkedin.com/in/alexjohnson",
-
-    // Preferences
-    remoteOk: true,
+    github: "",
+    linkedin: "",
+    remoteOk: false,
     relocationOk: false,
   });
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
+  const [jobDetails, setJobDetails] = useState(null);
 
-  const jobDetails = {
-    title: "Senior React Developer",
-    company: "TechInnovate Inc.",
-    location: "San Francisco, CA / Remote",
-    type: "Full-time",
-    salary: "$120K - $160K",
-    posted: "2 hours ago",
-    match: 95,
-    skills: ["React", "TypeScript", "Node.js", "AWS", "GraphQL"],
-    description:
-      "We're looking for a passionate Senior React Developer to join our growing team. You'll work on building scalable web applications and collaborate with cross-functional teams.",
-    requirements: [
-      "5+ years of React experience",
-      "Strong TypeScript knowledge",
-      "Experience with modern frontend tools",
-      "Bachelor's in Computer Science or equivalent",
-    ],
+  const getJobDetails = async () => {
+    if (!id) return;
+    try {
+      const response = await jobsApi.getById(id);
+      if (response.data.success) {
+        setJobDetails(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching job details:", error);
+    }
   };
+
+  useEffect(() => {
+    getJobDetails();
+  }, [id]);
 
   const steps = [
     { number: 1, title: "Personal Info", icon: <User className="w-4 h-4" /> },
@@ -91,20 +86,91 @@ export default function QuickApplyPage() {
     }));
   };
 
-  const handleFileUpload = (event, field) => {
+  const handleFileUpload = async (event, field) => {
     const file = event.target.files[0];
     if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: file,
-      }));
+      if (field === "resume") {
+        setIsUploading(true);
+        const uploadData = new FormData();
+        uploadData.append("file", file);
+
+        try {
+          const response = await jobsApi.uploadResume(uploadData);
+
+          setFormData((prev) => ({
+            ...prev,
+            resume: response.data.url,
+            resumeName: file.name,
+          }));
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          alert("Failed to upload resume. Please try again.");
+        } finally {
+          setIsUploading(false);
+        }
+      }
     }
   };
 
-  const handleSubmit = () => {
-    // Handle form submission
-    console.log("Application submitted:", formData);
-    setCurrentStep(5); // Success step
+  const validateStep = (step) => {
+    switch (step) {
+      case 1:
+        if (!formData.fullName || !formData.email || !formData.phone || !formData.location) {
+          alert("Please fill in all required personal information fields.");
+          return false;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+          alert("Please enter a valid email address.");
+          return false;
+        }
+        return true;
+      case 2:
+        if (!formData.coverLetter || formData.coverLetter.length < 50) {
+          alert("Cover letter must be at least 50 characters long.");
+          return false;
+        }
+        return true;
+      case 3:
+        if (!formData.resume) {
+          alert("Please upload your resume.");
+          return false;
+        }
+        return true;
+      default:
+        return true;
+    }
+  };
+
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length));
+    }
+  };
+
+  const handlePrevious = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await jobsApi.apply({jobId: id,
+        coverLetter: formData.coverLetter,
+        resume: formData.resume,
+        notes: `Name: ${formData.fullName}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nLocation: ${formData.location}\nSalary Expectation: ${formData.salaryExpectation}\nAvailability: ${formData.availability}\nGitHub: ${formData.github}\nLinkedIn: ${formData.linkedin}\nPortfolio: ${formData.portfolio}\nRemote OK: ${formData.remoteOk}\nRelocation OK: ${formData.relocationOk}`,
+      });
+
+      if (response.data.success) {
+        setCurrentStep(5); // Success step
+      } else {
+        alert(response.data.message || "Failed to submit application");
+      }
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      alert(
+        error.response?.data?.message ||
+          "Failed to submit application. Please try again."
+      );
+    }
   };
 
   const progress = (currentStep / steps.length) * 100;
@@ -146,7 +212,7 @@ export default function QuickApplyPage() {
                     isDark ? "text-white" : "text-gray-900"
                   }`}
                 >
-                  {jobDetails.title}
+                  {jobDetails?.title}
                 </span>{" "}
                 at{" "}
                 <span
@@ -154,7 +220,7 @@ export default function QuickApplyPage() {
                     isDark ? "text-white" : "text-gray-900"
                   }`}
                 >
-                  {jobDetails.company}
+                  {jobDetails?.company}
                 </span>{" "}
                 has been submitted successfully.
               </p>
@@ -224,19 +290,19 @@ export default function QuickApplyPage() {
               >
                 <div className="flex items-center gap-1">
                   <Building className="w-4 h-4" />
-                  {jobDetails.company}
+                  {jobDetails?.company || "Loading..."}
                 </div>
                 <div className="flex items-center gap-1">
                   <Target className="w-4 h-4 text-green-400" />
-                  {jobDetails.match}% Match
+                  {jobDetails?.match || 0}% Match
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  {jobDetails.posted}
+                  {jobDetails?.posted || "Recently"}
                 </div>
               </div>
             </div>
-            <div className="w-24"></div> {/* Spacer for alignment */}
+            <div className="w-24"></div> 
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
@@ -629,11 +695,16 @@ export default function QuickApplyPage() {
                       >
                         Choose File
                       </label>
-                      {formData.resume && (
+                      {isUploading && (
+                        <div className="mt-4 text-center text-purple-500">
+                          Uploading...
+                        </div>
+                      )}
+                      {formData.resume && !isUploading && (
                         <div className="mt-4 flex items-center justify-center gap-2 text-green-400">
                           <CheckCircle className="w-4 h-4" />
                           <span className="text-sm">
-                            {formData.resume.name}
+                            {formData.resumeName || "Resume Uploaded"}
                           </span>
                         </div>
                       )}
@@ -987,7 +1058,7 @@ export default function QuickApplyPage() {
                 >
                   {currentStep > 1 ? (
                     <button
-                      onClick={() => setCurrentStep(currentStep - 1)}
+                      onClick={handlePrevious}
                       className={`px-6 py-3 rounded-xl font-semibold transition-all border ${
                         isDark
                           ? "bg-slate-800 text-white border-slate-700 hover:bg-slate-700"
@@ -1002,7 +1073,7 @@ export default function QuickApplyPage() {
 
                   {currentStep < steps.length ? (
                     <button
-                      onClick={() => setCurrentStep(currentStep + 1)}
+                      onClick={handleNext}
                       className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-2"
                     >
                       Continue
@@ -1039,10 +1110,10 @@ export default function QuickApplyPage() {
                       isDark ? "text-white" : "text-gray-900"
                     }`}
                   >
-                    {jobDetails.title}
+                    {jobDetails?.title || "Loading..."}
                   </h2>
                   <p className={isDark ? "text-gray-400" : "text-gray-600"}>
-                    {jobDetails.company}
+                    {jobDetails?.company || "Loading..."}
                   </p>
                 </div>
 
@@ -1058,7 +1129,7 @@ export default function QuickApplyPage() {
                       Match Score
                     </span>
                     <span className="text-green-400 font-bold">
-                      {jobDetails.match}%
+                      {jobDetails?.match || 0}%
                     </span>
                   </div>
                   <div
@@ -1072,7 +1143,7 @@ export default function QuickApplyPage() {
                       Location
                     </span>
                     <span className={isDark ? "text-white" : "text-gray-900"}>
-                      {jobDetails.location}
+                      {jobDetails?.location || "N/A"}
                     </span>
                   </div>
                   <div
@@ -1086,7 +1157,7 @@ export default function QuickApplyPage() {
                       Type
                     </span>
                     <span className={isDark ? "text-white" : "text-gray-900"}>
-                      {jobDetails.type}
+                      {jobDetails?.type || "N/A"}
                     </span>
                   </div>
                   <div
@@ -1100,7 +1171,7 @@ export default function QuickApplyPage() {
                       Salary
                     </span>
                     <span className={isDark ? "text-white" : "text-gray-900"}>
-                      {jobDetails.salary}
+                      {jobDetails?.salary || "N/A"}
                     </span>
                   </div>
                 </div>
@@ -1114,7 +1185,7 @@ export default function QuickApplyPage() {
                     Required Skills
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {jobDetails.skills.map((skill, index) => (
+                    {jobDetails?.skills?.map((skill, index) => (
                       <span
                         key={index}
                         className={`px-3 py-1 rounded-full text-sm border ${

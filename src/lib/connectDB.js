@@ -1,32 +1,41 @@
 import mongoose from "mongoose";
 
-let isConnected = false;
+let cached = global.mongoose;
 
-const connectDB = async () => {
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
-  if (isConnected) {
-    console.log("Already connected to DB");
-    return;
+async function connectDB() {
+  if (cached.conn) {
+    console.log("Using cached DB connection");
+    return cached.conn;
   }
 
-  const url = process.env.MONGODB_URL;
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    };
 
-   if (!url) {
-    throw new Error("MONGODB_URI is not defined in .env.local");
+    const url = process.env.MONGODB_URL;
+    if (!url) {
+      throw new Error("MONGODB_URI is not defined in .env.local");
+    }
+
+    cached.promise = mongoose.connect(url, opts).then((mongoose) => {
+      console.log("DB connected successfully");
+      return mongoose;
+    });
   }
 
   try {
-    const db = await mongoose.connect(url);
-
-    isConnected = db.connection.readyState === 1;
-
-    console.log("DB connected successfully");
-  
-  } catch (error) {
-    console.log("DB connection failed", error);
-    // process.exit(1);
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
   }
 
+  return cached.conn;
 }
 
 export default connectDB;

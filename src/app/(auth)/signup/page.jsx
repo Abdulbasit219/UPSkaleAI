@@ -4,20 +4,16 @@ import { Controller, useForm } from "react-hook-form";
 import Link from "next/link";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useDebounceCallback } from "usehooks-ts";
+
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signUpSchema } from "@/schemas/signupSchema";
 import { Input } from "@/components/ui/input";
-import { Loader2, Sparkles, CheckCircle2, XCircle } from "lucide-react";
+import { Loader2, Sparkles, Briefcase, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 const Page = () => {
-  const [username, setUserName] = useState("");
-  const [usernameMessage, setUsernameMessage] = useState("");
-  const [isCheckingUsername, setisCheckingUserName] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const debounced = useDebounceCallback(setUserName, 500);
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
 
@@ -26,9 +22,10 @@ const Page = () => {
   const form = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      username: "",
+      name: "",
       email: "",
       password: "",
+      role: "Job Seeker",
     },
   });
 
@@ -37,7 +34,7 @@ const Page = () => {
     try {
       const response = await axios.post("/api/user/signup", data);
       toast.success(response.data.message);
-      router.replace(`/verify/${username}`);
+      router.replace(`/verify/${response.data.username}`);
       setIsSubmitting(false);
     } catch (error) {
       console.error("Error during sign-up:", error);
@@ -45,32 +42,6 @@ const Page = () => {
       setIsSubmitting(false);
     }
   };
-
-  // Check username availability
-  useEffect(() => {
-    const checkUniqueUserName = async () => {
-      if (!username) {
-        setUsernameMessage("");
-        return;
-      }
-
-      setisCheckingUserName(true);
-      setUsernameMessage("");
-      try {
-        const response = await axios.get(
-          `/api/check-username-unique?username=${username}`
-        );
-        setUsernameMessage(response.data.message);
-      } catch (error) {
-        setUsernameMessage(
-          error.response?.data?.message || "Error checking username"
-        );
-      } finally {
-        setisCheckingUserName(false);
-      }
-    };
-    checkUniqueUserName();
-  }, [username]);
 
   return (
     <div
@@ -131,70 +102,30 @@ const Page = () => {
           {/* Form */}
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <Controller
-              name="username"
+              name="name"
               control={form.control}
               render={({ field, fieldState }) => (
                 <div>
                   <label
-                    htmlFor="username"
+                    htmlFor="name"
                     className={`font-medium mb-2 block text-sm ${
                       isDark ? "text-gray-300" : "text-gray-700"
                     }`}
                   >
-                    Username
+                    Full Name
                   </label>
 
-                  <div className="relative">
-                    <Input
-                      {...field}
-                      id="username"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Choose a username"
-                      onChange={(e) => {
-                        field.onChange(e);
-                        debounced(e.target.value);
-                      }}
-                      className={`w-full px-4 py-3 border rounded-xl placeholder:text-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none pr-10 ${
-                        isDark
-                          ? "bg-slate-800/50 border-purple-500/30 text-white"
-                          : "bg-white border-purple-300/30 text-gray-900"
-                      }`}
-                    />
-
-                    {isCheckingUsername && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <Loader2 className="animate-spin h-5 w-5 text-purple-400" />
-                      </div>
-                    )}
-
-                    {!isCheckingUsername &&
-                      usernameMessage &&
-                      usernameMessage === "Username is Available" && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                          <CheckCircle2 className="h-5 w-5 text-green-400" />
-                        </div>
-                      )}
-
-                    {!isCheckingUsername &&
-                      usernameMessage &&
-                      usernameMessage !== "Username is Available" && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                          <XCircle className="h-5 w-5 text-red-400" />
-                        </div>
-                      )}
-                  </div>
-
-                  {!isCheckingUsername && usernameMessage && (
-                    <p
-                      className={`text-sm mt-1.5 flex items-center gap-1 ${
-                        usernameMessage === "Username is Available"
-                          ? "text-green-400"
-                          : "text-red-400"
-                      }`}
-                    >
-                      {usernameMessage}
-                    </p>
-                  )}
+                  <Input
+                    {...field}
+                    id="name"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Enter your full name"
+                    className={`w-full px-4 py-3 border rounded-xl placeholder:text-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none ${
+                      isDark
+                        ? "bg-slate-800/50 border-purple-500/30 text-white"
+                        : "bg-white border-purple-300/30 text-gray-900"
+                    }`}
+                  />
 
                   {fieldState.invalid && fieldState.error && (
                     <p className="text-pink-400 text-sm mt-1.5">
@@ -273,6 +204,54 @@ const Page = () => {
                       {fieldState.error.message}
                     </p>
                   )}
+                </div>
+              )}
+            />
+
+            {/* Role Selection */}
+            <Controller
+              name="role"
+              control={form.control}
+              defaultValue="Job Seeker"
+              render={({ field }) => (
+                <div>
+                  <label
+                    className={`font-medium mb-3 block text-sm ${
+                      isDark ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    I am a...
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => field.onChange("Job Seeker")}
+                      className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                        field.value === "Job Seeker"
+                          ? "border-purple-500 bg-purple-500/10 text-purple-500"
+                          : isDark
+                            ? "border-slate-700 bg-slate-800/50 text-gray-400 hover:border-purple-500/50"
+                            : "border-gray-200 bg-white text-gray-600 hover:border-purple-200"
+                      }`}
+                    >
+                      <Briefcase className="w-6 h-6" />
+                      <span className="font-semibold">Job Seeker</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => field.onChange("Company")}
+                      className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                        field.value === "Company"
+                          ? "border-purple-500 bg-purple-500/10 text-purple-500"
+                          : isDark
+                            ? "border-slate-700 bg-slate-800/50 text-gray-400 hover:border-purple-500/50"
+                            : "border-gray-200 bg-white text-gray-600 hover:border-purple-200"
+                      }`}
+                    >
+                      <Building2 className="w-6 h-6" />
+                      <span className="font-semibold">Company</span>
+                    </button>
+                  </div>
                 </div>
               )}
             />

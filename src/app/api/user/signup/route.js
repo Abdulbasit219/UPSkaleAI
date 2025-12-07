@@ -4,33 +4,24 @@ import bcrypt from "bcryptjs";
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
 
 export async function POST(req) {
+  // Endpoint for user signup
   await connectDB();
 
   try {
-    const { username, email, password } = await req.json();
+    const { name, email, password, role } = await req.json();
 
     // validate fields
-    if (!username || !email || !password) {
+    if (!name || !email || !password) {
       return new Response(
         JSON.stringify({ message: "All fields are required" }),
         { status: 400 }
       );
     }
 
-    const existingVerifiedUserByUsername = await AuthUser.findOne({
-      username,
-      isVerified: true,
-    });
-
-    if (existingVerifiedUserByUsername) {
-      return Response.json(
-        {
-          success: false,
-          message: "Username is already taken",
-        },
-        { status: 400 }
-      );
-    }
+    // Generate unique username
+    const baseUsername = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000).toString();
+    const username = `${baseUsername}${randomSuffix}`;
 
     const existingUserByEmail = await AuthUser.findOne({ email });
     let verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -47,6 +38,9 @@ export async function POST(req) {
       } else {
         const hashedPassword = await bcrypt.hash(password, 10);
         existingUserByEmail.password = hashedPassword;
+        existingUserByEmail.role = role || "Job Seeker";
+        existingUserByEmail.username = username; // Update username just in case
+        existingUserByEmail.name = name;
         existingUserByEmail.verifyCode = verifyCode;
         existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000);
         await existingUserByEmail.save();
@@ -57,8 +51,10 @@ export async function POST(req) {
       expiryDate.setHours(expiryDate.getHours() + 1);
       const newUser = await AuthUser({
         username,
+        name,
         email,
         password: hashedPassword,
+        role: role || "Job Seeker",
         verifyCode,
         verifyCodeExpiry: expiryDate,
       });
@@ -86,6 +82,7 @@ export async function POST(req) {
       {
         success: true,
         message: "User registered successfully. Please verify your account.",
+        username: username,
       },
       { status: 201 }
     );
