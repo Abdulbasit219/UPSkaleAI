@@ -24,11 +24,7 @@
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.8.0",
     "clsx": "^2.1.1",
-<<<<<<< HEAD
-    "formidable": "^3.5.4",
-=======
     "cropperjs": "^2.1.0",
->>>>>>> 600b106c4ba02ca62ba766c9bfbdd2b3b8688f62
     "input-otp": "^1.4.2",
     "jspdf": "^3.0.4",
     "lucide-react": "^0.552.0",
