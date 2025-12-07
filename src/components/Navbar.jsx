@@ -41,11 +41,13 @@ const Navbar = () => {
   const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session, status } = useSession();
 
   // Refs for detecting outside clicks
   const userDropdownRef = useRef(null);
   const userButtonRef = useRef(null);
+
+  const { data: session, status } = useSession();
+  const user = session?.user;
 
   // Redux theme
   const dispatch = useDispatch();
@@ -100,6 +102,11 @@ const Navbar = () => {
 
   const toggleUserDropdown = () => {
     setIsUserDropdownOpen(!isUserDropdownOpen);
+  };
+
+  const isActiveLink = (href) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
   };
 
   const handleSignOut = async () => {
@@ -242,10 +249,11 @@ const Navbar = () => {
 
   const userMenuItems = getRoleBasedMenuItems();
 
-  const isActiveLink = (href) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const isResourcesActive = () => {
     const mainNavHrefs = mainNavItems.map((item) => item.href);

@@ -20,15 +20,15 @@ const authUserSchema = new mongoose.Schema(
     },
     isAdmin: {
       type: Boolean,
-      default: 0,
+      default: false,
     },
     verifyCode: {
       type: String,
-      required: [true, "Verify Code is required"],
+      required: true,
     },
     verifyCodeExpiry: {
       type: Date,
-      required: [true, "Verify Code Expiry is required"],
+      required: true,
     },
     isVerified: {
       type: Boolean,

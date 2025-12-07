@@ -2,6 +2,7 @@ import connectDB from "@/lib/connectDB";
 import AuthUser from "@/models/AuthUser";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
+import UserProfile from "@/models/UserProfile";
 
 export async function POST(req) {
   // Endpoint for user signup
@@ -36,7 +37,9 @@ export async function POST(req) {
           { status: 400 }
         );
       } else {
+        // Update unverified user
         const hashedPassword = await bcrypt.hash(password, 10);
+
         existingUserByEmail.password = hashedPassword;
         existingUserByEmail.role = role || "Job Seeker";
         existingUserByEmail.username = username; // Update username just in case
@@ -46,10 +49,12 @@ export async function POST(req) {
         await existingUserByEmail.save();
       }
     } else {
+      // Create new user
       const hashedPassword = await bcrypt.hash(password, 10);
+
       const expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + 1);
-      const newUser = await AuthUser({
+      const newUser = await AuthUser.create({
         username,
         name,
         email,
@@ -59,15 +64,22 @@ export async function POST(req) {
         verifyCodeExpiry: expiryDate,
       });
 
-      await newUser.save();
+      // Create user profile
+      await UserProfile.create({
+        userId: newUser._id,
+        name: name,
+        avatar: "",
+        coverPhoto: "",
+        role: "",
+        location: "",
+        memberSince: newUser.createdAt.toISOString().split("T")[0],
+        bio: "",
+      });
     }
 
-    // send verification email
-    const emailResponse = await sendVerificationEmail(
-      email,
-      username,
-      verifyCode
-    );
+    // Send verification email
+    const emailResponse = await sendVerificationEmail(email, name, verifyCode);
+
     if (!emailResponse.success) {
       return Response.json(
         {

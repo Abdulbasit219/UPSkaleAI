@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Target,
@@ -67,6 +67,18 @@ export default function SkillBridgeLanding() {
     { value: "95%", label: "Success Rate" },
     { value: "2K+", label: "Opportunities" },
   ];
+
+  const updateStreak = async () => {
+    try {
+      await axios.post("/api/user/profile/streak");
+    } catch (error) {
+      console.log("Streak update failed:", error);
+    }
+  };
+
+  useEffect(() => {
+    updateStreak();
+  }, []);
 
   return (
     <>
