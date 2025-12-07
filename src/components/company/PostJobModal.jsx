@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Briefcase,
@@ -80,11 +81,13 @@ export default function PostJobModal({ isOpen, onClose, isDark, onJobPosted }) {
       const cleanedData = {
         ...formData,
         requirements: formData.requirements.filter((r) => r.trim() !== ""),
-        responsibilities: formData.responsibilities.filter((r) => r.trim() !== ""),
+        responsibilities: formData.responsibilities.filter(
+          (r) => r.trim() !== ""
+        ),
         skills: formData.skills.filter((s) => s.trim() !== ""),
         benefits: formData.benefits.filter((b) => b.trim() !== ""),
-        applicationDeadline: formData.applicationDeadline 
-          ? new Date(formData.applicationDeadline).toISOString() 
+        applicationDeadline: formData.applicationDeadline
+          ? new Date(formData.applicationDeadline).toISOString()
           : "",
       };
 
@@ -135,16 +138,27 @@ export default function PostJobModal({ isOpen, onClose, isDark, onJobPosted }) {
     }
   };
 
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
+
+  const modalContent = (
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
       <div
         className={`relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border ${
           isDark
             ? "bg-slate-900 border-purple-500/30"
             : "bg-white border-purple-300/30"
         }`}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div
@@ -773,4 +787,6 @@ export default function PostJobModal({ isOpen, onClose, isDark, onJobPosted }) {
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

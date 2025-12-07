@@ -17,6 +17,7 @@ import {
   Trash2,
 } from "lucide-react";
 import axios from "axios";
+import ConfirmDialog from "./ConfirmDialog";
 
 const ApplicationsTab = ({ isDark, isMobile }) => {
   const [filterStatus, setFilterStatus] = useState("all");
@@ -26,6 +27,12 @@ const ApplicationsTab = ({ isDark, isMobile }) => {
   const [loading, setLoading] = useState(true);
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    applicationId: null,
+    title: "",
+    message: "",
+  });
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -112,14 +119,18 @@ const ApplicationsTab = ({ isDark, isMobile }) => {
     }
   };
 
-  const handleDelete = async (applicationId) => {
-    if (
-      !confirm(
-        "Are you sure you want to delete this application? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
+  const handleDelete = (applicationId) => {
+    setConfirmDialog({
+      isOpen: true,
+      applicationId,
+      title: "Delete Application",
+      message:
+        "Are you sure you want to delete this application? This action cannot be undone and will permanently remove all application data.",
+    });
+  };
+
+  const confirmDelete = async () => {
+    const applicationId = confirmDialog.applicationId;
 
     try {
       const response = await axios.delete(
@@ -787,6 +798,26 @@ const ApplicationsTab = ({ isDark, isMobile }) => {
           </div>
         </div>
       )}
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() =>
+          setConfirmDialog({
+            isOpen: false,
+            applicationId: null,
+            title: "",
+            message: "",
+          })
+        }
+        onConfirm={confirmDelete}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDark={isDark}
+        variant="danger"
+      />
     </>
   );
 };
