@@ -15,6 +15,26 @@ body {
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-border: var(--border);
+  
+  /* Brand Colors - Primary (Purple) */
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  
+  /* Brand Colors - Secondary (Pink) */
+  --color-secondary-300: var(--secondary-300);
+  --color-secondary-400: var(--secondary-400);
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-600: var(--secondary-600);
+  
+  /* Accent Colors */
+  --color-accent-success: var(--accent-success);
+  --color-accent-warning: var(--accent-warning);
+  --color-accent-error: var(--accent-error);
+  --color-accent-info: var(--accent-info);
 }
 
 :root {
@@ -25,6 +45,26 @@ body {
   --card: 255 255 255;          /* #ffffff */
   --card-foreground: 17 24 39;  /* #111827 */
   --border: 229 231 235;        /* #e5e7eb */
+  
+  /* Brand Colors - Primary (Purple) */
+  --primary-50: 250 245 255;       /* #faf5ff */
+  --primary-100: 243 232 255;      /* #f3e8ff */
+  --primary-300: 216 180 254;      /* #d8b4fe */
+  --primary-400: 192 132 252;      /* #c084fc */
+  --primary-500: 168 85 247;       /* #a855f7 */
+  --primary-600: 147 51 234;       /* #9333ea */
+  
+  /* Brand Colors - Secondary (Pink) */
+  --secondary-300: 249 168 212;    /* #f9a8d4 */
+  --secondary-400: 244 114 182;    /* #f472b6 */
+  --secondary-500: 236 72 153;     /* #ec4899 */
+  --secondary-600: 219 39 119;     /* #db2777 */
+  
+  /* Accent Colors */
+  --accent-success: 34 197 94;     /* #22c55e - green-500 */
+  --accent-warning: 234 179 8;     /* #eab308 - yellow-500 */
+  --accent-error: 239 68 68;       /* #ef4444 - red-500 */
+  --accent-info: 59 130 246;       /* #3b82f6 - blue-500 */
 }
 
 .dark {
@@ -35,6 +75,17 @@ body {
   --card: 15 23 42;             /* #0f172a - slate-900 */
   --card-foreground: 255 255 255; /* #ffffff */
   --border: 55 65 81;           /* #374151 - gray-700 */
+  
+  /* Brand Colors - Same values, optimized for dark backgrounds */
+  --primary-300: 216 180 254;      /* #d8b4fe - lighter for dark mode */
+  --primary-400: 192 132 252;      /* #c084fc */
+  --primary-500: 168 85 247;       /* #a855f7 */
+  --primary-600: 147 51 234;       /* #9333ea */
+  
+  --secondary-300: 249 168 212;    /* #f9a8d4 */
+  --secondary-400: 244 114 182;    /* #f472b6 */
+  --secondary-500: 236 72 153;     /* #ec4899 */
+  --secondary-600: 219 39 119;     /* #db2777 */
 }
 
 @layer base {
@@ -44,5 +95,21 @@ body {
   
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-slate-700 rounded-full;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-slate-600;
   }
 }
