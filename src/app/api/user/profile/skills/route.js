@@ -1,16 +1,28 @@
 import { NextResponse } from "next/server";
 import UserProfile from "@/models/UserProfile";
 import connectDB from "@/lib/connectDB";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 export async function POST(req) {
   try {
     await connectDB();
 
-    const { userId, skillName, level, lastPracticed } = await req.json();
-
-    if (!userId || !skillName) {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?._id) {
       return NextResponse.json(
-        { success: false, message: "userId and skill name are required" },
+        { success: false, message: "Not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    // We can use the ID from the session rather than the body for security
+    const userId = session.user._id;
+    const { skillName, level, lastPracticed } = await req.json();
+
+    if (!skillName) {
+      return NextResponse.json(
+        { success: false, message: "Skill name is required" },
         { status: 400 }
       );
     }

@@ -5,12 +5,13 @@ import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
 import UserProfile from "@/models/UserProfile";
 
 export async function POST(req) {
+  // Endpoint for user signup
   await connectDB();
 
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, role } = await req.json();
 
-    // Validate fields
+    // validate fields
     if (!name || !email || !password) {
       return new Response(
         JSON.stringify({ message: "All fields are required" }),
@@ -18,7 +19,11 @@ export async function POST(req) {
       );
     }
 
-    // Check if email already exists
+    // Generate unique username
+    const baseUsername = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000).toString();
+    const username = `${baseUsername}${randomSuffix}`;
+
     const existingUserByEmail = await AuthUser.findOne({ email });
     let verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -36,6 +41,9 @@ export async function POST(req) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         existingUserByEmail.password = hashedPassword;
+        existingUserByEmail.role = role || "Job Seeker";
+        existingUserByEmail.username = username; // Update username just in case
+        existingUserByEmail.name = name;
         existingUserByEmail.verifyCode = verifyCode;
         existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000);
         await existingUserByEmail.save();
@@ -46,11 +54,12 @@ export async function POST(req) {
 
       const expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + 1);
-
       const newUser = await AuthUser.create({
+        username,
         name,
         email,
         password: hashedPassword,
+        role: role || "Job Seeker",
         verifyCode,
         verifyCodeExpiry: expiryDate,
       });
@@ -69,11 +78,7 @@ export async function POST(req) {
     }
 
     // Send verification email
-    const emailResponse = await sendVerificationEmail(
-      email,
-      name,
-      verifyCode
-    );
+    const emailResponse = await sendVerificationEmail(email, name, verifyCode);
 
     if (!emailResponse.success) {
       return Response.json(
@@ -89,6 +94,7 @@ export async function POST(req) {
       {
         success: true,
         message: "User registered successfully. Please verify your account.",
+        username: username,
       },
       { status: 201 }
     );

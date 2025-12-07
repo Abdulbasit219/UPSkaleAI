@@ -17,7 +17,7 @@ export async function GET() {
   }
 
   const userId = session.user._id;
- 
+
   try {
     let profile = await UserProfile.findOne({ userId });
 
@@ -56,7 +56,9 @@ export async function PUT(req) {
   const contentType = req.headers.get("content-type");
 
   try {
-    if (contentType.startsWith("multipart/form-data")) {
+    let updateData = {};
+
+    if (contentType?.startsWith("multipart/form-data")) {
       const form = await req.formData();
       const name = form.get("name");
       const role = form.get("role");
@@ -65,8 +67,6 @@ export async function PUT(req) {
 
       const avatarFile = form.get("avatar");
       const coverFile = form.get("coverPhoto");
-
-      let updateData = {};
 
       if (name) updateData.name = name;
       if (role) updateData.role = role;
@@ -82,19 +82,28 @@ export async function PUT(req) {
         const uploadedCover = await UploadImage(coverFile, "covers");
         updateData.coverPhoto = uploadedCover.secure_url;
       }
+    } else {
+      // Handle JSON data
+      const body = await req.json();
+      const { name, role, location, bio } = body;
 
-      const updatedProfile = await UserProfile.findOneAndUpdate(
-        { userId },
-        { $set: updateData },
-        { new: true }
-      );
-
-      return Response.json({
-        success: true,
-        message: "Profile updated successfully",
-        profile: updatedProfile,
-      });
+      if (name) updateData.name = name;
+      if (role) updateData.role = role;
+      if (location) updateData.location = location;
+      if (bio) updateData.bio = bio;
     }
+
+    const updatedProfile = await UserProfile.findOneAndUpdate(
+      { userId },
+      { $set: updateData },
+      { new: true }
+    );
+
+    return Response.json({
+      success: true,
+      message: "Profile updated successfully",
+      profile: updatedProfile,
+    });
   } catch (error) {
     return Response.json(
       {

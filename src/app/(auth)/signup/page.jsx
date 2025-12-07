@@ -3,12 +3,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import Link from "next/link";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signUpSchema } from "@/schemas/signupSchema";
 import { Input } from "@/components/ui/input";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, Briefcase, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 
@@ -25,6 +26,7 @@ const Page = () => {
       name: "",
       email: "",
       password: "",
+      role: "Job Seeker",
     },
   });
 
@@ -33,8 +35,7 @@ const Page = () => {
     try {
       const response = await axios.post("/api/user/signup", data);
       toast.success(response.data.message);
-
-      router.replace(`/verify/${data.email}`);
+      router.replace(`/verify/${response.data.username}`);
       setIsSubmitting(false);
     } catch (error) {
       console.error("Sign-up error:", error);
@@ -72,16 +73,19 @@ const Page = () => {
           </div>
 
           <div className="text-center mb-8">
-            <h1 className={`text-3xl md:text-4xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
+            <h1
+              className={`text-3xl md:text-4xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}
+            >
               Create Account
             </h1>
-            <p className={`${isDark ? "text-gray-400" : "text-gray-600"} text-sm`}>
+            <p
+              className={`${isDark ? "text-gray-400" : "text-gray-600"} text-sm`}
+            >
               Start your journey to bridge learning and earning
             </p>
           </div>
 
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            
             {/* Name Field */}
             <Controller
               name="name"
@@ -100,15 +104,16 @@ const Page = () => {
                   <Input
                     {...field}
                     id="name"
+                    aria-invalid={fieldState.invalid}
                     placeholder="Enter your full name"
-                    className={`w-full px-4 py-3 border rounded-xl ${
+                    className={`w-full px-4 py-3 border rounded-xl placeholder:text-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none ${
                       isDark
                         ? "bg-slate-800/50 border-purple-500/30 text-white"
                         : "bg-white border-purple-300/30 text-gray-900"
                     }`}
                   />
 
-                  {fieldState.error && (
+                  {fieldState.invalid && fieldState.error && (
                     <p className="text-pink-400 text-sm mt-1.5">
                       {fieldState.error.message}
                     </p>
@@ -189,6 +194,54 @@ const Page = () => {
               )}
             />
 
+            {/* Role Selection */}
+            <Controller
+              name="role"
+              control={form.control}
+              defaultValue="Job Seeker"
+              render={({ field }) => (
+                <div>
+                  <label
+                    className={`font-medium mb-3 block text-sm ${
+                      isDark ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    I am a...
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => field.onChange("Job Seeker")}
+                      className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                        field.value === "Job Seeker"
+                          ? "border-purple-500 bg-purple-500/10 text-purple-500"
+                          : isDark
+                            ? "border-slate-700 bg-slate-800/50 text-gray-400 hover:border-purple-500/50"
+                            : "border-gray-200 bg-white text-gray-600 hover:border-purple-200"
+                      }`}
+                    >
+                      <Briefcase className="w-6 h-6" />
+                      <span className="font-semibold">Job Seeker</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => field.onChange("Company")}
+                      className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                        field.value === "Company"
+                          ? "border-purple-500 bg-purple-500/10 text-purple-500"
+                          : isDark
+                            ? "border-slate-700 bg-slate-800/50 text-gray-400 hover:border-purple-500/50"
+                            : "border-gray-200 bg-white text-gray-600 hover:border-purple-200"
+                      }`}
+                    >
+                      <Building2 className="w-6 h-6" />
+                      <span className="font-semibold">Company</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            />
+
             <Button
               type="submit"
               className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-white hover:shadow-lg transition-all"
@@ -206,7 +259,9 @@ const Page = () => {
           </form>
 
           <div className="text-center mt-6">
-            <p className={`${isDark ? "text-gray-400" : "text-gray-600"} text-sm`}>
+            <p
+              className={`${isDark ? "text-gray-400" : "text-gray-600"} text-sm`}
+            >
               Already have an account?
               <Link
                 href="/sign-in"

@@ -118,7 +118,7 @@ export default function ProfilePage() {
         toast.error("Something went wrong while deleting the project.");
       }
     } catch (error) {
-      console.error("Delete project error:", err);
+      console.error("Delete project error:", error);
       toast.error("An error occurred while deleting the project.");
     }
   };
@@ -593,8 +593,6 @@ export default function ProfilePage() {
                 ))}
               </div>
             </div>
-
-            
           </div>
         </div>
       </div>

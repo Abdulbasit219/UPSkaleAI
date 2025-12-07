@@ -2,10 +2,11 @@ import mongoose from "mongoose";
 
 const authUserSchema = new mongoose.Schema(
   {
-    name: {
+    username: {
       type: String,
-      required: [true, "Name is required"],
+      required: [true, "Username is required"],
       trim: true,
+      unique: true,
     },
     email: {
       type: String,
@@ -32,6 +33,66 @@ const authUserSchema = new mongoose.Schema(
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    // Profile Fields
+    name: {
+      type: String,
+      trim: true,
+    },
+    role: {
+      type: String,
+      enum: ["Job Seeker", "Company", "Admin"],
+      default: "Job Seeker",
+    },
+    phone: {
+      type: String,
+      trim: true,
+    },
+    location: {
+      type: String,
+      trim: true,
+    },
+    status: {
+      type: String,
+      enum: ["active", "disabled", "banned"],
+      default: "active",
+    },
+    bio: {
+      type: String,
+      trim: true,
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    resume: {
+      type: String, // URL
+    },
+    // Company Fields
+    companyName: {
+      type: String,
+      trim: true,
+    },
+    industry: {
+      type: String,
+      trim: true,
+    },
+    employees: {
+      type: String, // e.g., "1-10", "11-50"
+    },
+    website: {
+      type: String,
+      trim: true,
+    },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    companyDescription: {
+      type: String,
+    },
+    logo: {
+      type: String, // URL or Emoji as per mock
     },
   },
   { timestamps: true }

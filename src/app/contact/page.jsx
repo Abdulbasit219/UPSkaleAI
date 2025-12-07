@@ -7,6 +7,8 @@ import {
   Sparkles, Shield, Globe
 } from 'lucide-react';
 import { useSelector } from 'react-redux';
+import SharedCTABanner from "@/components/ui/CTABanner";
+
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -414,30 +416,27 @@ export default function ContactPage() {
 
         {/* CTA Section */}
         <div className="text-center">
-          <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-pink-600 to-purple-600 rounded-[2rem] p-12 md:p-16 shadow-2xl">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30" />
-            <div className="relative z-10">
-              <h2 className="text-4xl md:text-5xl font-black text-white mb-5">
-                Ready to Transform Your Career?
-              </h2>
-              <p className="text-xl md:text-2xl text-purple-100 mb-10 max-w-2xl mx-auto leading-relaxed">
-                Join thousands of learners who are building their dream careers with AI-powered guidance.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-5 justify-center">
-                <button className="px-10 py-5 bg-white text-purple-600 rounded-full font-black text-lg hover:shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-3 group">
-                  Start Free Trial
-                  <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                </button>
-                <button className="px-10 py-5 border-2 border-white text-white rounded-full font-black text-lg hover:bg-white/10 transition-all">
-                  Book a Demo
-                </button>
-              </div>
-              <p className="text-purple-100/90 text-sm mt-8 font-medium">
-                No credit card required • 14-day free trial • Personalized onboarding
-              </p>
-            </div>
-          </div>
+          <SharedCTABanner
+            isDark={isDark}
+            className="rounded-[2rem] shadow-2xl"
+            title="Ready to Transform Your Career?"
+            subtitle="Join thousands of learners who are building their dream careers with AI-powered guidance."
+            primaryBtn={{
+              text: "Start Free Trial",
+              icon: <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />,
+              onClick: () => {}
+            }}
+            secondaryBtn={{
+              text: "Book a Demo",
+              onClick: () => {}
+            }}
+          >
+            <p className="text-purple-100/90 text-sm mt-8 font-medium">
+              No credit card required • 14-day free trial • Personalized onboarding
+            </p>
+          </SharedCTABanner>
         </div>
+
       </div>
     </div>
   );

@@ -1,23 +1,24 @@
 "use client";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
-  ArrowRight,
-  Sparkles,
-  TrendingUp,
   Target,
   Award,
   Briefcase,
   BarChart3,
   CheckCircle2,
+  TrendingUp,
+  ArrowRight,
   Zap,
   Brain,
   Rocket,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import Navbar from "@/components/Navbar";
-import axios from "axios";
+import SharedCTABanner from "@/components/ui/CTABanner";
 
 export default function SkillBridgeLanding() {
+  const router = useRouter();
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
 
@@ -325,21 +326,15 @@ export default function SkillBridgeLanding() {
         {/* CTA Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
-            <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-pink-600 to-purple-600 rounded-3xl p-12 text-center">
-              <div className="relative z-10">
-                <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-white">
-                  Ready to bridge your future?
-                </h2>
-                <p className="text-xl mb-8 text-purple-100 max-w-2xl mx-auto">
-                  Join thousands of learners who are already building their
-                  dream careers with AI-powered guidance
-                </p>
-                <button className="px-10 py-4 bg-white text-purple-600 rounded-full font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all">
-                  Get Started Free
-                </button>
-              </div>
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30" />
-            </div>
+            <SharedCTABanner
+              isDark={isDark}
+              title="Ready to bridge your future?"
+              subtitle="Join thousands of learners who are already building their dream careers with AI-powered guidance"
+              primaryBtn={{
+                text: "Get Started Free",
+                onClick: () => router.push("/signup"),
+              }}
+            />
           </div>
         </section>
       </div>

@@ -1,10 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import AuthProvider from "@/context/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
-import ReduxProvider from '@/providers/ReduxProvider';
+import ReduxProvider from "@/providers/ReduxProvider";
+import ConditionalLayout from "@/components/ConditionalLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,17 +23,16 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-       <ReduxProvider>
-      <AuthProvider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <Navbar />
-          {children}
-          <Footer />
-          <Toaster />
-        </body>
-      </AuthProvider>
+      <ReduxProvider>
+        <AuthProvider>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            suppressHydrationWarning
+          >
+            <ConditionalLayout>{children}</ConditionalLayout>
+            <Toaster />
+          </body>
+        </AuthProvider>
       </ReduxProvider>
     </html>
   );

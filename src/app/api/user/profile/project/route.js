@@ -59,7 +59,7 @@ export async function PUT(req) {
     });
   } catch (error) {
     return Response.json(
-      { success: false, message: err.message },
+      { success: false, message: error.message },
       { status: 500 }
     );
   }
