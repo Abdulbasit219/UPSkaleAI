@@ -1,0 +1,45 @@
+# Python
+_pycache_/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+*.db
+
+# Virtual Environments
+venv/
+env/
+.venv/
+
+# Environment Variables
+.env
+.env.*
+
+# IDE Files
+.vscode/
+.idea/
+
+# Byte-compiled
+*.swp
+*.swo
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+**/logs/
+docker-compose.override.yml
+docker-compose.yml
+
+# PDF output
+*.pdf
+tmp/
+temp/
+
+# Cache
+.cache/
+dist/
+build/
