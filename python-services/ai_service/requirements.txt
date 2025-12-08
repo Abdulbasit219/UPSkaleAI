@@ -7,3 +7,6 @@ aiohttp
 motor
 sentence-transformers
 numpy
+faiss-cpu
+pymongo
+python-multipart

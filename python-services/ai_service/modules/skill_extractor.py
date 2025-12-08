@@ -1,13 +1,14 @@
 import re
-from typing import List, Set
+from typing import List
 
 SKILL_KEYWORDS = [
-    'python','java','c++','c#','javascript','node','django','flask','fastapi',
-    'sql','postgres','mysql','mongodb','redis','docker','kubernetes','aws','azure','gcp',
-    'rest','graphql','html','css','react','angular','vue','nlp','pytorch','tensorflow'
+    'python', 'java', 'c++', 'c#', 'javascript', 'node', 'django', 'flask', 'fastapi',
+    'sql', 'postgres', 'mysql', 'mongodb', 'redis', 'docker', 'kubernetes', 'aws', 'azure', 'gcp',
+    'rest', 'graphql', 'html', 'css', 'react', 'angular', 'vue', 'nlp', 'pytorch', 'tensorflow'
 ]
 
 SKILL_SET = set(SKILL_KEYWORDS)
+
 
 def naive_extract_skills(text: str) -> List[str]:
     t = text.lower()
