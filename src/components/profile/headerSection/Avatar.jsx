@@ -49,7 +49,7 @@ const Avatar = ({ profile, isDark, avatarInputRef, handleAvatarChange }) => {
         }`}
         onClick={() => avatarInputRef.current.click()}
       >
-        <Camera className="w-4 h-4" />
+        <Camera className="w-4 h-4 cursor-pointer" />
       </button>
 
       {/* Avatar Modal */}

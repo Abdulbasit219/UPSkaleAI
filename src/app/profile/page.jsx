@@ -45,17 +45,18 @@ export default function ProfilePage() {
   const avatarInputRef = useRef(null);
   const coverInputRef = useRef(null);
 
-  const generateLearningStreak = (streak) => {
-    const days = ["S", "M", "T", "W", "T", "F", "S"];
-    let result = [];
+  const generateLearningStreak = (streakCount) => {
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const today = new Date().getDay();
 
-    for (let i = 0; i < 7; i++) {
-      result.push({
-        day: days[i],
-        active: i < streak,
-      });
-    }
-    return result;
+    return days.map((day, index) => {
+      const diff = (today - index + 7) % 7;
+
+      return {
+        day,
+        active: diff < streakCount,
+      };
+    });
   };
 
   const fetchUserData = async () => {
@@ -78,7 +79,12 @@ export default function ProfilePage() {
     const formData = new FormData();
     formData.append("avatar", file);
 
-    const res = await axios.put("/api/user/profile", formData);
+    const res = await axios.put("/api/user/profile", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
     setProfile(res.data.profile);
   };
 
@@ -502,6 +508,7 @@ export default function ProfilePage() {
             <RecentActivityCard
               recentActivity={profile?.recentActivity}
               isDark={isDark}
+              userId={profile?.userId}
             />
 
             {/* Achievements */}

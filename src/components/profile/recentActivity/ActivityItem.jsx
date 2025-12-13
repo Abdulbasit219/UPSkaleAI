@@ -1,7 +1,8 @@
 import IconMap from "@/utils/iconsMap";
+import { Trash2 } from "lucide-react";
 import React from "react";
 
-const ActivityItem = ({ activity, isDark }) => {
+const ActivityItem = ({ activity, isDark, onDelete }) => {
   const IconComponent = IconMap[activity?.icon];
 
   const getTime = (timestamp) => {
@@ -60,6 +61,15 @@ const ActivityItem = ({ activity, isDark }) => {
         >
           {getTime(activity.timestamp)}
         </p>
+      </div>
+
+      <div>
+        <button
+          onClick={onDelete}
+          className="text-red-500 hover:text-red-600 cursor-pointer"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );

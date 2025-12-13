@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import connectDB from "@/lib/connectDB";
@@ -56,10 +58,12 @@ export async function PUT(req) {
   const contentType = req.headers.get("content-type");
 
   try {
+
     let updateData = {};
 
     if (contentType?.startsWith("multipart/form-data")) {
       const form = await req.formData();
+
       const name = form.get("name");
       const role = form.get("role");
       const location = form.get("location");
@@ -105,6 +109,8 @@ export async function PUT(req) {
       profile: updatedProfile,
     });
   } catch (error) {
+    console.error("PROFILE UPDATE ERROR", error);
+
     return Response.json(
       {
         success: false,
