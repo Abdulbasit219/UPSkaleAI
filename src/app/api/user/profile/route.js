@@ -58,7 +58,6 @@ export async function PUT(req) {
   const contentType = req.headers.get("content-type");
 
   try {
-
     let updateData = {};
 
     if (contentType?.startsWith("multipart/form-data")) {
@@ -117,6 +116,50 @@ export async function PUT(req) {
         message: "Profile update failed",
         error: error.message,
       },
+      { status: 500 }
+    );
+  }
+}
+
+// delete avatar or cover
+export async function DELETE(req) {
+  await connectDB();
+
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user?._id) {
+    return Response.json(
+      { success: false, message: "Not authenticated" },
+      { status: 401 }
+    );
+  }
+
+  const userId = session.user._id;
+
+  try {
+    const { type } = await req.json();
+    let updateData = {};
+    if (type === "avatar") {
+      updateData.avatar = null;
+    }
+
+    if (type === "cover") {
+      updateData.coverPhoto = null;
+    }
+
+    const updatedProfile = await UserProfile.findOneAndUpdate(
+      { userId },
+      { $set: updateData },
+      { new: true }
+    );
+
+    return Response.json({
+      success: true,
+      message: `${type} deleted successfully`,
+      profile: updatedProfile,
+    });
+  } catch (error) {
+    return Response.json(
+      { success: false, message: error.message },
       { status: 500 }
     );
   }

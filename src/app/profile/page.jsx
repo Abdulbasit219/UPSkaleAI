@@ -27,6 +27,7 @@ import LearningStreakCard from "@/components/profile/LearningStreakCard";
 import AchievementsCard from "@/components/profile/AchievementsCard";
 import SkillList from "@/components/profile/skills/SkillList";
 import RecentActivityCard from "@/components/profile/recentActivity/RecentActivityCard";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
@@ -164,12 +165,17 @@ export default function ProfilePage() {
     fetchUserData();
   }, [user]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <LoadingSpinner size={48} color={isDark ? "#a855f7" : "#7c3aed"} />
+      </div>
+    );
 
   const stats = [
     {
       icon: <Trophy className="w-5 h-5" />,
-      value: profile?.badges?.length || 0,
+      value: profile?.skills?.length || 0,
       label: "Skills Mastered",
       color: "from-yellow-500 to-orange-500",
     },
@@ -214,6 +220,7 @@ export default function ProfilePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <ProfileHeader
           profile={profile}
+          setProfile={setProfile}
           user={user}
           isDark={isDark}
           coverInputRef={coverInputRef}

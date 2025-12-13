@@ -2,30 +2,69 @@ import Image from "next/image";
 import { Camera, User } from "lucide-react";
 import ImageUploadModal from "./ImageUploadModal";
 import { useState } from "react";
+import { toast } from "sonner";
+import axios from "axios";
 
-const Avatar = ({ profile, isDark, avatarInputRef, handleAvatarChange }) => {
+const Avatar = ({
+  profile,
+  setProfile,
+  isDark,
+  avatarInputRef,
+  handleAvatarChange,
+}) => {
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleAvatarDelete = () => {
-    console.log("delete avatar");
+  const handleAvatarDelete = async () => {
+    try {
+      const { data } = await axios.delete("/api/user/profile", {
+        data: {
+          type: "avatar",
+        },
+      });
+
+      if (data.success) {
+        toast.success("Avatar deleted");
+        setProfile((prev) => ({
+          ...prev,
+          avatar: null,
+        }));
+      }
+    } catch (error) {
+      console.error(
+        "Avatar delete error",
+        error.response?.data || error.message
+      );
+    }
   };
 
+  const handleChangeImage = async (e) => {
+    setIsUploading(true);
+    try {
+      await handleAvatarChange(e);
+    } finally {
+      setIsUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const AvatarLoader = () => (
+    <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+  );
+
   return (
-    <div
-      className="relative group -mt-28 cursor-pointer"
-    >
+    <div className="relative group -mt-28 cursor-pointer">
       <div
-        className={`w-32 h-32 lg:w-40 lg:h-40 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center ring-4 shadow-xl ${
-          isDark ? "ring-slate-950" : "ring-white"
-        }`}
+        className={`w-32 h-32 lg:w-40 lg:h-40 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl overflow-hidden ring-4 shadow-xl flex items-center justify-center ${isDark ? "ring-slate-950" : "ring-white"}`}
       >
-        {profile?.avatar ? (
+        {isUploading ? (
+          <AvatarLoader />
+        ) : profile?.avatar ? (
           <Image
             src={profile.avatar}
             alt="Profile Avatar"
-            width={160}
-            height={100}
-            className="rounded-xl object-cover"
+            fill
+            className="object-cover rounded"
             onClick={() => setIsAvatarModalOpen(true)}
           />
         ) : (
@@ -37,11 +76,12 @@ const Avatar = ({ profile, isDark, avatarInputRef, handleAvatarChange }) => {
         type="file"
         accept="image/*"
         ref={avatarInputRef}
-        onChange={handleAvatarChange}
+        onChange={handleChangeImage}
         className="hidden"
       />
 
       <button
+        disabled={isUploading}
         className={`absolute bottom-2 right-2 p-2 backdrop-blur-sm rounded-lg border text-white opacity-0 group-hover:opacity-100 transition-all hover:scale-105 ${
           isDark
             ? "bg-slate-900/90 border-purple-500/30"

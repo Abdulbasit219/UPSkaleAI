@@ -6,6 +6,7 @@ import ActionButtons from "./headerSection/ActionButtons";
 const ProfileHeader = ({
   profile,
   user,
+  setProfile,
   isDark,
   coverInputRef,
   handleCoverChange,
@@ -20,6 +21,7 @@ const ProfileHeader = ({
       <CoverPhoto
         profile={profile}
         isDark={isDark}
+        setProfile={setProfile}
         coverInputRef={coverInputRef}
         handleCoverChange={handleCoverChange}
       />
@@ -37,6 +39,7 @@ const ProfileHeader = ({
             isDark={isDark}
             avatarInputRef={avatarInputRef}
             handleAvatarChange={handleAvatarChange}
+            setProfile={setProfile}
           />
           <div className="flex-1 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 pt-2">
             <UserInfo profile={profile} isDark={isDark} />
