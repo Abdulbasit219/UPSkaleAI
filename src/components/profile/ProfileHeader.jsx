@@ -5,8 +5,8 @@ import ActionButtons from "./headerSection/ActionButtons";
 
 const ProfileHeader = ({
   profile,
-  user,
   setProfile,
+  user,
   isDark,
   coverInputRef,
   handleCoverChange,
@@ -15,6 +15,7 @@ const ProfileHeader = ({
   setIsEditOpen,
   generateResume,
 }) => {
+  
 
   return (
     <div className="relative mb-8">

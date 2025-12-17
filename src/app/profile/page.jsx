@@ -11,7 +11,7 @@ import {
   BookOpen,
   Flame,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import EditProfileModal from "@/components/profile/EditProfileModal";
@@ -159,19 +159,6 @@ export default function ProfilePage() {
     }
   };
 
-  useEffect(() => {
-    if (!user) return;
-
-    fetchUserData();
-  }, [user]);
-
-  if (loading)
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <LoadingSpinner size={48} color={isDark ? "#a855f7" : "#7c3aed"} />
-      </div>
-    );
-
   const stats = [
     {
       icon: <Trophy className="w-5 h-5" />,
@@ -203,6 +190,19 @@ export default function ProfilePage() {
       color: "from-green-500 to-emerald-500",
     },
   ];
+
+  useEffect(() => {
+    if (!user) return;
+
+    fetchUserData();
+  }, [user]);
+
+  if (loading)
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    );
 
   return (
     <div

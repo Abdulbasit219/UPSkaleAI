@@ -24,10 +24,14 @@ import UpcomingEventsCard from "@/components/dashboard/user/UpcomingEventsCard";
 import RecentActivityCard from "@/components/dashboard/user/RecentActivityCard";
 
 export default function Dashboard() {
+  
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
   const { data: session, status } = useSession();
   const router = useRouter();
+
+  const { recentActivity } = useSelector((state) => state.user);
+
 
   useEffect(() => {
     // Redirect if not authenticated or not a Job Seeker
@@ -194,26 +198,26 @@ export default function Dashboard() {
   ];
 
   // Recent activity
-  const recentActivity = [
-    {
-      type: "course",
-      title: "Completed 'State Management' lesson",
-      time: "2 hours ago",
-      icon: <CheckCircle className="w-4 h-4 text-green-400" />,
-    },
-    {
-      type: "achievement",
-      title: "Earned 'Quick Learner' badge",
-      time: "5 hours ago",
-      icon: <Trophy className="w-4 h-4 text-yellow-400" />,
-    },
-    {
-      type: "project",
-      title: "Updated E-Commerce project",
-      time: "1 day ago",
-      icon: <Code className="w-4 h-4 text-blue-400" />,
-    },
-  ];
+  // const recentActivity = [
+  //   {
+  //     type: "course",
+  //     title: "Completed 'State Management' lesson",
+  //     time: "2 hours ago",
+  //     icon: <CheckCircle className="w-4 h-4 text-green-400" />,
+  //   },
+  //   {
+  //     type: "achievement",
+  //     title: "Earned 'Quick Learner' badge",
+  //     time: "5 hours ago",
+  //     icon: <Trophy className="w-4 h-4 text-yellow-400" />,
+  //   },
+  //   {
+  //     type: "project",
+  //     title: "Updated E-Commerce project",
+  //     time: "1 day ago",
+  //     icon: <Code className="w-4 h-4 text-blue-400" />,
+  //   },
+  // ];
 
   // Upcoming events
   const upcomingEvents = [
