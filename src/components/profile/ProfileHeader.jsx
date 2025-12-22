@@ -8,9 +8,7 @@ const ProfileHeader = ({
   user,
   isDark,
   coverInputRef,
-  handleCoverChange,
   avatarInputRef,
-  handleAvatarChange,
   setIsEditOpen,
   generateResume,
 }) => {
@@ -21,7 +19,6 @@ const ProfileHeader = ({
         profile={profile}
         isDark={isDark}
         coverInputRef={coverInputRef}
-        handleCoverChange={handleCoverChange}
       />
 
       <div
@@ -36,7 +33,7 @@ const ProfileHeader = ({
             profile={profile}
             isDark={isDark}
             avatarInputRef={avatarInputRef}
-            handleAvatarChange={handleAvatarChange}
+            // handleAvatarChange={handleAvatarChange}
           />
           <div className="flex-1 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 pt-2">
             <UserInfo profile={profile} isDark={isDark} />
