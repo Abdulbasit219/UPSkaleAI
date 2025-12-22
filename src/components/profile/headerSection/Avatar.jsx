@@ -2,16 +2,11 @@ import Image from "next/image";
 import { Camera, User } from "lucide-react";
 import ImageUploadModal from "./ImageUploadModal";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { updateAvatar } from "@/store/slices/profileSlice";
 import { toast } from "sonner";
-import axios from "axios";
 
-const Avatar = ({
-  profile,
-  setProfile,
-  isDark,
-  avatarInputRef,
-  handleAvatarChange,
-}) => {
+const Avatar = ({ profile, isDark, avatarInputRef }) => {
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -46,6 +41,21 @@ const Avatar = ({
       setIsUploading(false);
       e.target.value = "";
     }
+  const dispatch = useDispatch()
+
+  const handleAvatarChange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        await dispatch(updateAvatar(file)).unwrap();
+        toast.success("Avatar updated successfully!");
+      } catch (error) {
+        toast.error("Failed to update avatar");
+      }
+    };
+
+  const handleAvatarDelete = () => {
+    console.log("delete avatar");
   };
 
   const AvatarLoader = () => (

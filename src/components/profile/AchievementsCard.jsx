@@ -28,13 +28,13 @@ const AchievementsCard = ({ isDark, profile, badgeStyles }) => {
               : "bg-purple-100 text-purple-700 border-purple-200"
           }`}
         >
-          {profile.badges.length}
+          {profile?.badges?.length}
         </span>
       </div>
 
       {/* Badge Grid */}
       <AchievementsGrid
-        badges={profile.badges}
+        badges={profile?.badges}
         badgeStyles={badgeStyles}
         isDark={isDark}
       />

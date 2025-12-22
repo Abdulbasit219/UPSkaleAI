@@ -1,0 +1,74 @@
+import mongoose from "mongoose";
+
+const CourseSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    category: {
+      type: String,
+      required: true,
+      enum: [
+        "Web Development",
+        "Mobile Development",
+        "Data Science",
+        "DevOps",
+        "AI/ML",
+        "Other",
+      ],
+    },
+    difficulty: {
+      type: String,
+      enum: ["Beginner", "Intermediate", "Advanced"],
+      default: "Beginner",
+    },
+    // thumbnail: {
+    //   type: String,
+    //   default: "",
+    // },
+    tags: {
+      type: [String],
+      default: [],
+    },
+    estimatedTime: {
+      type: String,
+    },
+    prerequisites: {
+      type: [String],
+      default: [],
+    },
+    isPublished: {
+      type: Boolean,
+      default: false,
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AuthUser",
+    },
+    enrolledCount: {
+      type: Number,
+      default: 0,
+    },
+  },
+  { timestamps: true }
+);
+
+// Indexes
+CourseSchema.index({ category: 1, isPublished: 1 });
+CourseSchema.index({ slug: 1 });
+
+const Course =
+  mongoose.models.Course || mongoose.model("Course", CourseSchema);
+
+export default Course;
