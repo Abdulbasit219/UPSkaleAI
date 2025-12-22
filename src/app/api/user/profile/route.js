@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import connectDB from "@/lib/connectDB";
@@ -60,6 +62,7 @@ export async function PUT(req) {
 
     if (contentType?.startsWith("multipart/form-data")) {
       const form = await req.formData();
+
       const name = form.get("name");
       const role = form.get("role");
       const location = form.get("location");
@@ -105,12 +108,58 @@ export async function PUT(req) {
       profile: updatedProfile,
     });
   } catch (error) {
+    console.error("PROFILE UPDATE ERROR", error);
+
     return Response.json(
       {
         success: false,
         message: "Profile update failed",
         error: error.message,
       },
+      { status: 500 }
+    );
+  }
+}
+
+// delete avatar or cover
+export async function DELETE(req) {
+  await connectDB();
+
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user?._id) {
+    return Response.json(
+      { success: false, message: "Not authenticated" },
+      { status: 401 }
+    );
+  }
+
+  const userId = session.user._id;
+
+  try {
+    const { type } = await req.json();
+    let updateData = {};
+    if (type === "avatar") {
+      updateData.avatar = null;
+    }
+
+    if (type === "cover") {
+      updateData.coverPhoto = null;
+    }
+
+    const updatedProfile = await UserProfile.findOneAndUpdate(
+      { userId },
+      { $set: updateData },
+      { new: true }
+    );
+
+    return Response.json({
+      success: true,
+      message: `${type} deleted successfully`,
+      profile: updatedProfile,
+    });
+  } catch (error) {
+    return Response.json(
+      { success: false, message: error.message },
       { status: 500 }
     );
   }

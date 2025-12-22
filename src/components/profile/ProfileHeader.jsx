@@ -5,6 +5,7 @@ import ActionButtons from "./headerSection/ActionButtons";
 
 const ProfileHeader = ({
   profile,
+  setProfile,
   user,
   isDark,
   coverInputRef,
@@ -12,12 +13,14 @@ const ProfileHeader = ({
   setIsEditOpen,
   generateResume,
 }) => {
+  
 
   return (
     <div className="relative mb-8">
       <CoverPhoto
         profile={profile}
         isDark={isDark}
+        setProfile={setProfile}
         coverInputRef={coverInputRef}
       />
 

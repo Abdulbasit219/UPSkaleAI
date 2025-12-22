@@ -1,8 +1,41 @@
-import React from "react";
+import React, { act, useState } from "react";
 import { Clock } from "lucide-react";
 import ActivityItem from "./ActivityItem";
+import Link from "next/link";
+import axios from "axios";
+import { toast } from "sonner";
 
-const RecentActivityCard = ({ recentActivity, isDark }) => {
+const RecentActivityCard = ({ recentActivity, isDark, userId }) => {
+  const [loading, setLoading] = useState(false);
+  const [activities, setActivities] = useState(recentActivity);
+
+  const sortedActivities = [...activities].sort(
+    (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+  );
+
+  const topFiveActivities = sortedActivities.slice(0, 5);
+
+  const deleteActivity = async (activityId) => {
+    try {
+      setLoading(true);
+      await axios.delete(
+        `/api/user/profile/${userId}/activities/${activityId}`
+      );
+
+      setActivities((prev) => prev.filter((item) => item._id !== activityId));
+
+      toast.success("Activity deleted");
+    } catch (error) {
+      toast.error("Failed to delete activity");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return "Loading";
+  }
+
   return (
     <div
       className={`backdrop-blur-sm border rounded-xl p-6 transition-colors ${
@@ -23,14 +56,32 @@ const RecentActivityCard = ({ recentActivity, isDark }) => {
 
       {/* Activity List */}
       <div className="space-y-3">
-        {recentActivity?.map((activity, index) => (
-          <ActivityItem
-            key={index}
-            activity={activity}
-            isDark={isDark}
-          />
-        ))}
+        {topFiveActivities.length === 0 ? (
+          <p className="text-center text-gray-400 mt-10">No activity found.</p>
+        ) : (
+          topFiveActivities.map((activity, index) => (
+            <ActivityItem
+              key={index}
+              activity={activity}
+              isDark={isDark}
+              onDelete={() => deleteActivity(activity._id)}
+            />
+          ))
+        )}
       </div>
+
+      {sortedActivities.length > 5 && (
+        <div className="text-center mt-4">
+          <Link
+            href={`/all-activity/${userId}`}
+            className={`text-sm font-semibold underline ${
+              isDark ? "text-purple-300" : "text-purple-600"
+            }`}
+          >
+            View All Activity →
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

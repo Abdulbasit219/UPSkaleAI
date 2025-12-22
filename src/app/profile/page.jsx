@@ -27,14 +27,7 @@ import LearningStreakCard from "@/components/profile/LearningStreakCard";
 import AchievementsCard from "@/components/profile/AchievementsCard";
 import SkillList from "@/components/profile/skills/SkillList";
 import RecentActivityCard from "@/components/profile/recentActivity/RecentActivityCard";
-import {
-  addSkill,
-  deleteProjectAction,
-  fetchProfile,
-  updateAvatar,
-  updateCoverPhoto,
-  updateProfile,
-} from "@/store/slices/profileSlice";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function ProfilePage() {
   // const [profile, setProfile] = useState(null);
@@ -127,7 +120,7 @@ export default function ProfilePage() {
   const stats = [
     {
       icon: <Trophy className="w-5 h-5" />,
-      value: profile?.badges?.length || 0,
+      value: profile?.skills?.length || 0,
       label: "Skills Mastered",
       color: "from-yellow-500 to-orange-500",
     },
@@ -156,6 +149,19 @@ export default function ProfilePage() {
     },
   ];
 
+  useEffect(() => {
+    if (!user) return;
+
+    fetchUserData();
+  }, [user]);
+
+  if (loading)
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    );
+
   return (
     <div
       className={`min-h-screen pt-20 pb-12 transition-colors duration-300 ${
@@ -172,6 +178,7 @@ export default function ProfilePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <ProfileHeader
           profile={profile}
+          setProfile={setProfile}
           user={user}
           isDark={isDark}
           coverInputRef={coverInputRef}
@@ -464,6 +471,7 @@ export default function ProfilePage() {
             <RecentActivityCard
               recentActivity={profile?.recentActivity}
               isDark={isDark}
+              userId={profile?.userId}
             />
 
             {/* Achievements */}

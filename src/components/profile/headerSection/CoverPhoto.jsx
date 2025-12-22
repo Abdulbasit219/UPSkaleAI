@@ -1,45 +1,87 @@
+import axios from "axios";
 import { updateCoverPhoto } from "@/store/slices/profileSlice";
 import { Camera } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import ImageUploadModal from "./ImageUploadModal";
 
-const CoverPhoto = ({ profile, isDark, coverInputRef }) => {
+const CoverPhoto = ({
+  profile,
+  setProfile,
+  isDark,
+  coverInputRef,
+}) => {
+  const dispatch = useDispatch();
 
-  const dispatch = useDispatch()
+  const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
+  // 🔹 Upload / Change cover
   const handleCoverChange = async (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
+    setIsUploading(true);
     try {
       await dispatch(updateCoverPhoto(file)).unwrap();
       toast.success("Cover photo updated!");
     } catch (error) {
       toast.error("Failed to update cover photo");
+    } finally {
+      setIsUploading(false);
+      e.target.value = "";
     }
   };
+
+  // 🔹 Delete cover
+  const handleCoverDelete = async () => {
+    try {
+      const { data } = await axios.delete("/api/user/profile", {
+        data: { type: "cover" },
+      });
+
+      if (data.success) {
+        toast.success("Cover photo deleted");
+        setProfile((prev) => ({
+          ...prev,
+          coverPhoto: null,
+        }));
+      }
+    } catch (error) {
+      toast.error("Failed to delete cover photo");
+    }
+  };
+
+  const AvatarLoader = () => (
+    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+      <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+    </div>
+  );
 
   return (
     <div className="h-48 lg:h-64 rounded-xl relative overflow-hidden group cursor-pointer">
       {profile?.coverPhoto ? (
-        <a href={profile.coverPhoto} target="_blank">
-          <Image
-            src={profile.coverPhoto}
-            alt="Cover Photo"
-            fill
-            className="object-cover"
-            priority
-          />
-        </a>
+        <Image
+          src={profile.coverPhoto}
+          alt="Cover Photo"
+          fill
+          className="object-cover rounded"
+          priority
+          onClick={() => setIsCoverModalOpen(true)}
+        />
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500" />
       )}
 
+      {isUploading && <AvatarLoader />}
+
       <div
-        className={`absolute inset-0 ${isDark ? "bg-black/20" : "bg-white/20"}`}
-      ></div>
+        className={`absolute inset-0 pointer-events-none ${
+          isDark ? "bg-black/20" : "bg-white/20"
+        }`}
+      />
 
       <input
         type="file"
@@ -50,15 +92,29 @@ const CoverPhoto = ({ profile, isDark, coverInputRef }) => {
       />
 
       <button
-        className={`absolute top-4 right-4 p-2.5 backdrop-blur-sm rounded-lg border text-white hover:scale-105 transition-all opacity-0 group-hover:opacity-100 z-10 ${
+        className={`absolute top-4 right-4 p-2.5 backdrop-blur-sm rounded-lg border hover:scale-105 transition-all opacity-0 group-hover:opacity-100 z-10 ${
           isDark
-            ? "bg-slate-900/80 border-purple-500/30 hover:bg-slate-800"
+            ? "bg-slate-900/80 border-purple-500/30 hover:bg-slate-800 text-white"
             : "bg-white/80 border-purple-300/30 hover:bg-white text-gray-700"
         }`}
         onClick={() => coverInputRef.current.click()}
+        disabled={isUploading}
       >
         <Camera className="w-4 h-4" />
       </button>
+
+      {isCoverModalOpen && (
+        <ImageUploadModal
+          open={isCoverModalOpen}
+          onClose={() => setIsCoverModalOpen(false)}
+          onUpload={handleCoverChange}
+          onDelete={handleCoverDelete}
+          currentImage={profile?.coverPhoto}
+          fileInputRef={coverInputRef}
+          isDark={isDark}
+          type="cover"
+        />
+      )}
     </div>
   );
 };

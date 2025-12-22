@@ -1,39 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import {
-  Home,
   BookOpen,
   Target,
   Briefcase,
-  Award,
-  TrendingUp,
-  Clock,
-  Zap,
   CheckCircle,
-  ArrowRight,
-  Play,
-  Calendar,
   Users,
-  MessageCircle,
-  Bell,
-  Search,
-  Filter,
-  Star,
   Code,
   Flame,
   Trophy,
-  BarChart3,
-  ChevronRight,
-  Plus,
-  Brain,
-  Sparkles,
-  AlertCircle,
-  ExternalLink,
-  Heart,
-  BookMarked,
   Video,
-  FileText,
-  Lightbulb,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
@@ -49,7 +25,7 @@ import UpcomingEventsCard from "@/components/dashboard/user/UpcomingEventsCard";
 import RecentActivityCard from "@/components/dashboard/user/RecentActivityCard";
 
 export default function Dashboard() {
-  const [activeFilter, setActiveFilter] = useState("all");
+  
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
   const { data: session, status } = useSession();
@@ -190,26 +166,26 @@ export default function Dashboard() {
   ];
 
   // Recent activity
-  const recentActivity = [
-    {
-      type: "course",
-      title: "Completed 'State Management' lesson",
-      time: "2 hours ago",
-      icon: <CheckCircle className="w-4 h-4 text-green-400" />,
-    },
-    {
-      type: "achievement",
-      title: "Earned 'Quick Learner' badge",
-      time: "5 hours ago",
-      icon: <Trophy className="w-4 h-4 text-yellow-400" />,
-    },
-    {
-      type: "project",
-      title: "Updated E-Commerce project",
-      time: "1 day ago",
-      icon: <Code className="w-4 h-4 text-blue-400" />,
-    },
-  ];
+  // const recentActivity = [
+  //   {
+  //     type: "course",
+  //     title: "Completed 'State Management' lesson",
+  //     time: "2 hours ago",
+  //     icon: <CheckCircle className="w-4 h-4 text-green-400" />,
+  //   },
+  //   {
+  //     type: "achievement",
+  //     title: "Earned 'Quick Learner' badge",
+  //     time: "5 hours ago",
+  //     icon: <Trophy className="w-4 h-4 text-yellow-400" />,
+  //   },
+  //   {
+  //     type: "project",
+  //     title: "Updated E-Commerce project",
+  //     time: "1 day ago",
+  //     icon: <Code className="w-4 h-4 text-blue-400" />,
+  //   },
+  // ];
 
   // Upcoming events
   const upcomingEvents = [
