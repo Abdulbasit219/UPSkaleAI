@@ -165,6 +165,12 @@ const Navbar = () => {
       icon: <FileUser className="w-4 h-4" />,
       description: "Build resume with AI",
     },
+    {
+      name: "Learning",
+      href: "/learning",
+      icon: <FileUser className="w-4 h-4" />,
+      description: "Build resume with AI",
+    },
   ];
 
   // Role-based menu items

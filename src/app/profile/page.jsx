@@ -30,83 +30,35 @@ import RecentActivityCard from "@/components/profile/recentActivity/RecentActivi
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [profile, setProfile] = useState(null);
+  // const [loading, setLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [streak, setStreak] = useState([]);
+  // const [streak, setStreak] = useState([]);
 
   const theme = useSelector((state) => state.theme.mode);
+  const {
+    data: profile,
+    loading,
+    streak,
+  } = useSelector((state) => state.profile);
   const isDark = theme === "dark";
 
+  const dispatch = useDispatch();
   const { data } = useSession();
   const user = data?.user;
 
   const avatarInputRef = useRef(null);
   const coverInputRef = useRef(null);
 
-  const generateLearningStreak = (streakCount) => {
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const today = new Date().getDay();
-
-    return days.map((day, index) => {
-      const diff = (today - index + 7) % 7;
-
-      return {
-        day,
-        active: diff < streakCount,
-      };
-    });
-  };
-
-  const fetchUserData = async () => {
-    try {
-      const res = await axios.get("/api/user/profile");
-      setProfile(res?.data?.profile);
-      const streakBoxes = generateLearningStreak(res?.data?.profile?.streak);
-      setStreak(streakBoxes);
-    } catch (error) {
-      console.log("Fetch error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAvatarChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("avatar", file);
-
-    const res = await axios.put("/api/user/profile", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    setProfile(res.data.profile);
-  };
-
-  const handleCoverChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("coverPhoto", file);
-
-    const res = await axios.put("/api/user/profile", formData);
-    setProfile(res.data.profile);
-  };
-
   const handleProfileUpdate = async (updatedData) => {
     try {
-      const res = await axios.put("/api/user/profile", updatedData);
-      setProfile(res.data.profile);
+      await dispatch(updateProfile(updatedData)).unwrap();
       setIsEditOpen(false);
-    } catch (err) {
-      console.log("Update error:", err);
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update profile");
     }
   };
 
@@ -114,19 +66,10 @@ export default function ProfilePage() {
     if (!projectId) return;
 
     try {
-      const res = await axios.delete("/api/user/profile/project", {
-        data: { projectId, projectTitle },
-      });
-
-      if (res.data.success) {
-        toast.success("Your project was deleted successfully.");
-        fetchUserData();
-      } else {
-        toast.error("Something went wrong while deleting the project.");
-      }
+      await dispatch(deleteProjectAction({ projectId, projectTitle })).unwrap();
+      toast.success("Project deleted successfully!");
     } catch (error) {
-      console.error("Delete project error:", error);
-      toast.error("An error occurred while deleting the project.");
+      toast.error("Failed to delete project");
     }
   };
 
@@ -141,23 +84,38 @@ export default function ProfilePage() {
       return;
     }
     try {
-      const response = await axios.post("/api/user/profile/skills", {
-        userId: user?._id,
-        skillName: skillData?.skillName,
-        level: skillData.level,
-        lastPracticed: skillData.lastPracticed,
-      });
-
-      if (response.data.success) {
-        toast.success("Skill added successfully!");
-        return true;
-      }
+      await dispatch(
+        addSkill({
+          userId: user._id,
+          skillName: skillData.skillName,
+          level: skillData.level,
+          lastPracticed: skillData.lastPracticed,
+        })
+      ).unwrap();
+      toast.success("Skill added successfully!");
+      return true;
     } catch (error) {
-      console.error("Axios Error:", error);
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(error?.message || "Failed to add skill");
       return false;
     }
   };
+
+  console.log(profile)
+
+  // Fetch profile on mount
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchProfile());
+    }
+  }, [user, dispatch]);
+
+  if (loading && !profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
   const stats = [
     {
@@ -224,9 +182,7 @@ export default function ProfilePage() {
           user={user}
           isDark={isDark}
           coverInputRef={coverInputRef}
-          handleCoverChange={handleCoverChange}
           avatarInputRef={avatarInputRef}
-          handleAvatarChange={handleAvatarChange}
           setIsEditOpen={setIsEditOpen}
           generateResume={generateResume}
         />

@@ -14,6 +14,7 @@ import {
 import { useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import WelcomeHeader from "@/components/dashboard/user/WelcomeHeader";
 import QuickStatsGrid from "@/components/dashboard/user/QuickStatsGrid";
 import ContinueLearningSection from "@/components/dashboard/user/ContinueLearningSection";
@@ -29,39 +30,6 @@ export default function Dashboard() {
   const isDark = theme === "dark";
   const { data: session, status } = useSession();
   const router = useRouter();
-
-  const { recentActivity } = useSelector((state) => state.user);
-
-
-  useEffect(() => {
-    // Redirect if not authenticated or not a Job Seeker
-    if (status === "unauthenticated") {
-      router.push("/sign-in");
-    } else if (
-      status === "authenticated" &&
-      session?.user?.role !== "Job Seeker"
-    ) {
-      router.push("/unauthorized");
-    }
-  }, [status, session, router]);
-
-  // Show loading while checking authentication
-  if (status === "loading") {
-    return (
-      <div
-        className={`min-h-screen flex items-center justify-center ${
-          isDark ? "bg-slate-950" : "bg-gray-50"
-        }`}
-      >
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p className={isDark ? "text-gray-400" : "text-gray-600"}>
-            Loading dashboard...
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   // User data
   const userData = {
@@ -252,6 +220,38 @@ export default function Dashboard() {
     strongestSkill: "React",
   };
 
+  
+  useEffect(() => {
+    // Redirect if not authenticated or not a Job Seeker
+    if (status === "unauthenticated") {
+      router.push("/sign-in");
+    } else if (
+      status === "authenticated" &&
+      session?.user?.role !== "Job Seeker"
+    ) {
+      router.push("/unauthorized");
+    }
+  }, [status, session, router]);
+
+
+  // Show loading while checking authentication
+  if (status === "loading") {
+    return (
+      <div
+        className={`min-h-screen flex items-center justify-center ${
+          isDark ? "bg-slate-950" : "bg-gray-50"
+        }`}
+      >
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className={isDark ? "text-gray-400" : "text-gray-600"}>
+            Loading dashboard...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`min-h-screen pt-20 pb-12 transition-colors duration-300 ${
@@ -312,7 +312,10 @@ export default function Dashboard() {
             />
 
             {/* Recent Activity */}
-            <RecentActivityCard isDark={isDark} recentActivity={recentActivity} />
+            <RecentActivityCard
+              isDark={isDark}
+              recentActivity={recentActivity}
+            />
           </div>
         </div>
       </div>
