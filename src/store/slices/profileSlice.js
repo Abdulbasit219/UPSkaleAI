@@ -22,7 +22,9 @@ export const updateProfile = createAsyncThunk(
       const response = await axios.put("/api/user/profile", updateData);
       return response.data.profile;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to update profile");
+      return rejectWithValue(
+        error.response?.data || "Failed to update profile"
+      );
     }
   }
 );
@@ -58,7 +60,7 @@ export const updateCoverPhoto = createAsyncThunk(
 );
 
 // Async thunk to delete project
-export const deleteProject = createAsyncThunk(
+export const deleteProjectAction = createAsyncThunk(
   "profile/deleteProject",
   async ({ projectId, projectTitle }, { rejectWithValue }) => {
     try {
@@ -67,7 +69,9 @@ export const deleteProject = createAsyncThunk(
       });
       return projectId;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to delete project");
+      return rejectWithValue(
+        error.response?.data || "Failed to delete project"
+      );
     }
   }
 );
@@ -160,7 +164,7 @@ const profileSlice = createSlice({
       })
 
       // Delete Project
-      .addCase(deleteProject.fulfilled, (state, action) => {
+      .addCase(deleteProjectAction.fulfilled, (state, action) => {
         if (state.data?.projects) {
           state.data.projects = state.data.projects.filter(
             (p) => p._id !== action.payload

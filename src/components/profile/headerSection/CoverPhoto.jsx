@@ -1,8 +1,26 @@
+import { updateCoverPhoto } from "@/store/slices/profileSlice";
 import { Camera } from "lucide-react";
 import Image from "next/image";
 import React from "react";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 
-const CoverPhoto = ({ profile, isDark, coverInputRef, handleCoverChange }) => {
+const CoverPhoto = ({ profile, isDark, coverInputRef }) => {
+
+  const dispatch = useDispatch()
+
+  const handleCoverChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      await dispatch(updateCoverPhoto(file)).unwrap();
+      toast.success("Cover photo updated!");
+    } catch (error) {
+      toast.error("Failed to update cover photo");
+    }
+  };
+
   return (
     <div className="h-48 lg:h-64 rounded-xl relative overflow-hidden group cursor-pointer">
       {profile?.coverPhoto ? (

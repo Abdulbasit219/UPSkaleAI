@@ -39,7 +39,7 @@ const SkillList = ({ isDark, handleAddSkill, skills }) => {
 
       {/* SKILL LIST */}
       <div className="space-y-3">
-        {skills.map((skill, index) => (
+        {skills?.map((skill, index) => (
           <SkillCard key={index} skill={skill} isDark={isDark} />
         ))}
       </div>
