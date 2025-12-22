@@ -28,6 +28,7 @@ import AchievementsCard from "@/components/profile/AchievementsCard";
 import SkillList from "@/components/profile/skills/SkillList";
 import RecentActivityCard from "@/components/profile/recentActivity/RecentActivityCard";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { fetchProfile } from "@/store/slices/profileSlice";
 
 export default function ProfilePage() {
   // const [profile, setProfile] = useState(null);
@@ -100,23 +101,9 @@ export default function ProfilePage() {
     }
   };
 
-  console.log(profile)
-
   // Fetch profile on mount
-  useEffect(() => {
-    if (user) {
-      dispatch(fetchProfile());
-    }
-  }, [user, dispatch]);
 
-  if (loading && !profile) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
-
+  
   const stats = [
     {
       icon: <Trophy className="w-5 h-5" />,
@@ -149,11 +136,13 @@ export default function ProfilePage() {
     },
   ];
 
-  useEffect(() => {
-    if (!user) return;
-
-    fetchUserData();
-  }, [user]);
+  if (loading && !profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
   if (loading)
     return (
@@ -178,7 +167,7 @@ export default function ProfilePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <ProfileHeader
           profile={profile}
-          setProfile={setProfile}
+          // setProfile={setProfile}
           user={user}
           isDark={isDark}
           coverInputRef={coverInputRef}

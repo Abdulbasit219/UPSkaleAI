@@ -7,9 +7,11 @@ import { toast } from "sonner";
 
 const RecentActivityCard = ({ recentActivity, isDark, userId }) => {
   const [loading, setLoading] = useState(false);
-  const [activities, setActivities] = useState(recentActivity);
+  const [activities, setActivities] = useState(
+    Array.isArray(recentActivity) ? recentActivity : []
+  );
 
-  const sortedActivities = [...activities].sort(
+  const sortedActivities = [...activities]?.sort(
     (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
   );
 

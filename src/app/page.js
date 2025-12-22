@@ -13,14 +13,21 @@ import {
   Brain,
   Rocket,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar from "@/components/Navbar";
 import SharedCTABanner from "@/components/ui/CTABanner";
+import { fetchProfile } from "@/store/slices/profileSlice";
+import { useSession } from "next-auth/react";
 
 export default function SkillBridgeLanding() {
   const router = useRouter();
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
+
+  const { data } = useSession();
+  const user = data?.user;
+
+  const dispatch = useDispatch();
 
   const features = [
     {
@@ -79,6 +86,12 @@ export default function SkillBridgeLanding() {
   useEffect(() => {
     updateStreak();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchProfile());
+    }
+  }, [user, dispatch]);
 
   return (
     <>

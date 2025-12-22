@@ -10,28 +10,28 @@ const Avatar = ({ profile, isDark, avatarInputRef }) => {
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleAvatarDelete = async () => {
-    try {
-      const { data } = await axios.delete("/api/user/profile", {
-        data: {
-          type: "avatar",
-        },
-      });
+  // const handleAvatarDelete = async () => {
+  //   try {
+  //     const { data } = await axios.delete("/api/user/profile", {
+  //       data: {
+  //         type: "avatar",
+  //       },
+  //     });
 
-      if (data.success) {
-        toast.success("Avatar deleted");
-        setProfile((prev) => ({
-          ...prev,
-          avatar: null,
-        }));
-      }
-    } catch (error) {
-      console.error(
-        "Avatar delete error",
-        error.response?.data || error.message
-      );
-    }
-  };
+  //     if (data.success) {
+  //       toast.success("Avatar deleted");
+  //       setProfile((prev) => ({
+  //         ...prev,
+  //         avatar: null,
+  //       }));
+  //     }
+  //   } catch (error) {
+  //     console.error(
+  //       "Avatar delete error",
+  //       error.response?.data || error.message
+  //     );
+  //   }
+  // };
 
   const handleChangeImage = async (e) => {
     setIsUploading(true);
@@ -41,6 +41,8 @@ const Avatar = ({ profile, isDark, avatarInputRef }) => {
       setIsUploading(false);
       e.target.value = "";
     }
+  }
+  
   const dispatch = useDispatch()
 
   const handleAvatarChange = async (e) => {
@@ -53,6 +55,7 @@ const Avatar = ({ profile, isDark, avatarInputRef }) => {
         toast.error("Failed to update avatar");
       }
     };
+
 
   const handleAvatarDelete = () => {
     console.log("delete avatar");
@@ -119,4 +122,4 @@ const Avatar = ({ profile, isDark, avatarInputRef }) => {
   );
 };
 
-export default Avatar;
+export default Avatar
