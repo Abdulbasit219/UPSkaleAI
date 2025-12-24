@@ -1,20 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import {
-  BookOpen,
-  Target,
-  Briefcase,
-  CheckCircle,
-  Users,
-  Code,
-  Flame,
-  Trophy,
-  Video,
-} from "lucide-react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { Briefcase, Users, Video } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import WelcomeHeader from "@/components/dashboard/user/WelcomeHeader";
 import QuickStatsGrid from "@/components/dashboard/user/QuickStatsGrid";
 import ContinueLearningSection from "@/components/dashboard/user/ContinueLearningSection";
@@ -22,89 +11,58 @@ import RecommendedSection from "@/components/dashboard/user/RecommendedSection";
 import LearningInsights from "@/components/dashboard/user/LearningInsights";
 import TodayGoals from "@/components/dashboard/user/TodayGoals";
 import UpcomingEventsCard from "@/components/dashboard/user/UpcomingEventsCard";
-import RecentActivityCard from "@/components/dashboard/user/RecentActivityCard";
+import { fetchProfile } from "@/store/slices/profileSlice";
+import RecentActivityCard from "@/components/profile/recentActivity/RecentActivityCard";
+import { fetchEnrolledCourses } from "@/store/slices/enrolledCoursesSlice";
+import axios from "axios";
 
 export default function Dashboard() {
-  
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // User data
+  const dispatch = useDispatch();
+  const { data } = useSession();
+  const user = data?.user;
+
+  const { data: profile } = useSelector((state) => state.profile);
+
+  const { data: enrolledCourses } = useSelector(
+    (state) => state.enrolledCourses
+  );
+
+  const [tasks, setTasks] = useState([]);
+
   const userData = {
-    name: session?.user?.username || session?.user?.name || "User",
+    name: user?.username || user?.name || "User",
     streak: 47,
     todayGoal: 2,
     completedToday: 1,
   };
 
-  // Quick stats
-  const quickStats = [
-    {
-      icon: <Flame className="w-5 h-5" />,
-      value: "47",
-      label: "Day Streak",
-      change: "+2 days",
-      color: "from-orange-500 to-red-500",
-      trend: "up",
-    },
-    {
-      icon: <Target className="w-5 h-5" />,
-      value: "65%",
-      label: "Career Progress",
-      change: "+5% this week",
-      color: "from-green-500 to-emerald-500",
-      trend: "up",
-    },
-    {
-      icon: <BookOpen className="w-5 h-5" />,
-      value: "12",
-      label: "Active Courses",
-      change: "3 in progress",
-      color: "from-blue-500 to-cyan-500",
-      trend: "neutral",
-    },
-    {
-      icon: <Trophy className="w-5 h-5" />,
-      value: "24",
-      label: "Achievements",
-      change: "2 new badges",
-      color: "from-purple-500 to-pink-500",
-      trend: "up",
-    },
-  ];
+  const fetchTodayTask = async () => {
+    try {
+      const { data } = await axios.get("/api/daily-goals");
+      setTasks(data?.data?.tasks);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  // Continue learning
-  const continueLearning = [
-    {
-      title: "Advanced React Patterns",
-      category: "Web Development",
-      progress: 75,
-      timeLeft: "2h 30m left",
-      nextLesson: "Higher Order Components",
-      thumbnail: "⚛️",
-      difficulty: "Advanced",
-    },
-    {
-      title: "Node.js Backend Mastery",
-      category: "Backend Development",
-      progress: 45,
-      timeLeft: "5h 15m left",
-      nextLesson: "RESTful API Design",
-      thumbnail: "🟢",
-      difficulty: "Intermediate",
-    },
-    {
-      title: "Database Design Fundamentals",
-      category: "Database",
-      progress: 30,
-      timeLeft: "8h 45m left",
-      nextLesson: "Normalization Techniques",
-      thumbnail: "💾",
-      difficulty: "Beginner",
-    },
-  ];
+  const toggleTask = async (taskId) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task._id === taskId ? { ...task, completed: !task.completed } : task
+      )
+    );
+
+    try {
+      await axios.patch(`/api/daily-goals/${taskId}`);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   // Recommended for you
   const recommended = [
@@ -165,28 +123,6 @@ export default function Dashboard() {
     },
   ];
 
-  // Recent activity
-  // const recentActivity = [
-  //   {
-  //     type: "course",
-  //     title: "Completed 'State Management' lesson",
-  //     time: "2 hours ago",
-  //     icon: <CheckCircle className="w-4 h-4 text-green-400" />,
-  //   },
-  //   {
-  //     type: "achievement",
-  //     title: "Earned 'Quick Learner' badge",
-  //     time: "5 hours ago",
-  //     icon: <Trophy className="w-4 h-4 text-yellow-400" />,
-  //   },
-  //   {
-  //     type: "project",
-  //     title: "Updated E-Commerce project",
-  //     time: "1 day ago",
-  //     icon: <Code className="w-4 h-4 text-blue-400" />,
-  //   },
-  // ];
-
   // Upcoming events
   const upcomingEvents = [
     {
@@ -213,14 +149,61 @@ export default function Dashboard() {
   ];
 
   // Learning insights
-  const learningInsights = {
-    weeklyHours: 12.5,
-    completionRate: 85,
-    focusArea: "Frontend Development",
-    strongestSkill: "React",
+  const total = enrolledCourses.length;
+  const completed = enrolledCourses.filter((c) => c.isCompleted).length;
+  const completionRate = total ? Math.round((completed / total) * 100) : 0;
+
+  // Focus area
+  const categoryCount = {};
+  enrolledCourses.forEach((c) => {
+    const cat = c.courseId?.category;
+    if (cat) categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+  });
+
+  const focusArea = Object.keys(categoryCount).length
+    ? Object.keys(categoryCount).reduce((a, b) =>
+        categoryCount[a] > categoryCount[b] ? a : b
+      )
+    : "N/A";
+
+  // Strongest skill
+  const strongestCourse = enrolledCourses.reduce(
+    (prev, curr) =>
+      curr.progressPercentage > prev.progressPercentage ? curr : prev,
+    enrolledCourses[0]
+  );
+
+  const formatSkill = (tag) =>
+    tag.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+
+  const strongestSkill = strongestCourse?.courseId?.tags?.length
+    ? formatSkill(strongestCourse.courseId.tags[0])
+    : "N/A";
+
+  const getHoursFromEstimatedTime = (estimatedTime) => {
+    if (!estimatedTime) return 0;
+    return parseInt(estimatedTime);
   };
 
-  
+  const weeklyHours = enrolledCourses
+    .reduce((sum, c) => {
+      const totalHours = getHoursFromEstimatedTime(c.courseId?.estimatedTime);
+
+      const completedHours = (c.progressPercentage / 100) * totalHours;
+
+      const weekly = completedHours / 4;
+
+      return sum + weekly;
+    }, 0)
+    .toFixed(1);
+
+  const learningInsights = {
+    weeklyHours: weeklyHours,
+    completionRate: completionRate,
+    focusArea: focusArea,
+    strongestSkill: strongestSkill,
+  };
+
   useEffect(() => {
     // Redirect if not authenticated or not a Job Seeker
     if (status === "unauthenticated") {
@@ -233,8 +216,22 @@ export default function Dashboard() {
     }
   }, [status, session, router]);
 
+  useEffect(() => {
+    if (!profile) {
+      dispatch(fetchProfile());
+    }
+  }, [dispatch, profile, user]);
 
-  // Show loading while checking authentication
+  useEffect(() => {
+    if (enrolledCourses.length === 0) {
+      dispatch(fetchEnrolledCourses());
+    }
+  }, [enrolledCourses, dispatch]);
+
+  useEffect(() => {
+    fetchTodayTask();
+  }, []);
+
   if (status === "loading") {
     return (
       <div
@@ -274,7 +271,11 @@ export default function Dashboard() {
         <WelcomeHeader userData={userData} isDark={isDark} />
 
         {/* Quick Stats */}
-        <QuickStatsGrid quickStats={quickStats} isDark={isDark} />
+        <QuickStatsGrid
+          isDark={isDark}
+          enrolledCourses={enrolledCourses}
+          profile={profile}
+        />
 
         {/* Main Content Grid */}
         <div className="grid lg:grid-cols-3 gap-6">
@@ -282,7 +283,7 @@ export default function Dashboard() {
           <div className="lg:col-span-2 space-y-6">
             {/* Continue Learning */}
             <ContinueLearningSection
-              continueLearning={continueLearning}
+              enrolledCourses={enrolledCourses}
               isDark={isDark}
             />
 
@@ -301,20 +302,21 @@ export default function Dashboard() {
             {/* Today's Goals */}
             <TodayGoals
               isDark={isDark}
-              userData={userData}
-              todayTasks={todayTasks}
+              // userData={userData}
+              todayTasks={tasks}
+              onToggleTask={toggleTask}
             />
 
             {/* Upcoming Events */}
-            <UpcomingEventsCard
+            {/* <UpcomingEventsCard
               isDark={isDark}
               upcomingEvents={upcomingEvents}
-            />
+            /> */}
 
-            {/* Recent Activity */}
             <RecentActivityCard
+              recentActivity={profile?.recentActivity}
               isDark={isDark}
-              recentActivity={recentActivity}
+              userId={profile?.userId}
             />
           </div>
         </div>

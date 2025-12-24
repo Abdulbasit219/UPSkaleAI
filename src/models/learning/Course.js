@@ -33,10 +33,9 @@ const CourseSchema = new mongoose.Schema(
       enum: ["Beginner", "Intermediate", "Advanced"],
       default: "Beginner",
     },
-    // thumbnail: {
-    //   type: String,
-    //   default: "",
-    // },
+    skills: [
+      { type: String }, 
+    ],
     tags: {
       type: [String],
       default: [],
@@ -68,7 +67,6 @@ const CourseSchema = new mongoose.Schema(
 CourseSchema.index({ category: 1, isPublished: 1 });
 CourseSchema.index({ slug: 1 });
 
-const Course =
-  mongoose.models.Course || mongoose.model("Course", CourseSchema);
+const Course = mongoose.models.Course || mongoose.model("Course", CourseSchema);
 
 export default Course;

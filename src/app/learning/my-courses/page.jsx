@@ -1,28 +1,24 @@
 "use client";
 import EnrolledCourseCard from "@/components/learning/EnrolledCourseCard";
 import StatCard from "@/components/learning/StatCard";
+import { fetchEnrolledCourses } from "@/store/slices/enrolledCoursesSlice";
 import axios from "axios";
 import { Award, BookOpen, GraduationCap, TrendingUp } from "lucide-react";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const MyCoursesPage = () => {
-  const [enrolledCourses, setEnrolledCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchEnrolledCourses = async () => {
-    try {
-      const response = await axios.get("/api/learning/progress");
-      setEnrolledCourses(response?.data?.data || []);
-    } catch (error) {
-      console.error("Error fetching enrolled courses:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const dispatch = useDispatch();
+  const { data: enrolledCourses, loading } = useSelector(
+    (state) => state.enrolledCourses
+  );
 
   useEffect(() => {
-    fetchEnrolledCourses();
-  }, []);
+    if (enrolledCourses.length === 0) {
+      dispatch(fetchEnrolledCourses());
+    }
+  }, [dispatch, enrolledCourses.length]);
 
   if (loading) {
     return (

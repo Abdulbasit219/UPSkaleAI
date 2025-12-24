@@ -7,13 +7,11 @@ export default function LearningInsights({ learningInsights, isDark }) {
     {
       label: "This Week",
       value: `${learningInsights.weeklyHours}h`,
-      change: "+2.5h from last week",
       icon: <Clock className="w-4 h-4 text-purple-400" />,
     },
     {
       label: "Completion Rate",
       value: `${learningInsights.completionRate}%`,
-      change: "+8% from last month",
       icon: <Target className="w-4 h-4 text-purple-400" />,
     },
     {
@@ -75,13 +73,6 @@ export default function LearningInsights({ learningInsights, isDark }) {
             >
               {insight.value}
             </div>
-
-            {insight.change && (
-              <div className="text-green-400 text-xs flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" />
-                {insight.change}
-              </div>
-            )}
           </div>
         ))}
       </div>

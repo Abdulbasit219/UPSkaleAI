@@ -64,14 +64,13 @@ export async function POST(request) {
   try {
     await connectDB();
 
-    // Get session (optional - uncomment if you want authentication)
-    // const session = await getServerSession(authOptions);
-    // if (!session) {
-    //   return NextResponse.json(
-    //     { success: false, message: "Unauthorized" },
-    //     { status: 401 }
-    //   );
-    // }
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
 
     const body = await request.json();
     
@@ -80,7 +79,6 @@ export async function POST(request) {
       description,
       category,
       difficulty,
-      // thumbnail,
       tags,
       estimatedTime,
       prerequisites,
@@ -103,8 +101,6 @@ export async function POST(request) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
-    console.log(slug)
-
     const existingCourse = await Course.findOne({ slug });
     if (existingCourse) {
       return NextResponse.json(
@@ -122,12 +118,11 @@ export async function POST(request) {
       description,
       category,
       difficulty: difficulty || "Beginner",
-      // thumbnail: thumbnail || "",
       tags: tags || [],
       estimatedTime: estimatedTime || "2 hours",
       prerequisites: prerequisites || [],
       isPublished: isPublished || false,
-      author: author, // Session se user id lo: session.user._id
+      author: author, 
     });
 
     await course.populate("author", "username email name");

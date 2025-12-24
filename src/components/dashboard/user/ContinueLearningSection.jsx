@@ -2,8 +2,17 @@
 
 import React from "react";
 import { Play, ChevronRight, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export default function ContinueLearningSection({ continueLearning, isDark }) {
+export default function ContinueLearningSection({enrolledCourses, isDark}) {
+  const router = useRouter();
+
+  const sortedCourses = [...enrolledCourses].sort((a, b) => {
+    const aDate = new Date(a.lastAccessedAt || a.enrolledAt);
+    const bDate = new Date(b.lastAccessedAt || b.enrolledAt);
+    return bDate - aDate;
+  });
+
   return (
     <div
       className={`backdrop-blur-sm border rounded-xl p-6 transition-colors ${
@@ -30,7 +39,7 @@ export default function ContinueLearningSection({ continueLearning, isDark }) {
 
       {/* Course Items */}
       <div className="space-y-4">
-        {continueLearning.map((course, index) => (
+        {sortedCourses?.map((course, index) => (
           <div
             key={index}
             className={`group border rounded-lg overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg ${
@@ -40,25 +49,6 @@ export default function ContinueLearningSection({ continueLearning, isDark }) {
             }`}
           >
             <div className="flex flex-col sm:flex-row gap-4 p-4">
-              
-              {/* Thumbnail */}
-              <div
-                className={`w-full sm:w-24 h-24 rounded-lg flex items-center justify-center text-4xl flex-shrink-0 relative ${
-                  isDark
-                    ? "bg-gradient-to-br from-slate-800 to-slate-700"
-                    : "bg-gradient-to-br from-gray-100 to-gray-200"
-                }`}
-              >
-                <div
-                  className={`absolute inset-0 rounded-lg ${
-                    isDark
-                      ? "bg-gradient-to-br from-purple-500/10 to-pink-500/10"
-                      : "bg-gradient-to-br from-purple-100 to-pink-100"
-                  }`}
-                ></div>
-                <span className="relative z-10">{course.thumbnail}</span>
-              </div>
-
               {/* Course Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2 mb-2">
@@ -68,10 +58,10 @@ export default function ContinueLearningSection({ continueLearning, isDark }) {
                         isDark ? "text-white" : "text-gray-900"
                       }`}
                     >
-                      {course.title}
+                      {course?.courseId?.title}
                     </h3>
                     <p className={isDark ? "text-gray-400" : "text-gray-600"}>
-                      {course.category}
+                      {course?.courseId?.category}
                     </p>
                   </div>
 
@@ -82,21 +72,15 @@ export default function ContinueLearningSection({ continueLearning, isDark }) {
                         : "bg-blue-100 text-blue-700 border-blue-200"
                     }`}
                   >
-                    {course.difficulty}
+                    {course?.courseId?.difficulty}
                   </span>
                 </div>
 
                 {/* Progress Section */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span
-                      className={isDark ? "text-gray-400" : "text-gray-600"}
-                    >
-                      Next: {course.nextLesson}
-                    </span>
-
                     <span className="text-purple-400 font-semibold">
-                      {course.progress}%
+                      {course?.progressPercentage}%
                     </span>
                   </div>
 
@@ -107,23 +91,36 @@ export default function ContinueLearningSection({ continueLearning, isDark }) {
                   >
                     <div
                       className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${course.progress}%` }}
+                      style={{ width: `${course?.progressPercentage}%` }}
                     ></div>
                   </div>
 
                   {/* Footer */}
                   <div className="flex items-center justify-between">
                     <span
-                      className={`text-xs flex items-center gap-1 ${
-                        isDark ? "text-gray-500" : "text-gray-400"
-                      }`}
+                      className={`text-xs flex items-center gap-1 ${isDark ? "text-gray-500" : "text-gray-400"}`}
                     >
                       <Clock className="w-3 h-3" />
-                      {course.timeLeft}
+                      {course.isCompleted
+                        ? "Completed"
+                        : course.currentLesson
+                          ? `Next: ${course.currentLesson.title}`
+                          : "Not started"}
                     </span>
 
                     <button
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                      onClick={() => {
+                        if (course?.currentLesson) {
+                          router.push(
+                            `/learning/${course?.courseId?._id}/lessons/${course?.currentLesson?._id}`
+                          );
+                        } else {
+                          router.push(
+                            `/learning/${course?.courseId?._id}`
+                          );
+                        }
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
                         isDark
                           ? "bg-purple-500/10 text-purple-300 border-purple-500/20 hover:bg-purple-500/20"
                           : "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200"
@@ -132,7 +129,6 @@ export default function ContinueLearningSection({ continueLearning, isDark }) {
                       Continue
                     </button>
                   </div>
-
                 </div>
               </div>
             </div>

@@ -5,6 +5,7 @@ import UserProgress from "@/models/learning/UserProgress";
 import { NextResponse } from "next/server";
 import Lesson from "@/models/learning/Lesson";
 import Certificate from "@/models/learning/Certificate";
+import Course from "@/models/learning/Course"
 
 // GET USER PROGRESS (search for both query based on course or not)
 export async function GET(request) {  
@@ -29,7 +30,7 @@ export async function GET(request) {
     }
 
     const progress = await UserProgress.find(query)
-      .populate("courseId", "title slug category difficulty")
+      .populate("courseId", "title slug category difficulty tags estimatedTime")
       .populate("currentLesson", "title slug")
       .sort({ lastAccessedAt: -1 });
 

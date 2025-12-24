@@ -83,14 +83,14 @@ export async function GET(request, { params }) {
   try {
     await connectDB();
 
-    // const session = await getServerSession(authOptions);
-    // if (!session) {
-    //   return NextResponse.json({ success: true, enrolled: false });
-    // }
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ success: true, enrolled: false });
+    }
 
     const { id } = params;
-    // const userId = session.user._id;
-    const userId = "6922ad85960624dadd579169"
+    const userId = session.user._id;
+    // const userId = "6922ad85960624dadd579169"
 
     const progress = await UserProgress.findOne({
       userId,

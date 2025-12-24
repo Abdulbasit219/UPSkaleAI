@@ -3,35 +3,21 @@ import { Camera, User } from "lucide-react";
 import ImageUploadModal from "./ImageUploadModal";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { updateAvatar } from "@/store/slices/profileSlice";
+import { deleteAvatar, updateAvatar } from "@/store/slices/profileSlice";
 import { toast } from "sonner";
 
 const Avatar = ({ profile, isDark, avatarInputRef }) => {
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  // const handleAvatarDelete = async () => {
-  //   try {
-  //     const { data } = await axios.delete("/api/user/profile", {
-  //       data: {
-  //         type: "avatar",
-  //       },
-  //     });
-
-  //     if (data.success) {
-  //       toast.success("Avatar deleted");
-  //       setProfile((prev) => ({
-  //         ...prev,
-  //         avatar: null,
-  //       }));
-  //     }
-  //   } catch (error) {
-  //     console.error(
-  //       "Avatar delete error",
-  //       error.response?.data || error.message
-  //     );
-  //   }
-  // };
+  const handleAvatarDelete = async () => {
+    try {
+      await dispatch(deleteAvatar()).unwrap();
+      toast.success("Avatar deleted successfully!");
+    } catch (error) {
+      toast.error("Failed to delete avatar");
+    }
+  };
 
   const handleChangeImage = async (e) => {
     setIsUploading(true);
@@ -41,24 +27,19 @@ const Avatar = ({ profile, isDark, avatarInputRef }) => {
       setIsUploading(false);
       e.target.value = "";
     }
-  }
-  
-  const dispatch = useDispatch()
+  };
+
+  const dispatch = useDispatch();
 
   const handleAvatarChange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      try {
-        await dispatch(updateAvatar(file)).unwrap();
-        toast.success("Avatar updated successfully!");
-      } catch (error) {
-        toast.error("Failed to update avatar");
-      }
-    };
-
-
-  const handleAvatarDelete = () => {
-    console.log("delete avatar");
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      await dispatch(updateAvatar(file)).unwrap();
+      toast.success("Avatar updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update avatar");
+    }
   };
 
   const AvatarLoader = () => (
@@ -122,4 +103,4 @@ const Avatar = ({ profile, isDark, avatarInputRef }) => {
   );
 };
 
-export default Avatar
+export default Avatar;

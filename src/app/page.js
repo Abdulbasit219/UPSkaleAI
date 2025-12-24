@@ -18,6 +18,7 @@ import Navbar from "@/components/Navbar";
 import SharedCTABanner from "@/components/ui/CTABanner";
 import { fetchProfile } from "@/store/slices/profileSlice";
 import { useSession } from "next-auth/react";
+import axios from "axios";
 
 export default function SkillBridgeLanding() {
   const router = useRouter();
@@ -26,6 +27,8 @@ export default function SkillBridgeLanding() {
 
   const { data } = useSession();
   const user = data?.user;
+
+  const { data: profile } = useSelector((state) => state.profile);
 
   const dispatch = useDispatch();
 
@@ -88,7 +91,7 @@ export default function SkillBridgeLanding() {
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (user && !profile) {
       dispatch(fetchProfile());
     }
   }, [user, dispatch]);

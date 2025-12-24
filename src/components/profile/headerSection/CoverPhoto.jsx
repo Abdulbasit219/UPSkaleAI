@@ -1,5 +1,8 @@
 import axios from "axios";
-import { updateCoverPhoto } from "@/store/slices/profileSlice";
+import {
+  deleteCoverPhoto,
+  updateCoverPhoto,
+} from "@/store/slices/profileSlice";
 import { Camera } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -7,12 +10,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import ImageUploadModal from "./ImageUploadModal";
 
-const CoverPhoto = ({
-  profile,
-  setProfile,
-  isDark,
-  coverInputRef,
-}) => {
+const CoverPhoto = ({ profile, isDark, coverInputRef }) => {
   const dispatch = useDispatch();
 
   const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
@@ -35,26 +33,17 @@ const CoverPhoto = ({
     }
   };
 
-  // 🔹 Delete cover
+  // Delete cover
   const handleCoverDelete = async () => {
     try {
-      const { data } = await axios.delete("/api/user/profile", {
-        data: { type: "cover" },
-      });
-
-      if (data.success) {
-        toast.success("Cover photo deleted");
-        setProfile((prev) => ({
-          ...prev,
-          coverPhoto: null,
-        }));
-      }
+      await dispatch(deleteCoverPhoto()).unwrap();
+      toast.success("Cover photo deleted successfully!");
     } catch (error) {
       toast.error("Failed to delete cover photo");
     }
   };
 
-  const AvatarLoader = () => (
+  const CoverLoader = () => (
     <div className="absolute inset-0 flex items-center justify-center bg-black/30">
       <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin" />
     </div>
@@ -75,7 +64,7 @@ const CoverPhoto = ({
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500" />
       )}
 
-      {isUploading && <AvatarLoader />}
+      {isUploading && <CoverLoader />}
 
       <div
         className={`absolute inset-0 pointer-events-none ${
