@@ -29,6 +29,7 @@ import {
   Share2,
   RefreshCw,
   Home,
+  Loader2,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 export default function SkillAssessmentPage() {
@@ -38,11 +39,26 @@ export default function SkillAssessmentPage() {
   const [answers, setAnswers] = useState({});
   const [timeLeft, setTimeLeft] = useState(600);
   const [quizStarted, setQuizStarted] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
 
+  React.useEffect(() => {
+    // Fetch profile to check for skills
+    fetch("/api/user/profile")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.profile) {
+          setUserProfile(data.profile);
+        }
+      })
+      .catch((err) => console.error("Failed to load profile", err));
+  }, []);
+
   // Assessment categories
-  const categories = [
+  let categories = [
     {
       id: "frontend",
       title: "Frontend Development",
@@ -92,8 +108,22 @@ export default function SkillAssessmentPage() {
     },
   ];
 
-  // Sample quiz questions (Frontend)
-  const quizQuestions = [
+  // if (userProfile?.skills?.length > 0) {
+  //   categories.unshift({
+  //     id: "personalized",
+  //     title: "Personalized Assessment",
+  //     icon: <Sparkles className="w-8 h-8" />,
+  //     color: "from-indigo-500 to-violet-500",
+  //     skills: userProfile.skills.slice(0, 4).map((s) => s.skillName),
+  //     questions: 10,
+  //     duration: "10 min",
+  //     difficulty: "Adaptive",
+  //     description: "Tailored questions based on your specific skill profile",
+  //   });
+  // }
+
+  // Frontend Questions
+  const frontendQuestions = [
     {
       id: 1,
       question: "What is the purpose of React Hooks?",
@@ -161,30 +191,262 @@ export default function SkillAssessmentPage() {
     },
   ];
 
+  // Backend Questions
+  const backendQuestions = [
+    {
+      id: 1,
+      question: "What is Node.js?",
+      options: [
+        "A frontend framework",
+        "A JavaScript runtime built on Chrome's V8 JavaScript engine",
+        "A database management system",
+        "A testing library",
+      ],
+      correct: 1,
+      explanation:
+        "Node.js is a runtime environment that allows you to run JavaScript on the server side.",
+    },
+    {
+      id: 2,
+      question: "What is the primary purpose of Express.js?",
+      options: [
+        "To design user interfaces",
+        "To handle database connections only",
+        "To build web applications and APIs in Node.js",
+        "To test JavaScript code",
+      ],
+      correct: 2,
+      explanation:
+        "Express.js is a minimal and flexible Node.js web application framework that provides a robust set of features for web and mobile applications.",
+    },
+    {
+      id: 3,
+      question: "What is the key difference between SQL and NoSQL?",
+      options: [
+        "SQL databases are relational, NoSQL are non-relational",
+        "SQL databases are faster",
+        "NoSQL uses tables, SQL uses collections",
+        "There is no difference",
+      ],
+      correct: 0,
+      explanation:
+        "SQL databases are table-based (relational), whereas NoSQL databases are document, key-value, graph, or wide-column stores (non-relational).",
+    },
+    {
+      id: 4,
+      question: "What is middleware in Express?",
+      options: [
+        "A database driver",
+        "A function that has access to the request and response objects",
+        "A frontend component",
+        "A CSS framework",
+      ],
+      correct: 1,
+      explanation:
+        "Middleware functions are functions that have access to the request object, the response object, and the next middleware function in the application's request-response cycle.",
+    },
+    {
+      id: 5,
+      question: "What constraint defines a RESTful API?",
+      options: [
+        "It must use XML",
+        "It must use HTTP/2",
+        "It is stateless and uses standard HTTP methods",
+        "It must comprise of a single monolithic server",
+      ],
+      correct: 2,
+      explanation:
+        "RESTful APIs are stateless, meaning each request from a client to server must contain all the information needed to understand and process the request.",
+    },
+  ];
+
+  // Fullstack Questions
+  const fullstackQuestions = [
+    {
+      id: 1,
+      question: "What does the MERN stack stand for?",
+      options: [
+        "MySQL, Express, React, Node",
+        "MongoDB, Express, React, Node",
+        "MongoDB, Ember, React, Node",
+        "MySQL, Ember, React, Nginx",
+      ],
+      correct: 1,
+      explanation:
+        "MERN stands for MongoDB, Express.js, React.js, and Node.js.",
+    },
+    {
+      id: 2,
+      question:
+        "What is the difference between client-side and server-side rendering?",
+      options: [
+        "SSR happens in the browser, CSR on the server",
+        "SSR generates HTML on the server, CSR generates it in the browser",
+        "SSR is slower for initial load",
+        "CSR is better for SEO",
+      ],
+      correct: 1,
+      explanation:
+        "Server-Side Rendering (SSR) generates the full HTML for a page on the server, while Client-Side Rendering (CSR) renders content in the browser using JavaScript.",
+    },
+    {
+      id: 3,
+      question: "What is the purpose of CORS?",
+      options: [
+        "To optimize database queries",
+        "To allow restricted resources on a web page to be requested from another domain",
+        "To style web pages",
+        "To manage state in React",
+      ],
+      correct: 1,
+      explanation:
+        "Cross-Origin Resource Sharing (CORS) is a mechanism that allows restricted resources on a web page to be requested from another domain outside the domain from which the first resource was served.",
+    },
+    {
+      id: 4,
+      question: "What is a JWT (JSON Web Token) used for?",
+      options: [
+        "Storing large amounts of data",
+        "Securely transmitting information between parties as a JSON object, often for authentication",
+        "Formatting JSON responses",
+        "Encrypting database passwords",
+      ],
+      correct: 1,
+      explanation:
+        "JWT is used for securely transmitting information between parties. It is commonly used for authentication and information exchange.",
+    },
+    {
+      id: 5,
+      question:
+        "In a MERN app, how does React typically communicate with the Node backend?",
+      options: [
+        "Through direct database access",
+        "Through HTTP requests (REST or GraphQL)",
+        "Through file sharing",
+        "Magic",
+      ],
+      correct: 1,
+      explanation:
+        "React communicates with the Node.js backend by sending HTTP requests to the API endpoints exposed by the Node server.",
+    },
+  ];
+
+  // JavaScript Questions
+  const javascriptQuestions = [
+    {
+      id: 1,
+      question: "What is the difference between 'let' and 'var'?",
+      options: [
+        "var is block scoped, let is function scoped",
+        "let is block scoped, var is function scoped",
+        "They are exactly the same",
+        "let is deprecated",
+      ],
+      correct: 1,
+      explanation:
+        "let is block scoped (only accessible within the nearest set of curly braces), while var is function scoped.",
+    },
+    {
+      id: 2,
+      question: "What is a closure in JavaScript?",
+      options: [
+        "A way to close a browser window",
+        "A function bundled together with references to its surrounding state (lexical environment)",
+        "A variable that cannot be changed",
+        "A syntax error",
+      ],
+      correct: 1,
+      explanation:
+        "A closure gives you access to an outer function's scope from an inner function.",
+    },
+    {
+      id: 3,
+      question: "What does the 'this' keyword refer to?",
+      options: [
+        "Always the global object",
+        "The object that the function is a property of, or the object that executes the function",
+        "The function itself",
+        "The previous function in the stack",
+      ],
+      correct: 1,
+      explanation:
+        "The value of 'this' depends on how the function is called. In a method, it refers to the owner object.",
+    },
+    {
+      id: 4,
+      question: "What is a Promise?",
+      options: [
+        "A guarantee that your code will not fail",
+        "An object representing the eventual completion or failure of an asynchronous operation",
+        "A synchronous function",
+        "A variable type",
+      ],
+      correct: 1,
+      explanation:
+        "A Promise is an object representing the eventual completion or failure of an asynchronous operation and its resulting value.",
+    },
+    {
+      id: 5,
+      question: "What is hoisting?",
+      options: [
+        "Moving declarations to the top of the current scope",
+        "Moving variables to the bottom of the script",
+        "Deleting unused variables",
+        "Optimizing code speed",
+      ],
+      correct: 0,
+      explanation:
+        "Hoisting is JavaScript's default behavior of moving declarations to the top of the current scope before code execution.",
+    },
+  ];
+
   // Calculate score
   const calculateScore = () => {
     let correct = 0;
     Object.keys(answers).forEach((questionId) => {
-      const question = quizQuestions.find((q) => q.id === parseInt(questionId));
+      const question = questions.find((q) => q.id === parseInt(questionId));
       if (question && answers[questionId] === question.correct) {
         correct++;
       }
     });
     return {
       score: correct,
-      total: quizQuestions.length,
-      percentage: Math.round((correct / quizQuestions.length) * 100),
+      total: questions.length,
+      percentage:
+        questions.length > 0
+          ? Math.round((correct / questions.length) * 100)
+          : 0,
     };
   };
 
   const handleAnswer = (questionIndex, optionIndex) => {
     setAnswers({
       ...answers,
-      [quizQuestions[questionIndex].id]: optionIndex,
+      [questions[questionIndex].id]: optionIndex,
     });
   };
 
-  const startQuiz = (category) => {
+  const handleStartAssessment = async (category) => {
+    // Select questions based on category
+    let selectedQuestions = [];
+    switch (category.id) {
+      case "frontend":
+        selectedQuestions = frontendQuestions;
+        break;
+      case "backend":
+        selectedQuestions = backendQuestions;
+        break;
+      case "fullstack":
+        selectedQuestions = fullstackQuestions;
+        break;
+      case "javascript":
+        selectedQuestions = javascriptQuestions;
+        break;
+      default:
+        selectedQuestions = frontendQuestions;
+    }
+
+    setQuestions(selectedQuestions);
     setSelectedCategory(category);
     setStep("quiz");
     setQuizStarted(true);
@@ -228,6 +490,21 @@ export default function SkillAssessmentPage() {
       />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Loading Overlay */}
+        {isGenerating && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="bg-white/10 p-8 rounded-2xl flex flex-col items-center gap-4 border border-white/20">
+              <Loader2 className="w-12 h-12 text-purple-400 animate-spin" />
+              <h3 className="text-xl font-bold text-white">
+                Generating Assessment...
+              </h3>
+              <p className="text-purple-200">
+                Analyzing your skills and preparing questions
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Welcome Screen */}
         {step === "welcome" && (
           <div className="space-y-8">
@@ -315,6 +592,45 @@ export default function SkillAssessmentPage() {
               ))}
             </div>
 
+            {/* User Skills Section */}
+            {userProfile?.skills?.length > 0 && (
+              <div className="mb-12">
+                <h2
+                  className={`text-2xl font-bold mb-6 ${isDark ? "text-white" : "text-gray-900"}`}
+                >
+                  Your Skills Profile
+                </h2>
+                <div
+                  className={`backdrop-blur-sm border rounded-xl p-6 ${
+                    isDark
+                      ? "bg-slate-900/50 border-purple-500/20"
+                      : "bg-white/80 border-purple-300/20"
+                  }`}
+                >
+                  <div className="flex flex-wrap gap-2">
+                    {userProfile.skills.map((skill, i) => (
+                      <span
+                        key={i}
+                        className={`px-4 py-2 rounded-lg font-medium border ${
+                          isDark
+                            ? "bg-purple-500/10 text-purple-300 border-purple-500/20"
+                            : "bg-purple-100 text-purple-700 border-purple-300/20"
+                        }`}
+                      >
+                        {skill.skillName}
+                      </span>
+                    ))}
+                  </div>
+                  <p
+                    className={`mt-4 text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                  >
+                    Assessment not available for personal skills right now. Try
+                    one of our standard assessments below.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Categories */}
             <div>
               <h2
@@ -401,7 +717,7 @@ export default function SkillAssessmentPage() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        startQuiz(category);
+                        handleStartAssessment(category);
                       }}
                       className="w-full mt-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center justify-center gap-2 group-hover:scale-105"
                     >
@@ -436,7 +752,7 @@ export default function SkillAssessmentPage() {
                   <p
                     className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
                   >
-                    Question {currentQuestion + 1} of {quizQuestions.length}
+                    Question {currentQuestion + 1} of {questions.length}
                   </p>
                 </div>
                 <div className="text-right">
@@ -461,7 +777,7 @@ export default function SkillAssessmentPage() {
                 <div
                   className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
                   style={{
-                    width: `${((currentQuestion + 1) / quizQuestions.length) * 100}%`,
+                    width: `${((currentQuestion + 1) / questions.length) * 100}%`,
                   }}
                 ></div>
               </div>
@@ -483,45 +799,41 @@ export default function SkillAssessmentPage() {
                 <h3
                   className={`text-2xl font-bold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
                 >
-                  {quizQuestions[currentQuestion]?.question}
+                  {questions[currentQuestion]?.question}
                 </h3>
               </div>
 
-              {/* Options */}
               <div className="space-y-3">
-                {quizQuestions[currentQuestion]?.options.map(
-                  (option, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleAnswer(currentQuestion, index)}
-                      className={`w-full p-4 rounded-xl text-left transition-all border-2 ${
-                        answers[quizQuestions[currentQuestion].id] === index
-                          ? "bg-purple-500/20 border-purple-500 text-white"
-                          : isDark
-                            ? "bg-slate-800/50 border-slate-700 text-gray-300 hover:border-purple-500/50 hover:bg-slate-800"
-                            : "bg-gray-50 border-gray-300 text-gray-700 hover:border-purple-500/50 hover:bg-gray-100"
-                      }`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                            answers[quizQuestions[currentQuestion].id] === index
-                              ? "border-purple-400 bg-purple-500"
-                              : isDark
-                                ? "border-gray-600"
-                                : "border-gray-400"
-                          }`}
-                        >
-                          {answers[quizQuestions[currentQuestion].id] ===
-                            index && (
-                            <div className="w-2 h-2 bg-white rounded-full"></div>
-                          )}
-                        </div>
-                        <span className="font-medium">{option}</span>
+                {questions[currentQuestion]?.options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleAnswer(currentQuestion, index)}
+                    className={`w-full p-4 rounded-xl text-left transition-all border-2 ${
+                      answers[questions[currentQuestion].id] === index
+                        ? "bg-purple-500/20 border-purple-500 text-white"
+                        : isDark
+                          ? "bg-slate-800/50 border-slate-700 text-gray-300 hover:border-purple-500/50 hover:bg-slate-800"
+                          : "bg-gray-50 border-gray-300 text-gray-700 hover:border-purple-500/50 hover:bg-gray-100"
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                          answers[questions[currentQuestion].id] === index
+                            ? "border-purple-400 bg-purple-500"
+                            : isDark
+                              ? "border-gray-600"
+                              : "border-gray-400"
+                        }`}
+                      >
+                        {answers[questions[currentQuestion].id] === index && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
                       </div>
-                    </button>
-                  )
-                )}
+                      <span className="font-medium">{option}</span>
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -542,7 +854,7 @@ export default function SkillAssessmentPage() {
                 Previous
               </button>
 
-              {currentQuestion < quizQuestions.length - 1 ? (
+              {currentQuestion < questions.length - 1 ? (
                 <button
                   onClick={() => setCurrentQuestion(currentQuestion + 1)}
                   className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-2"
@@ -672,7 +984,7 @@ export default function SkillAssessmentPage() {
                     <span
                       className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
                     >
-                      {Object.keys(answers).length}/{quizQuestions.length}
+                      {Object.keys(answers).length}/{questions.length}
                     </span>
                   </div>
                   <div
@@ -683,7 +995,7 @@ export default function SkillAssessmentPage() {
                     <div
                       className="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full"
                       style={{
-                        width: `${(Object.keys(answers).length / quizQuestions.length) * 100}%`,
+                        width: `${(Object.keys(answers).length / questions.length) * 100}%`,
                       }}
                     ></div>
                   </div>
@@ -979,7 +1291,7 @@ export default function SkillAssessmentPage() {
               </h3>
 
               <div className="space-y-4">
-                {quizQuestions.map((question, index) => {
+                {questions.map((question, index) => {
                   const userAnswer = answers[question.id];
                   const isCorrect = userAnswer === question.correct;
 
