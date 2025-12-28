@@ -94,6 +94,37 @@ export const addSkill = createAsyncThunk(
   }
 );
 
+// Async thunk to delete cover photo
+export const deleteCoverPhoto = createAsyncThunk(
+  "profile/deleteCoverPhoto",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete("/api/user/profile", {
+        data: { type: "cover" },
+      });
+      return response.data.profile;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to delete cover photo"
+      );
+    }
+  }
+);
+
+export const deleteAvatar = createAsyncThunk(
+  "profile/deleteAvatar",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete("/api/user/profile", {
+        data: { type: "avatar" },
+      });
+      return response.data.profile;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to delete avatar");
+    }
+  }
+);
+
 const profileSlice = createSlice({
   name: "profile",
   initialState: {
@@ -158,9 +189,35 @@ const profileSlice = createSlice({
         state.data = action.payload;
       })
 
+      // Delete Avatar
+      .addCase(deleteAvatar.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteAvatar.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(deleteAvatar.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
       // Update Cover Photo
       .addCase(updateCoverPhoto.fulfilled, (state, action) => {
         state.data = action.payload;
+      })
+
+      // Delete Cover Photo
+      .addCase(deleteCoverPhoto.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteCoverPhoto.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(deleteCoverPhoto.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
 
       // Delete Project

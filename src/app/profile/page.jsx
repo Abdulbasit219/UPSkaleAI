@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
-import axios from "axios";
 import EditProfileModal from "@/components/profile/EditProfileModal";
 import AddProjectModal from "@/components/profile/ProjectUpsertModal";
 import { toast } from "sonner";
@@ -31,12 +30,9 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { fetchProfile } from "@/store/slices/profileSlice";
 
 export default function ProfilePage() {
-  // const [profile, setProfile] = useState(null);
-  // const [loading, setLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
-  // const [streak, setStreak] = useState([]);
 
   const theme = useSelector((state) => state.theme.mode);
   const {
@@ -101,9 +97,6 @@ export default function ProfilePage() {
     }
   };
 
-  // Fetch profile on mount
-
-  
   const stats = [
     {
       icon: <Trophy className="w-5 h-5" />,
@@ -135,6 +128,12 @@ export default function ProfilePage() {
       color: "from-green-500 to-emerald-500",
     },
   ];
+
+  useEffect(() => {
+    if (user && !profile) {
+      dispatch(fetchProfile());
+    }
+  }, [user, dispatch, profile]);
 
   if (loading && !profile) {
     return (

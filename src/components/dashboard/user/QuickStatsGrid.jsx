@@ -1,9 +1,42 @@
 "use client";
 
 import React from "react";
-import { TrendingUp } from "lucide-react";
+import { BookOpen, Flame, Target, Trophy } from "lucide-react";
 
-export default function QuickStatsGrid({ quickStats, isDark }) {
+export default function QuickStatsGrid({isDark, enrolledCourses, profile}) {
+
+  const quickStats = [
+    {
+      icon: <Flame className="w-5 h-5" />,
+      value: profile?.maxStreak,
+      label: "Day Streak",
+      color: "from-orange-500 to-red-500",
+    },
+    {
+      icon: <Target className="w-5 h-5" />,
+      value: `${Math.round(
+        ((profile?.projects?.length || 0) * 20 +
+          (profile?.streak || 0) * 5 +
+          (profile?.badges?.length || 0) * 10) /
+          3
+      )}%`,
+      label: "Career Progress",
+      color: "from-green-500 to-emerald-500",
+    },
+    {
+      icon: <BookOpen className="w-5 h-5" />,
+      value: enrolledCourses.length,
+      label: "Enrolled Courses",
+      color: "from-blue-500 to-cyan-500",
+    },
+    {
+      icon: <Trophy className="w-5 h-5" />,
+      value: profile?.badges?.length,
+      label: "Achievements",
+      color: "from-purple-500 to-pink-500",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       {quickStats.map((stat, index) => (
@@ -38,20 +71,6 @@ export default function QuickStatsGrid({ quickStats, isDark }) {
             }`}
           >
             {stat.label}
-          </div>
-
-          {/* TREND */}
-          <div
-            className={`text-xs flex items-center gap-1 ${
-              stat.trend === "up"
-                ? "text-green-400"
-                : isDark
-                ? "text-gray-500"
-                : "text-gray-400"
-            }`}
-          >
-            {stat.trend === "up" && <TrendingUp className="w-3 h-3" />}
-            {stat.change}
           </div>
         </div>
       ))}
