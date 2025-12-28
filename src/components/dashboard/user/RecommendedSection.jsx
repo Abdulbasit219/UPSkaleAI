@@ -2,8 +2,17 @@
 
 import React from "react";
 import { Sparkles, ChevronRight, Star, Users, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function RecommendedSection({ recommended, isDark }) {
+  const router = useRouter();
+
+  const handleViewCourse = (courseId) => {
+    router.push(`/learning/${courseId}`);
+  };
+
+  if (!recommended.length) return null;
+
   return (
     <div
       className={`backdrop-blur-sm border rounded-xl p-6 transition-colors ${
@@ -40,24 +49,6 @@ export default function RecommendedSection({ recommended, isDark }) {
                 : "bg-white/50 border-purple-300/10 hover:border-purple-300/30 hover:shadow-purple-300/20"
             }`}
           >
-            {/* Thumbnail */}
-            <div
-              className={`h-32 flex items-center justify-center text-5xl relative ${
-                isDark
-                  ? "bg-gradient-to-br from-slate-800 to-slate-700"
-                  : "bg-gradient-to-br from-gray-100 to-gray-200"
-              }`}
-            >
-              <div
-                className={`absolute inset-0 ${
-                  isDark
-                    ? "bg-gradient-to-br from-purple-500/10 to-pink-500/10"
-                    : "bg-gradient-to-br from-purple-100 to-pink-100"
-                }`}
-              ></div>
-              <span className="relative z-10">{course.thumbnail}</span>
-            </div>
-
             {/* Content */}
             <div className="p-4">
               <h3
@@ -69,7 +60,7 @@ export default function RecommendedSection({ recommended, isDark }) {
               </h3>
 
               <p className={isDark ? "text-gray-400" : "text-gray-600"}>
-                {course.instructor}
+                {course.author.name}
               </p>
 
               {/* Meta Info */}
@@ -79,18 +70,13 @@ export default function RecommendedSection({ recommended, isDark }) {
                 }`}
               >
                 <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                  <span>{course.rating}</span>
-                </div>
-
-                <div className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
-                  <span>{course.students}</span>
+                  <span>{course.enrolledCount}</span>
                 </div>
 
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  <span>{course.duration}</span>
+                  <span>{course.estimatedTime}</span>
                 </div>
               </div>
 
@@ -112,13 +98,14 @@ export default function RecommendedSection({ recommended, isDark }) {
 
               {/* Button */}
               <button
-                className={`w-full py-2 rounded-lg text-sm font-semibold border transition-all ${
+                onClick={() => handleViewCourse(course._id)}
+                className={`w-full py-2 rounded-lg text-sm font-semibold border transition-all cursor-pointer ${
                   isDark
                     ? "bg-purple-500/10 text-purple-300 border-purple-500/20 hover:bg-purple-500/20"
                     : "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200"
                 }`}
               >
-                Enroll Now
+                View
               </button>
             </div>
           </div>
