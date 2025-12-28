@@ -203,6 +203,16 @@ const CoursePage = () => {
                 </ul>
               </div>
             )}
+
+            {/* Quiz Button */}
+            {isEnrolled && (
+              <Link
+                href={`/learning/${courseId}/${course.title}/quiz`}
+                className="mt-6 inline-block px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl text-white font-semibold hover:shadow-lg hover:shadow-green-500/50 transition-all"
+              >
+                Take Quiz
+              </Link>
+            )}
           </div>
 
           {/* Sidebar - Lessons */}

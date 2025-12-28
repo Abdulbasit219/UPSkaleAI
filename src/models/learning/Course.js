@@ -33,9 +33,7 @@ const CourseSchema = new mongoose.Schema(
       enum: ["Beginner", "Intermediate", "Advanced"],
       default: "Beginner",
     },
-    skills: [
-      { type: String }, 
-    ],
+    skills: [{ type: String }],
     tags: {
       type: [String],
       default: [],
@@ -58,6 +56,10 @@ const CourseSchema = new mongoose.Schema(
     enrolledCount: {
       type: Number,
       default: 0,
+    },
+    quiz: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Quiz",
     },
   },
   { timestamps: true }
