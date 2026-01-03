@@ -1,5 +1,5 @@
 "use client";
-import React, { useState,useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
   ArrowLeft,
@@ -30,6 +30,7 @@ import {
   IdCardLanyard,
 } from "lucide-react";
 import { useSelector } from "react-redux";
+import BackgroundPattern from "@/components/ui/BackgroundPattern";
 import Link from "next/link";
 import { jobsApi } from "@/lib/api.config";
 
@@ -115,7 +116,12 @@ export default function QuickApplyPage({ params }) {
   const validateStep = (step) => {
     switch (step) {
       case 1:
-        if (!formData.fullName || !formData.email || !formData.phone || !formData.location) {
+        if (
+          !formData.fullName ||
+          !formData.email ||
+          !formData.phone ||
+          !formData.location
+        ) {
           alert("Please fill in all required personal information fields.");
           return false;
         }
@@ -153,7 +159,8 @@ export default function QuickApplyPage({ params }) {
 
   const handleSubmit = async () => {
     try {
-      const response = await jobsApi.apply({jobId: id,
+      const response = await jobsApi.apply({
+        jobId: id,
         coverLetter: formData.coverLetter,
         resume: formData.resume,
         notes: `Name: ${formData.fullName}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nLocation: ${formData.location}\nSalary Expectation: ${formData.salaryExpectation}\nAvailability: ${formData.availability}\nGitHub: ${formData.github}\nLinkedIn: ${formData.linkedin}\nPortfolio: ${formData.portfolio}\nRemote OK: ${formData.remoteOk}\nRelocation OK: ${formData.relocationOk}`,
@@ -255,11 +262,7 @@ export default function QuickApplyPage({ params }) {
         }`}
       >
         {/* Background Pattern */}
-        <div
-          className={`fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjAzIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30 pointer-events-none ${
-            isDark ? "" : "invert"
-          }`}
-        />
+        <BackgroundPattern />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-20">
           {/* Header */}
@@ -302,7 +305,7 @@ export default function QuickApplyPage({ params }) {
                 </div>
               </div>
             </div>
-            <div className="w-24"></div> 
+            <div className="w-24"></div>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
