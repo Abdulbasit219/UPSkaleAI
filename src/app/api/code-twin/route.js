@@ -12,11 +12,10 @@ async function retryWithBackoff(fn, maxRetries = 3, initialDelay = 1000) {
     try {
       return await fn();
     } catch (error) {
-      
       if (error.status === 429 && i < maxRetries - 1) {
         const delay = initialDelay * Math.pow(2, i);
         console.log(`Rate limited. Retrying in ${delay}ms...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
       throw error;
@@ -26,7 +25,8 @@ async function retryWithBackoff(fn, maxRetries = 3, initialDelay = 1000) {
 
 export async function POST(request) {
   try {
-    const { messages, context } = await request.json();
+    const { messages, context, currentCode, learningMode, isBeginner } =
+      await request.json();
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json(
@@ -36,29 +36,24 @@ export async function POST(request) {
     }
 
     const systemPrompt = `
-You are **CodeTwin** – The Elite Neural Coding Mentor 🤖💻  
-Your mission is to architect breakthroughs, solve complex logical puzzles, and teach users to think like senior engineers.
-
-**Your Role as CodeTwin:**
-- Explain architectural patterns, data structures, and algorithms with high-fidelity clarity.
-- Provide "Deep Debugging" – don't just fix code; explain the logical fallacy and guide the user to the solution.
-- Suggest modern best practices (Clean Code, SOLID, DRY) and performance micro-optimizations.
-- Review code snippets for security vulnerabilities and efficiency bottlenecks.
-- Be encouraging, precise, and professional.
+You are **CodeTwin** – A supportive AI Coding Mentor.
+Your goal is to help users learn programming logic by providing clear, concise, and educational guidance.
 
 **Current Context:**
-${context || "Pair programming and technical mentorship"}
+- **Code in Editor:**
+\`\`\`javascript
+${currentCode || "// Editor is empty"}
+\`\`\`
+- **User Preference:** ${isBeginner ? "Beginner-friendly (simple analogies, no jargon)" : "Standard technical level"}
 
-**Response Structure:**
-1. **Conceptual Insight** - A brief high-level summary of the solution or concept.
-2. **Logic Breakdown** - Step-by-step technical explanation.
-3. **Optimized Implementation** - Clean, production-ready code blocks (Markdown).
-4. **Architect's Tip** - A "pro-tip" about scalability or maintenance.
+**Guidelines:**
+1. **Be Concise:** Don't write long essays. Get straight to the point.
+2. **Teach, Don't Provide:** Explain the concept. Don't just give the full code solution immediately.
+3. **Use Markdown:** Use bolding, lists, and headers to make your response visually structured and easy to read.
+4. **Interactive:** End your response with a helpful follow-up question that checks their understanding.
+5. **Tone:** Be encouraging, professional, and mentor-like.
 
-**Critical Boundaries:**
-- If code is provided with bugs, highlight the *location* and *reason* before providing the fix.
-- Always use modern ECMAScript/Language standards.
-- Keep explanations actionable and concise.
+**Important:** If the user asks about something specific like "What is HTML?", explain it clearly using simple analogies but stay focused on its relationship to the coding they are doing.
 `;
 
     // Map history to @google/genai format
@@ -67,62 +62,56 @@ ${context || "Pair programming and technical mentorship"}
       parts: [{ text: msg.content }],
     }));
 
-    // Ensure history starts with 'user'
-    const firstUserIndex = conversationHistory.findIndex(
-      (m) => m.role === "user"
-    );
-    if (firstUserIndex !== -1) {
-      conversationHistory = conversationHistory.slice(firstUserIndex);
-    }
+    // Inject current state into prompt
+    const stateInjection = `[Context: ${context}. User is currently using ${learningMode} mode. Beginner focus is ${isBeginner ? "ON" : "OFF"}.]`;
 
-    // Inject system prompt into the first message
     if (conversationHistory.length > 0) {
-      conversationHistory[0].parts[0].text = `System Instruction: ${systemPrompt}\n\nUser Message: ${conversationHistory[0].parts[0].text}`;
+      conversationHistory[0].parts[0].text = `System Instruction: ${systemPrompt}\n\n${stateInjection}\n\nUser Message: ${conversationHistory[0].parts[0].text}`;
     }
 
-    // Use retry with backoff
     const response = await retryWithBackoff(async () => {
       return await ai.models.generateContent({
-        model: "gemini-2.5-flash", // Changed to 2.5-flash
+        model: "gemini-2.5-flash",
         contents: conversationHistory,
       });
     });
 
-    // Extract text safely
     const responseText =
       response.text ||
       response.candidates?.[0]?.content?.parts?.[0]?.text ||
       "";
 
+    // Mock analysis generation based on the interaction (Real implementation would use a separate AI call or structured output)
+    const analysis = {
+      errors:
+        currentCode?.includes("while") &&
+        !currentCode?.includes("++") &&
+        !currentCode?.includes("--")
+          ? ["Possible Infinite Loop detected"]
+          : [],
+      optimizations: currentCode?.includes("var")
+        ? ["Variable declaration: Use 'let' or 'const' instead of 'var'"]
+        : ["No major optimizations needed for this beginner level."],
+      concepts: ["Logic Flow", "Control Structures"],
+      difficulty: isBeginner ? "Beginner" : "Intermediate",
+    };
+
     return NextResponse.json({
       success: true,
       content: responseText,
+      analysis: analysis,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error("CodeTwin API Error:", error);
-
-    let errorMessage = "AI service temporarily unavailable";
-    let status = 500;
-
-    if (error.message?.includes("API_KEY")) {
-      errorMessage = "AI service configuration error";
-    } else if (error.status === 429 || error.message?.includes("quota")) {
-      errorMessage = "The AI is currently busy. Please try again in 10 seconds.";
-      status = 429;
-    } else if (error.message?.includes("role")) {
-      errorMessage = "Conversation alignment error. Please refresh.";
-      status = 400;
-    }
-
     return NextResponse.json(
       {
         success: false,
-        error: errorMessage,
-        details: process.env.NODE_ENV === "development" ? error.message : undefined,
-        retryAfter: status === 429 ? 10 : undefined, 
+        error: "AI service temporarily unavailable",
+        details:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
       },
-      { status: status }
+      { status: 500 }
     );
   }
 }
