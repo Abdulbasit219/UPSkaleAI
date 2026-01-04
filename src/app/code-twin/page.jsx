@@ -59,7 +59,7 @@ welcome();`);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isSpeaking, setIsLoadingSpeaking] = useState(false);
 
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
@@ -272,18 +272,18 @@ welcome();`);
 
   return (
     <div
-      className={`h-screen w-full flex flex-col overflow-hidden relative ${isDark ? "bg-[#020617] text-white" : "bg-slate-50 text-slate-900"}`}
+      className={`h-screen w-screen flex flex-col overflow-hidden relative ${isDark ? "bg-[#020617] text-white" : "bg-slate-50 text-slate-900"}`}
     >
-      {/* Dynamic Background Effects */}
+      {/* Background Underneath */}
       <BackgroundPattern />
-      <div className="absolute top-[-5%] left-[-5%] w-[50%] h-[50%] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none z-0" />
-      <div className="absolute bottom-[-5%] right-[-5%] w-[50%] h-[50%] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none z-0" />
+      <div className="absolute top-0 left-0 w-[50%] h-[50%] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none z-0" />
 
-      {/* Global Navigation Shell */}
-      <header
-        className={`shrink-0 z-[1000] border-b transition-all duration-500 backdrop-blur-3xl relative ${isDark ? "bg-slate-950/80 border-white/5 shadow-2xl" : "bg-white/95 border-slate-200 shadow-sm"}`}
+      {/* Nav as first child of flex-col to force visibility */}
+      <nav
+        className={`w-full shrink-0 h-14 sm:h-16 border-b z-[9999] transition-all duration-500 backdrop-blur-3xl relative top-0 ${isDark ? "bg-slate-950/80 border-white/5 shadow-2xl shadow-black/20" : "bg-white/95 border-slate-200 shadow-sm"}`}
       >
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-6">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-2 sm:gap-6">
           {/* Brand Section */}
           <div className="flex items-center gap-2 sm:gap-6">
             <button
@@ -308,7 +308,7 @@ welcome();`);
             </div>
           </div>
 
-          {/* Core Layout Controls - Crucial for Toggling */}
+          {/* Layout Controls - The "Switcher" */}
           <div className="flex items-center gap-1 p-1 bg-slate-200/50 dark:bg-white/5 rounded-xl sm:rounded-2xl border border-slate-300/50 dark:border-white/5 shadow-inner">
             <button
               onClick={() => setFullscreenComp(null)}
@@ -333,7 +333,6 @@ welcome();`);
             </button>
           </div>
 
-          {/* User & Global Actions */}
           <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => dispatch(toggleTheme())}
@@ -351,7 +350,7 @@ welcome();`);
                 <button
                   ref={userButtonRef}
                   onClick={toggleUserDropdown}
-                  className="flex items-center gap-2 sm:gap-1 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all p-0.5"
+                  className="flex items-center gap-1 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all p-0.5"
                 >
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-2xl bg-gradient-to-tr from-purple-500 to-pink-500 p-[1.5px]">
                     <div className="w-full h-full rounded-[6px] sm:rounded-[14px] bg-slate-950 flex items-center justify-center overflow-hidden">
@@ -380,11 +379,10 @@ welcome();`);
             )}
           </div>
         </div>
-      </header>
+      </nav>
 
-      {/* Primary Workspace Content Area */}
+      {/* Main Workspace occupying the remaining space */}
       <main className="flex-1 w-full flex flex-col lg:flex-row gap-4 lg:gap-6 p-4 lg:p-6 overflow-hidden relative z-10 transition-all duration-1000 min-h-0">
-        {/* Editor Wrapper - Controlled by Toggle State */}
         <div
           className={`transition-all duration-500 flex flex-col min-w-0 h-full ${fullscreenComp === "chat" ? "hidden" : "flex-1"}`}
         >
@@ -399,7 +397,6 @@ welcome();`);
           />
         </div>
 
-        {/* AI Assistant Wrapper - Controlled by Toggle State */}
         <div
           className={`transition-all duration-500 flex flex-col min-w-0 h-full ${fullscreenComp === "editor" ? "hidden" : fullscreenComp === "chat" ? "flex-1" : "hidden lg:flex lg:w-[480px]"}`}
         >
@@ -411,7 +408,7 @@ welcome();`);
             isLoading={isLoading}
             isDark={isDark}
             isSpeaking={isSpeaking}
-            setIsSpeaking={setIsSpeaking}
+            setIsSpeaking={setIsLoadingSpeaking}
             onToggleFullscreen={() =>
               setFullscreenComp(fullscreenComp === "chat" ? null : "chat")
             }
@@ -420,11 +417,11 @@ welcome();`);
         </div>
       </main>
 
-      {/* Isolated Dropdown layer */}
+      {/* Profile Dropdown */}
       {isUserDropdownOpen && (
         <div
           ref={userDropdownRef}
-          className={`fixed top-[3.75rem] sm:top-[4.25rem] right-4 sm:right-6 w-56 sm:w-64 backdrop-blur-3xl border rounded-2xl sm:rounded-[2rem] shadow-2xl py-2 sm:py-3 z-[2000] animate-in fade-in zoom-in-95 duration-200 ${isDark ? "bg-slate-950/90 border-white/10 shadow-black" : "bg-white/95 border-slate-200 shadow-purple-500/10"}`}
+          className={`fixed top-[3.75rem] sm:top-[4.25rem] right-4 sm:right-6 w-56 sm:w-64 backdrop-blur-3xl border rounded-2xl sm:rounded-[2rem] shadow-2xl py-2 sm:py-3 z-[10000] animate-in fade-in zoom-in-95 duration-200 ${isDark ? "bg-slate-950/90 border-white/10" : "bg-white/95 border-slate-200"}`}
         >
           <div className="px-5 sm:px-6 py-3 sm:py-4 border-b dark:border-white/5 border-slate-100">
             <p className="text-xs sm:text-sm font-black tracking-tight dark:text-white text-slate-900">
