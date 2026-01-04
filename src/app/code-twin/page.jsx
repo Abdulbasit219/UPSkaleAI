@@ -1,629 +1,457 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
 import {
-  Brain,
-  Code,
-  MessageSquare,
-  Play,
-  Zap,
-  Sparkles,
-  BookOpen,
-  Target,
-  Award,
-  Clock,
-  Users,
-  TrendingUp,
-  Send,
-  Bot,
-  User,
-  Copy,
-  CheckCircle,
-  Volume2,
-  VolumeX,
-  Settings,
-  ChevronRight,
-  Star,
-  Lightbulb,
-  Bug,
-  Rocket,
-  Shield,
-  GitBranch,
+  Code2,
+  Maximize2,
+  Minimize2,
+  Moon,
+  Sun,
+  Layout,
+  PanelLeft,
+  PanelRight,
+  ChevronLeft,
+  Cloud,
   Cpu,
-  Bookmark,
+  Settings,
+  Zap,
+  ChevronDown,
+  User,
+  LogOut,
+  Sparkles,
+  Shield,
+  Building2,
+  DollarSign,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleTheme } from "@/store/slices/themeSlice";
 import BackgroundPattern from "@/components/ui/BackgroundPattern";
 
+// Components
+import CodeEditor from "@/components/code-twin/CodeEditor";
+import CodeTwinChat from "@/components/code-twin/CodeTwinChat";
+
 export default function CodeTwinPage() {
-  const [activeTab, setActiveTab] = useState("mentor");
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const [code, setCode] = useState(`// Welcome to CodeTwin
+// Write your code here and chat with the AI for help!
+
+function welcome() {
+  console.log("Hello, CodeTwin!");
+}
+
+welcome();`);
+
+  // Layout State
+  const [fullscreenComp, setFullscreenComp] = useState(null); // 'editor', 'chat', or null
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+
+  // Refs for detecting outside clicks
+  const userDropdownRef = useRef(null);
+  const userButtonRef = useRef(null);
+
+  // Chat State
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const messagesEndRef = useRef(null);
+  const [isSpeaking, setIsLoadingSpeaking] = useState(false);
+
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
 
-  // Mock initial conversation
+  // Initialize conversation
   useEffect(() => {
-    setMessages([
-      {
-        id: 1,
-        type: "ai",
-        content:
-          "Hi! I'm CodeTwin, your AI coding mentor. I can help you understand programming concepts, debug code, and improve your problem-solving skills. What would you like to work on today?",
-        timestamp: new Date(),
-        avatar: <Bot className="w-6 h-6" />,
-      },
-    ]);
+    if (messages.length === 0) {
+      setMessages([
+        {
+          id: 1,
+          type: "ai",
+          content:
+            "Hello! I'm your AI coding assistant. How can I help you with your code today?",
+          timestamp: new Date(),
+        },
+      ]);
+    }
   }, []);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // Close user dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isUserDropdownOpen &&
+        userDropdownRef.current &&
+        userButtonRef.current &&
+        !userDropdownRef.current.contains(event.target) &&
+        !userButtonRef.current.contains(event.target)
+      ) {
+        setIsUserDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isUserDropdownOpen]);
+
+  // Handle mobile layout: auto-switch away from split screen on small screens
+  useEffect(() => {
+    const checkMobileSplit = () => {
+      if (window.innerWidth < 1024 && fullscreenComp === null) {
+        setFullscreenComp("editor");
+      }
+    };
+
+    checkMobileSplit();
+    window.addEventListener("resize", checkMobileSplit);
+    return () => window.removeEventListener("resize", checkMobileSplit);
+  }, [fullscreenComp]);
+
+  const toggleUserDropdown = () => {
+    setIsUserDropdownOpen(!isUserDropdownOpen);
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
+  };
 
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
+  const getUserDisplayName = () => {
+    if (!session) return "Guest";
+    return (
+      session.user?.name ||
+      session.user?.username ||
+      session.user?.email?.split("@")[0] ||
+      "User"
+    );
+  };
 
-    const userMessage = {
-      id: messages.length + 1,
+  const getRoleBadgeColor = () => {
+    if (!session) return "";
+    const role = session.user.role;
+
+    switch (role) {
+      case "Admin":
+        return isDark
+          ? "bg-red-500/20 text-red-300 border-red-500/40"
+          : "bg-red-100 text-red-700 border-red-300";
+      case "Company":
+        return isDark
+          ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
+          : "bg-blue-100 text-blue-700 border-blue-300";
+      case "Job Seeker":
+      default:
+        return isDark
+          ? "bg-green-500/20 text-green-300 border-green-500/40"
+          : "bg-green-100 text-green-700 border-green-300";
+    }
+  };
+
+  const getRoleBasedMenuItems = () => {
+    if (!session) return [];
+    const role = session.user.role;
+
+    switch (role) {
+      case "Admin":
+        return [
+          {
+            name: "Admin Dashboard",
+            href: "/admin",
+            icon: <Shield className="w-4 h-4" />,
+          },
+          {
+            name: "Settings",
+            href: "/settings",
+            icon: <Settings className="w-4 h-4" />,
+          },
+        ];
+      case "Company":
+        return [
+          {
+            name: "Company Dashboard",
+            href: "/company/dashboard",
+            icon: <Building2 className="w-4 h-4" />,
+          },
+          {
+            name: "Settings",
+            href: "/settings",
+            icon: <Settings className="w-4 h-4" />,
+          },
+        ];
+      case "Job Seeker":
+      default:
+        return [
+          {
+            name: "Dashboard",
+            href: "/dashboardd",
+            icon: <Sparkles className="w-4 h-4" />,
+          },
+          {
+            name: "Profile",
+            href: "/profile",
+            icon: <User className="w-4 h-4" />,
+          },
+          {
+            name: "Pricing",
+            href: "/pricing",
+            icon: <DollarSign className="w-4 h-4" />,
+          },
+          {
+            name: "Settings",
+            href: "/settings",
+            icon: <Settings className="w-4 h-4" />,
+          },
+        ];
+    }
+  };
+
+  const userMenuItems = getRoleBasedMenuItems();
+
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim() || isLoading) return;
+
+    const userMsg = {
+      id: Date.now(),
       type: "user",
       content: inputMessage,
       timestamp: new Date(),
-      avatar: <User className="w-6 h-6" />,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMsg]);
     setInputMessage("");
     setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse = {
-        id: messages.length + 2,
-        type: "ai",
-        content:
-          "I understand you're asking about that concept. Let me break it down step by step and provide some examples to help you understand better.",
-        timestamp: new Date(),
-        avatar: <Bot className="w-6 h-6" />,
-        codeExample: `function example() {\n  // This is how it works\n  console.log("Learning made easy!");\n}`,
+    try {
+      const contextPayload = {
+        messages: [...messages, userMsg],
+        context: "Coding assistant mentorship.",
+        currentCode: code,
       };
-      setMessages((prev) => [...prev, aiResponse]);
+
+      const response = await fetch("/api/code-twin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(contextPayload),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            type: "ai",
+            content: data.content,
+            timestamp: new Date(),
+          },
+        ]);
+      } else {
+        throw new Error(data.error || "Failed to get response");
+      }
+    } catch (error) {
+      console.error("Chat Error:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          type: "ai",
+          content: "Connection interrupted. Please try again.",
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
-
-  const features = [
-    {
-      icon: <Brain className="w-8 h-8" />,
-      title: "AI Code Mentor",
-      description:
-        "Get step-by-step explanations and learn programming concepts intuitively",
-      gradient: "from-purple-500 to-pink-500",
-    },
-    {
-      icon: <Bug className="w-8 h-8" />,
-      title: "Smart Debugger",
-      description:
-        "Find and fix errors with detailed explanations and solutions",
-      gradient: "from-blue-500 to-cyan-500",
-    },
-    {
-      icon: <Zap className="w-8 h-8" />,
-      title: "Code Optimizer",
-      description: "Improve your code efficiency with AI-powered suggestions",
-      gradient: "from-green-500 to-emerald-500",
-    },
-    {
-      icon: <GitBranch className="w-8 h-8" />,
-      title: "Pair Programmer",
-      description: "Real-time collaborative coding with AI assistance",
-      gradient: "from-orange-500 to-yellow-500",
-    },
-  ];
-
-  const codingTopics = [
-    { name: "Algorithms", level: "Beginner", progress: 75 },
-    { name: "Data Structures", level: "Intermediate", progress: 60 },
-    { name: "Web Development", level: "Beginner", progress: 85 },
-    { name: "Python Basics", level: "Advanced", progress: 90 },
-  ];
-
-  const recentChallenges = [
-    { title: "Reverse String", difficulty: "Easy", completed: true },
-    { title: "Binary Search", difficulty: "Medium", completed: true },
-    { title: "Tree Traversal", difficulty: "Hard", completed: false },
-    { title: "Dynamic Programming", difficulty: "Medium", completed: false },
-  ];
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-300 ${
-        isDark
-          ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950"
-          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50"
-      } pt-20`}
+      className={`h-screen w-screen flex flex-col overflow-hidden relative ${isDark ? "bg-[#020617] text-white" : "bg-slate-50 text-slate-900"}`}
     >
-      {/* Background Pattern */}
+      {/* Background Underneath */}
       <BackgroundPattern />
+      <div className="absolute top-0 left-0 w-[50%] h-[50%] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none z-0" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div
-            className={`inline-flex items-center gap-2 px-4 py-2 border rounded-full mb-4 backdrop-blur-sm ${
-              isDark
-                ? "bg-purple-500/20 border-purple-500/30"
-                : "bg-purple-100 border-purple-300/30"
-            }`}
-          >
-            <Cpu
-              className={`w-4 h-4 ${isDark ? "text-purple-400" : "text-purple-600"}`}
-            />
-            <span
-              className={`text-sm font-medium ${isDark ? "text-purple-300" : "text-purple-700"}`}
+      {/* Nav as first child of flex-col to force visibility */}
+      <nav
+        className={`w-full shrink-0 h-14 sm:h-16 border-b z-[9999] transition-all duration-500 backdrop-blur-3xl relative top-0 ${isDark ? "bg-slate-950/80 border-white/5 shadow-2xl shadow-black/20" : "bg-white/95 border-slate-200 shadow-sm"}`}
+      >
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-2 sm:gap-6">
+          {/* Brand Section */}
+          <div className="flex items-center gap-2 sm:gap-6">
+            <button
+              onClick={() => router.push("/dashboardd")}
+              className={`p-2 sm:p-2.5 rounded-xl sm:rounded-2xl transition-all border ${isDark ? "bg-white/5 border-white/5 text-slate-400 hover:text-white" : "bg-white border-slate-200 text-slate-500 hover:text-slate-900 shadow-sm"}`}
             >
-              AI-Powered Coding Mentor
-            </span>
-          </div>
-
-          <h1
-            className={`text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-          >
-            Meet
-            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              {" "}
-              CodeTwin
-            </span>
-          </h1>
-          <p
-            className={`text-xl max-w-3xl mx-auto ${isDark ? "text-gray-400" : "text-gray-600"}`}
-          >
-            Your personal AI coding partner that teaches you to think like a
-            programmer, not just copy code.
-          </p>
-        </div>
-
-        {/* Main Content */}
-        <div className="grid lg:grid-cols-4 gap-8">
-          {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Quick Stats */}
-            <div
-              className={`backdrop-blur-sm border rounded-xl p-6 ${
-                isDark
-                  ? "bg-slate-900/50 border-purple-500/20"
-                  : "bg-white/80 border-purple-300/20"
-              }`}
-            >
-              <h3
-                className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}
-              >
-                <TrendingUp
-                  className={`w-5 h-5 ${isDark ? "text-purple-400" : "text-purple-600"}`}
-                />
-                Your Progress
-              </h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span
-                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    Coding Streak
-                  </span>
-                  <span
-                    className={`font-bold ${isDark ? "text-white" : "text-gray-900"}`}
-                  >
-                    7 days
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span
-                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    Problems Solved
-                  </span>
-                  <span
-                    className={`font-bold ${isDark ? "text-white" : "text-gray-900"}`}
-                  >
-                    24
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span
-                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    AI Sessions
-                  </span>
-                  <span
-                    className={`font-bold ${isDark ? "text-white" : "text-gray-900"}`}
-                  >
-                    18
-                  </span>
-                </div>
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+            <div className="flex items-center gap-2 sm:gap-4 group cursor-default">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] transform group-hover:rotate-6 transition-all duration-500">
+                <Code2 className="w-4 h-4 sm:w-6 sm:h-6" />
               </div>
-            </div>
-
-            {/* Learning Topics */}
-            <div
-              className={`backdrop-blur-sm border rounded-xl p-6 ${
-                isDark
-                  ? "bg-slate-900/50 border-purple-500/20"
-                  : "bg-white/80 border-purple-300/20"
-              }`}
-            >
-              <h3
-                className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}
-              >
-                <BookOpen
-                  className={`w-5 h-5 ${isDark ? "text-purple-400" : "text-purple-600"}`}
-                />
-                Learning Topics
-              </h3>
-              <div className="space-y-4">
-                {codingTopics.map((topic, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span
-                        className={`text-sm font-medium ${isDark ? "text-white" : "text-gray-900"}`}
-                      >
-                        {topic.name}
-                      </span>
-                      <span
-                        className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                      >
-                        {topic.level}
-                      </span>
-                    </div>
-                    <div
-                      className={`w-full rounded-full h-2 ${
-                        isDark ? "bg-slate-800" : "bg-gray-200"
-                      }`}
-                    >
-                      <div
-                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${topic.progress}%` }}
-                      ></div>
-                    </div>
-                    <div
-                      className={`text-right text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                    >
-                      {topic.progress}%
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Recent Challenges */}
-            <div
-              className={`backdrop-blur-sm border rounded-xl p-6 ${
-                isDark
-                  ? "bg-slate-900/50 border-purple-500/20"
-                  : "bg-white/80 border-purple-300/20"
-              }`}
-            >
-              <h3
-                className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? "text-white" : "text-gray-900"}`}
-              >
-                <Target
-                  className={`w-5 h-5 ${isDark ? "text-purple-400" : "text-purple-600"}`}
-                />
-                Recent Challenges
-              </h3>
-              <div className="space-y-3">
-                {recentChallenges.map((challenge, index) => (
-                  <div
-                    key={index}
-                    className={`flex items-center justify-between p-3 rounded-lg border ${
-                      isDark
-                        ? "bg-slate-800/50 border-purple-500/10"
-                        : "bg-gray-50 border-purple-300/10"
-                    }`}
-                  >
-                    <div>
-                      <div
-                        className={`text-sm font-medium ${isDark ? "text-white" : "text-gray-900"}`}
-                      >
-                        {challenge.title}
-                      </div>
-                      <div
-                        className={`text-xs ${
-                          challenge.difficulty === "Easy"
-                            ? "text-green-400"
-                            : challenge.difficulty === "Medium"
-                              ? "text-yellow-400"
-                              : "text-red-400"
-                        }`}
-                      >
-                        {challenge.difficulty}
-                      </div>
-                    </div>
-                    {challenge.completed ? (
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    ) : (
-                      <div
-                        className={`w-5 h-5 border-2 rounded-full ${
-                          isDark ? "border-gray-400" : "border-gray-300"
-                        }`}
-                      ></div>
-                    )}
-                  </div>
-                ))}
+              <div className="hidden xs:block">
+                <h1 className="text-[10px] sm:text-sm font-black tracking-tighter uppercase">
+                  CodeTwin IDE
+                </h1>
+                <div className="hidden sm:flex items-center gap-2 text-[8px] sm:text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-0.5">
+                  <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                  Cloud Sync Active
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Main Chat Area */}
-          <div className="lg:col-span-3">
-            <div
-              className={`backdrop-blur-sm border rounded-xl overflow-hidden ${
-                isDark
-                  ? "bg-slate-900/50 border-purple-500/20"
-                  : "bg-white/80 border-purple-300/20"
-              }`}
+          {/* Layout Controls - The "Switcher" */}
+          <div className="flex items-center gap-1 p-1 bg-slate-200/50 dark:bg-white/5 rounded-xl sm:rounded-2xl border border-slate-300/50 dark:border-white/5 shadow-inner">
+            <button
+              onClick={() => setFullscreenComp(null)}
+              className={`hidden md:flex px-4 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${!fullscreenComp ? "bg-white dark:bg-white/10 shadow-lg text-purple-600 dark:text-purple-400" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
             >
-              {/* Chat Header */}
-              <div
-                className={`border-b p-6 ${
-                  isDark ? "border-purple-500/20" : "border-purple-300/20"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                      <Bot className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h2
-                        className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
-                      >
-                        CodeTwin AI
-                      </h2>
-                      <p
-                        className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                      >
-                        Online • Ready to help you code
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      className={`p-2 transition-colors ${
-                        isDark
-                          ? "text-gray-400 hover:text-white"
-                          : "text-gray-500 hover:text-gray-700"
-                      }`}
-                    >
-                      {isSpeaking ? (
-                        <VolumeX className="w-5 h-5" />
-                      ) : (
-                        <Volume2 className="w-5 h-5" />
-                      )}
-                    </button>
-                    <button
-                      className={`p-2 transition-colors ${
-                        isDark
-                          ? "text-gray-400 hover:text-white"
-                          : "text-gray-500 hover:text-gray-700"
-                      }`}
-                    >
-                      <Settings className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <Layout className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden lg:inline">Split</span>
+            </button>
+            <button
+              onClick={() => setFullscreenComp("editor")}
+              className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all flex items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${fullscreenComp === "editor" ? "bg-white dark:bg-white/10 shadow-lg text-purple-600 dark:text-purple-400" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
+            >
+              <PanelLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden lg:inline">Editor</span>
+            </button>
+            <button
+              onClick={() => setFullscreenComp("chat")}
+              className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all flex items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${fullscreenComp === "chat" ? "bg-white dark:bg-white/10 shadow-lg text-purple-600 dark:text-purple-400" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
+            >
+              <PanelRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden lg:inline">Assistant</span>
+            </button>
+          </div>
 
-              {/* Messages Area */}
-              <div className="h-96 overflow-y-auto p-6 space-y-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex gap-4 ${
-                      message.type === "user" ? "flex-row-reverse" : "flex-row"
-                    }`}
-                  >
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        isDark
-                          ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20"
-                          : "bg-gradient-to-br from-purple-100 to-pink-100"
-                      }`}
-                    >
-                      <div
-                        className={
-                          isDark ? "text-purple-400" : "text-purple-600"
-                        }
-                      >
-                        {message.avatar}
-                      </div>
-                    </div>
-                    <div
-                      className={`max-w-[70%] rounded-2xl p-4 border ${
-                        message.type === "user"
-                          ? isDark
-                            ? "bg-purple-500/20 border-purple-500/20"
-                            : "bg-purple-100 border-purple-300/20"
-                          : isDark
-                            ? "bg-slate-800/50 border-purple-500/20"
-                            : "bg-gray-50 border-purple-300/20"
-                      }`}
-                    >
-                      <p className={isDark ? "text-white" : "text-gray-900"}>
-                        {message.content}
-                      </p>
-                      {message.codeExample && (
-                        <div
-                          className={`mt-3 rounded-lg p-3 border ${
-                            isDark
-                              ? "bg-slate-900 border-purple-500/20"
-                              : "bg-gray-100 border-purple-300/20"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-purple-400 text-sm font-mono">
-                              JavaScript
-                            </span>
-                            <button
-                              className={`transition-colors ${
-                                isDark
-                                  ? "text-gray-400 hover:text-white"
-                                  : "text-gray-500 hover:text-gray-700"
-                              }`}
-                            >
-                              <Copy className="w-4 h-4" />
-                            </button>
-                          </div>
-                          <pre className="text-green-400 text-sm font-mono overflow-x-auto">
-                            {message.codeExample}
-                          </pre>
-                        </div>
-                      )}
-                      <div
-                        className={`text-xs mt-2 ${
-                          isDark ? "text-gray-500" : "text-gray-400"
-                        }`}
-                      >
-                        {message.timestamp.toLocaleTimeString()}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex gap-4">
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        isDark
-                          ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20"
-                          : "bg-gradient-to-br from-purple-100 to-pink-100"
-                      }`}
-                    >
-                      <div
-                        className={
-                          isDark ? "text-purple-400" : "text-purple-600"
-                        }
-                      >
-                        <Bot className="w-6 h-6" />
-                      </div>
-                    </div>
-                    <div
-                      className={`rounded-2xl p-4 border ${
-                        isDark
-                          ? "bg-slate-800/50 border-purple-500/20"
-                          : "bg-gray-50 border-purple-300/20"
-                      }`}
-                    >
-                      <div className="flex space-x-2">
-                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
-                        <div
-                          className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
-                          style={{ animationDelay: "0.1s" }}
-                        ></div>
-                        <div
-                          className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
-                          style={{ animationDelay: "0.2s" }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* Input Area */}
-              <div
-                className={`border-t p-6 ${
-                  isDark ? "border-purple-500/20" : "border-purple-300/20"
-                }`}
-              >
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <textarea
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      placeholder="Ask CodeTwin about programming concepts, debug code, or request explanations..."
-                      className={`w-full px-4 py-3 border rounded-xl placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors resize-none ${
-                        isDark
-                          ? "bg-slate-800 border-purple-500/20 text-white"
-                          : "bg-white border-purple-300/20 text-gray-900"
-                      }`}
-                      rows="2"
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSendMessage();
-                        }
-                      }}
-                    />
-                  </div>
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!inputMessage.trim() || isLoading}
-                    className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  >
-                    <Send className="w-4 h-4" />
-                    Send
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {[
-                    "Explain loops in Python",
-                    "Debug this JavaScript function",
-                    "Help me understand recursion",
-                    "Optimize this algorithm",
-                  ].map((suggestion, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setInputMessage(suggestion)}
-                      className={`px-3 py-1 text-sm rounded-lg transition-colors border ${
-                        isDark
-                          ? "bg-slate-800 text-gray-400 border-slate-700 hover:bg-slate-700 hover:text-white"
-                          : "bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200 hover:text-gray-800"
-                      }`}
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Features Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  className={`backdrop-blur-sm border rounded-xl p-4 text-center transition-all duration-300 ${
-                    isDark
-                      ? "bg-slate-900/50 border-purple-500/20 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/20"
-                      : "bg-white/80 border-purple-300/20 hover:border-purple-300/50 hover:shadow-lg hover:shadow-purple-300/20"
-                  }`}
+          <div className="flex items-center gap-2 sm:gap-4">
+            <button
+              onClick={() => dispatch(toggleTheme())}
+              className={`p-2 sm:p-2.5 rounded-xl sm:rounded-2xl transition-all border ${isDark ? "bg-white/5 border-white/5 text-yellow-500" : "bg-white border-slate-200 text-purple-600 shadow-sm"}`}
+            >
+              {isDark ? (
+                <Sun className="w-4 h-4 sm:w-5 sm:h-5" />
+              ) : (
+                <Moon className="w-4 h-4 sm:w-5 sm:h-5" />
+              )}
+            </button>
+            <div className="w-px h-5 sm:h-6 bg-slate-200 dark:bg-white/10 hidden xs:block" />
+            {status === "authenticated" ? (
+              <div className="relative" ref={userDropdownRef}>
+                <button
+                  ref={userButtonRef}
+                  onClick={toggleUserDropdown}
+                  className="flex items-center gap-1 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all p-0.5"
                 >
-                  <div
-                    className={`w-12 h-12 bg-gradient-to-br ${feature.gradient} rounded-xl flex items-center justify-center mx-auto mb-3`}
-                  >
-                    <div className="text-white">{feature.icon}</div>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-2xl bg-gradient-to-tr from-purple-500 to-pink-500 p-[1.5px]">
+                    <div className="w-full h-full rounded-[6px] sm:rounded-[14px] bg-slate-950 flex items-center justify-center overflow-hidden">
+                      {session.user?.image ? (
+                        <img
+                          src={session.user.image}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-white text-[10px] sm:text-sm font-black">
+                          {getUserDisplayName().substring(0, 1).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <h3
-                    className={`font-semibold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}
-                  >
-                    {feature.title}
-                  </h3>
-                  <p
-                    className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    {feature.description}
-                  </p>
-                </div>
-              ))}
-            </div>
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/sign-in"
+                className="px-4 sm:px-6 py-1.5 sm:py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg sm:rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-500/20 hover:scale-105 active:scale-95 transition-all"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
-      </div>
+      </nav>
+
+      {/* Main Workspace occupying the remaining space */}
+      <main className="flex-1 w-full flex flex-col lg:flex-row gap-4 lg:gap-6 p-4 lg:p-6 overflow-hidden relative z-10 transition-all duration-1000 min-h-0">
+        <div
+          className={`transition-all duration-500 flex flex-col min-w-0 h-full ${fullscreenComp === "chat" ? "hidden" : "flex-1"}`}
+        >
+          <CodeEditor
+            isDark={isDark}
+            code={code}
+            setCode={setCode}
+            onToggleFullscreen={() =>
+              setFullscreenComp(fullscreenComp === "editor" ? null : "editor")
+            }
+            isFullscreen={fullscreenComp === "editor"}
+          />
+        </div>
+
+        <div
+          className={`transition-all duration-500 flex flex-col min-w-0 h-full ${fullscreenComp === "editor" ? "hidden" : fullscreenComp === "chat" ? "flex-1" : "hidden lg:flex lg:w-[480px]"}`}
+        >
+          <CodeTwinChat
+            messages={messages}
+            inputMessage={inputMessage}
+            setInputMessage={setInputMessage}
+            handleSendMessage={handleSendMessage}
+            isLoading={isLoading}
+            isDark={isDark}
+            isSpeaking={isSpeaking}
+            setIsSpeaking={setIsLoadingSpeaking}
+            onToggleFullscreen={() =>
+              setFullscreenComp(fullscreenComp === "chat" ? null : "chat")
+            }
+            isFullscreen={fullscreenComp === "chat"}
+          />
+        </div>
+      </main>
+
+      {/* Profile Dropdown */}
+      {isUserDropdownOpen && (
+        <div
+          ref={userDropdownRef}
+          className={`fixed top-[3.75rem] sm:top-[4.25rem] right-4 sm:right-6 w-56 sm:w-64 backdrop-blur-3xl border rounded-2xl sm:rounded-[2rem] shadow-2xl py-2 sm:py-3 z-[10000] animate-in fade-in zoom-in-95 duration-200 ${isDark ? "bg-slate-950/90 border-white/10" : "bg-white/95 border-slate-200"}`}
+        >
+          <div className="px-5 sm:px-6 py-3 sm:py-4 border-b dark:border-white/5 border-slate-100">
+            <p className="text-xs sm:text-sm font-black tracking-tight dark:text-white text-slate-900">
+              {getUserDisplayName()}
+            </p>
+            <p className="text-[9px] sm:text-[10px] font-bold text-slate-500 truncate mt-0.5">
+              {session?.user?.email}
+            </p>
+          </div>
+          <div className="py-2 sm:py-3 px-1.5 sm:px-2">
+            {userMenuItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-xs font-black uppercase tracking-wider mx-1.5 sm:mx-2 rounded-xl sm:rounded-2xl transition-all ${isDark ? "text-slate-400 hover:text-white hover:bg-white/5" : "text-slate-600 hover:text-slate-950 hover:bg-slate-100"}`}
+              >
+                <span className="text-purple-500">{item.icon}</span>
+                {item.name}
+              </Link>
+            ))}
+            <div className="mx-4 sm:mx-6 my-2 sm:my-3 border-t dark:border-white/5 border-slate-100" />
+            <button
+              onClick={handleSignOut}
+              className="w-[calc(100%-1.5rem)] sm:w-[calc(100%-2rem)] flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-xs font-black uppercase tracking-wider mx-3 sm:mx-4 rounded-xl sm:rounded-2xl text-red-500 hover:bg-red-500/10 transition-all font-bold"
+            >
+              <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Sign Out
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

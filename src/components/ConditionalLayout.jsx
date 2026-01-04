@@ -6,14 +6,16 @@ import Footer from "./Footer";
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
 
-  // Check if current path is admin dashboard
+  // Check if current path is admin dashboard or code-twin
   const isAdminRoute = pathname?.startsWith("/admin");
+  const isCodeTwinRoute = pathname?.startsWith("/code-twin");
+  const hideLayout = isAdminRoute || isCodeTwinRoute;
 
   return (
     <>
-      {!isAdminRoute && <Navbar />}
+      {!hideLayout && <Navbar />}
       {children}
-      {!isAdminRoute && <Footer />}
+      {!hideLayout && <Footer />}
     </>
   );
 }
