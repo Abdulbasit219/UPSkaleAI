@@ -123,14 +123,21 @@ export default function SkillBridgeLanding() {
 
   return (
     <div
-      className={`min-h-screen transition-all duration-300 ${
+      className={`relative w-full overflow-x-hidden min-h-screen transition-all duration-300 ${
         isDark
-          ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white"
-          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50 text-gray-900"
+          ? "bg-slate-950 via-purple-950 to-slate-950 text-white"
+          : "bg-gray-50 via-purple-50 to-gray-50 text-gray-900"
       }`}
     >
       {/* Background Pattern */}
       <BackgroundPattern />
+
+      {/* Hero Spotlight Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-600/20 blur-[120px] rounded-full animate-pulse" />
+        <div className="absolute top-[10%] left-[20%] w-[300px] h-[300px] bg-pink-500/10 blur-[100px] rounded-full" />
+        <div className="absolute top-[15%] right-[20%] w-[350px] h-[350px] bg-indigo-500/10 blur-[110px] rounded-full" />
+      </div>
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 z-10 overflow-hidden">
@@ -144,7 +151,7 @@ export default function SkillBridgeLanding() {
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight tracking-tight animate-in fade-in slide-in-from-bottom-8 duration-1000">
+          <h1 className="text-3xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight tracking-tight animate-in fade-in slide-in-from-bottom-8 duration-1000">
             Bridge the gap between <br />
             <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
               learning and earning
@@ -176,17 +183,17 @@ export default function SkillBridgeLanding() {
           </div>
 
           {/* Stats Bar */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 max-w-5xl mx-auto px-2 md:px-0">
             {stats.map((stat, idx) => (
               <div
                 key={idx}
-                className={`p-6 rounded-3xl border backdrop-blur-sm transition-all hover:-translate-y-1 ${isDark ? "bg-slate-900/50 border-white/5" : "bg-white border-gray-100 shadow-sm"}`}
+                className={`p-4 md:p-6 rounded-3xl border backdrop-blur-sm transition-all hover:-translate-y-1 ${isDark ? "bg-slate-900/50 border-white/5" : "bg-white border-gray-100 shadow-sm"}`}
               >
-                <div className="text-3xl font-bold text-purple-500 mb-1">
+                <div className="text-2xl md:text-3xl font-bold text-purple-500 mb-1">
                   {stat.value}
                 </div>
                 <div
-                  className={`text-xs font-bold uppercase tracking-widest ${isDark ? "text-gray-500" : "text-gray-400"}`}
+                  className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${isDark ? "text-gray-500" : "text-gray-400"}`}
                 >
                   {stat.label}
                 </div>
@@ -220,6 +227,10 @@ export default function SkillBridgeLanding() {
                 key={idx}
                 className={`p-8 rounded-3xl border group transition-all hover:border-purple-500/50 ${isDark ? "bg-slate-900/50 border-white/5 hover:bg-slate-900" : "bg-slate-50 border-gray-100 hover:bg-white hover:shadow-xl"}`}
               >
+                <div
+                  className="shine-effect absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg] pointer-events-none opacity-0 group-hover:opacity-100"
+                  style={{ left: "-100%" }}
+                />
                 <div
                   className={`w-12 h-12 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform shadow-lg`}
                 >
@@ -256,7 +267,7 @@ export default function SkillBridgeLanding() {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-500 text-xs font-bold uppercase tracking-widest mb-6">
               AI Powerhouse
             </div>
-            <h2 className="text-4xl sm:text-6xl font-black mb-6 tracking-tight leading-[1.1]">
+            <h2 className="text-3xl sm:text-6xl font-black mb-6 tracking-tight leading-[1.1]">
               One Platform. <br />
               <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 bg-clip-text text-transparent">
                 Infinite Career Possibilities.
@@ -271,7 +282,7 @@ export default function SkillBridgeLanding() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[160px]">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:auto-rows-[160px]">
             {[
               {
                 icon: <Code2 />,
@@ -333,6 +344,10 @@ export default function SkillBridgeLanding() {
                     : "bg-gray-50/50 border-gray-100 hover:bg-white hover:shadow-2xl"
                 } flex flex-col justify-between overflow-hidden`}
               >
+                <div
+                  className="shine-effect absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-[-20deg] pointer-events-none opacity-0 group-hover:opacity-100"
+                  style={{ left: "-100%" }}
+                />
                 {/* Spotlight background effect */}
                 <div
                   className={`absolute -inset-24 bg-gradient-to-br ${tool.color} opacity-0 group-hover:opacity-[0.03] blur-3xl transition-opacity duration-700`}
@@ -370,21 +385,76 @@ export default function SkillBridgeLanding() {
             ))}
           </div>
 
-          {/* Social Proof Footer */}
-          <div className="mt-20 flex flex-col items-center gap-6">
-            <div className="text-sm font-bold opacity-40 uppercase tracking-[0.2em] text-center">
-              Trusted by 10,000+ early adopters
+          {/* Social Proof Footer - Scrolling Marquee */}
+          <div className="mt-24 flex flex-col items-center gap-10">
+            <div className="text-sm font-bold opacity-40 uppercase tracking-[0.3em] text-center">
+              Trusted by 10,000+ top-tier professionals
             </div>
-            <div className="flex flex-wrap justify-center gap-8 opacity-20 grayscale brightness-150">
-              <div className="font-black italic text-2xl">VORTEX</div>
-              <div className="font-black italic text-2xl">AETHER</div>
-              <div className="font-black italic text-2xl">QUANTUM</div>
-              <div className="font-black italic text-2xl">NEON</div>
-              <div className="font-black italic text-2xl">PULSE</div>
+
+            <div
+              className={`relative w-full max-w-full overflow-hidden before:absolute before:left-0 before:top-0 before:z-10 before:h-full before:w-10 md:before:w-20 before:bg-gradient-to-r ${isDark ? "before:from-slate-950" : "before:from-gray-50"} before:to-transparent after:absolute after:right-0 after:top-0 after:z-10 after:h-full after:w-10 md:after:w-20 after:bg-gradient-to-l ${isDark ? "after:from-slate-950" : "after:from-gray-50"} after:to-transparent`}
+            >
+              <div className="flex animate-marquee gap-8 md:gap-16 items-center whitespace-nowrap">
+                {[1, 2].map((set) => (
+                  <div
+                    key={set}
+                    className="flex gap-8 md:gap-16 items-center shrink-0"
+                  >
+                    <div className="font-black italic text-2xl md:text-4xl opacity-20 hover:opacity-100 transition-opacity cursor-default">
+                      VORTEX
+                    </div>
+                    <div className="font-black italic text-2xl md:text-4xl opacity-20 hover:opacity-100 transition-opacity cursor-default">
+                      AETHER
+                    </div>
+                    <div className="font-black italic text-2xl md:text-4xl opacity-20 hover:opacity-100 transition-opacity cursor-default">
+                      QUANTUM
+                    </div>
+                    <div className="font-black italic text-2xl md:text-4xl opacity-20 hover:opacity-100 transition-opacity cursor-default">
+                      NEON
+                    </div>
+                    <div className="font-black italic text-2xl md:text-4xl opacity-20 hover:opacity-100 transition-opacity cursor-default">
+                      PULSE
+                    </div>
+                    <div className="font-black italic text-2xl md:text-4xl opacity-20 hover:opacity-100 transition-opacity cursor-default">
+                      ZIGMA
+                    </div>
+                    <div className="font-black italic text-2xl md:text-4xl opacity-20 hover:opacity-100 transition-opacity cursor-default">
+                      ORBIT
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+      <style jsx global>{`
+        @keyframes marquee {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .animate-marquee {
+          animation: marquee 30s linear infinite;
+        }
+        @keyframes shine {
+          0% {
+            left: -100%;
+            transition-property: left;
+          }
+          100% {
+            left: 100%;
+            transition-property: left;
+          }
+        }
+        .group:hover .shine-effect {
+          animation: shine 1.5s ease-in-out infinite;
+        }
+      `}</style>
 
       {/* CodeTwin Featured Section */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden z-10">
@@ -709,7 +779,7 @@ export default function SkillBridgeLanding() {
                   <div className="mb-8 relative flex justify-center md:justify-start">
                     {/* Number label watermark - Refined Outline Style */}
                     <span
-                      className={`absolute -left-2 -top-10 text-[120px] font-black pointer-events-none select-none transition-all duration-700 group-hover:scale-110 group-hover:-translate-y-4 ${
+                      className={`absolute -left-2 -top-10 text-[80px] md:text-[120px] font-black pointer-events-none select-none transition-all duration-700 group-hover:scale-110 group-hover:-translate-y-4 ${
                         isDark ? "text-white" : "text-black"
                       }`}
                       style={{
@@ -764,6 +834,61 @@ export default function SkillBridgeLanding() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section
+        id="faq"
+        className={`py-24 px-4 sm:px-6 lg:px-8 relative z-10 ${isDark ? "bg-slate-950/30" : "bg-gray-50/50"}`}
+      >
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Common Questions
+            </h2>
+            <p
+              className={`${isDark ? "text-gray-400" : "text-gray-600"} font-medium`}
+            >
+              Everything you need to know about the platform
+            </p>
+          </div>
+
+          <div className="grid gap-4">
+            {[
+              {
+                q: "How does the CodeTwin AI work?",
+                a: "CodeTwin uses advanced neural models to learn your coding style and logic patterns in real-time, providing contextual assistance that goes beyond simple autocomplete.",
+              },
+              {
+                q: "Is my data and code secure?",
+                a: "Absolutely. We use enterprise-grade encryption and do not store your code on our servers unless you explicitly choose to cloud-sync your workspace.",
+              },
+              {
+                q: "How accurate is the job matching?",
+                a: "Our AI analyzes 50+ data points from your CodeTwin projects, assessment scores, and roadmap progress to ensure a 90%+ compatibility rate with job roles.",
+              },
+              {
+                q: "Can I use it for free?",
+                a: "Yes, our core features including the basic Roadmap Engine and Community IDE are completely free for individual learners.",
+              },
+            ].map((faq, i) => (
+              <div
+                key={i}
+                className={`p-8 rounded-3xl border transition-all ${isDark ? "bg-slate-900 border-white/5 hover:border-purple-500/30 hover:bg-slate-900/80" : "bg-white border-gray-100 hover:shadow-xl hover:bg-gray-50/50"}`}
+              >
+                <h3 className="text-lg font-bold mb-4 flex items-center justify-between">
+                  {faq.q}
+                  <HelpCircle className="w-5 h-5 text-purple-500 opacity-30" />
+                </h3>
+                <p
+                  className={`text-sm leading-relaxed ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                >
+                  {faq.a}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
