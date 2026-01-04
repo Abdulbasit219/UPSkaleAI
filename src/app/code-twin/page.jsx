@@ -287,7 +287,7 @@ welcome();`);
           {/* Brand Section */}
           <div className="flex items-center gap-2 sm:gap-6">
             <button
-              onClick={() => router.push("/dashboardd")}
+              onClick={() => router.push("/")}
               className={`p-2 sm:p-2.5 rounded-xl sm:rounded-2xl transition-all border ${isDark ? "bg-white/5 border-white/5 text-slate-400 hover:text-white" : "bg-white border-slate-200 text-slate-500 hover:text-slate-900 shadow-sm"}`}
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
