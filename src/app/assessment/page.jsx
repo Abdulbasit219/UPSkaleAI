@@ -32,6 +32,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useSelector } from "react-redux";
+import BackgroundPattern from "@/components/ui/BackgroundPattern";
 export default function SkillAssessmentPage() {
   const [step, setStep] = useState("welcome");
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -477,9 +478,12 @@ export default function SkillAssessmentPage() {
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
-        isDark ? "bg-slate-950" : "bg-gray-50"
+        isDark
+          ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white"
+          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50 text-gray-900"
       } pt-20 pb-12`}
     >
+      <BackgroundPattern />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Loading Overlay */}
         {isGenerating && (

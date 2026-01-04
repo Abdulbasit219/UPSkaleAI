@@ -2,7 +2,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-
 const createPatternUrl = (strokeColor) => {
   const svg = `
     <svg width="60" height="60" xmlns="http://www.w3.org/2000/svg">
@@ -18,11 +17,18 @@ const createPatternUrl = (strokeColor) => {
 };
 
 export default function BackgroundPattern() {
-  const theme = useSelector((state) => state.theme.mode);
+  const [mounted, setMounted] = React.useState(false);
+  const themeMode = useSelector((state) => state.theme.mode);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const theme = mounted ? themeMode : "dark";
   const isDark = theme === "dark";
 
-  const darkColor = "white"; 
-  const lightColor = "gray"; 
+  const darkColor = "white";
+  const lightColor = "gray";
 
   const backgroundUrl = createPatternUrl(isDark ? darkColor : lightColor);
   const opacity = isDark ? 0.3 : 0.2;

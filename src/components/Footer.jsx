@@ -3,7 +3,14 @@ import React from "react";
 import { Sparkles } from "lucide-react";
 import { useSelector } from "react-redux";
 const Footer = () => {
-  const theme = useSelector((state) => state.theme.mode);
+  const [mounted, setMounted] = React.useState(false);
+  const themeMode = useSelector((state) => state.theme.mode);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const theme = mounted ? themeMode : "dark";
   const isDark = theme === "dark";
 
   return (
@@ -107,7 +114,7 @@ const Footer = () => {
                   href="/how-it-works"
                   className={`transition-colors ${isDark ? "hover:text-white" : "hover:text-gray-900"}`}
                 >
-                How it Works
+                  How it Works
                 </a>
               </li>
               <li>

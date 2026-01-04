@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Target,
@@ -15,12 +15,10 @@ import {
   Bot,
   Terminal,
   Sparkles,
-  ChevronRight,
-  CheckCircle2,
-  Layers,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import SharedCTABanner from "@/components/ui/CTABanner";
+import BackgroundPattern from "@/components/ui/BackgroundPattern";
 import { fetchProfile } from "@/store/slices/profileSlice";
 import { useSession } from "next-auth/react";
 import axios from "axios";
@@ -28,7 +26,14 @@ import Link from "next/link";
 
 export default function SkillBridgeLanding() {
   const router = useRouter();
-  const theme = useSelector((state) => state.theme.mode);
+  const [mounted, setMounted] = useState(false);
+  const themeMode = useSelector((state) => state.theme.mode);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const theme = mounted ? themeMode : "dark";
   const isDark = theme === "dark";
 
   const { data: session } = useSession();
@@ -106,69 +111,70 @@ export default function SkillBridgeLanding() {
 
   return (
     <div
-      className={`min-h-screen transition-all duration-700 ${isDark ? "bg-[#020617] text-white" : "bg-slate-50 text-slate-900"}`}
+      className={`min-h-screen transition-all duration-300 ${
+        isDark
+          ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white"
+          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50 text-gray-900"
+      }`}
     >
-      {/* Cinematic Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-0 right-0 w-[60%] h-[60%] bg-purple-600/10 blur-[150px] rounded-full translate-x-1/2 -translate-y-1/2 opacity-60" />
-        <div className="absolute bottom-0 left-0 w-[60%] h-[60%] bg-indigo-600/10 blur-[150px] rounded-full -translate-x-1/2 translate-y-1/2 opacity-60" />
-      </div>
+      {/* Background Pattern */}
+      <BackgroundPattern />
 
       {/* Hero Section */}
-      <section className="relative pt-48 pb-24 px-6 z-10">
+      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 z-10 overflow-hidden">
         <div className="max-w-7xl mx-auto text-center">
           <div
-            className={`inline-flex items-center gap-2 px-5 py-2 rounded-full border mb-10 animate-in fade-in slide-in-from-top-4 duration-700 ${isDark ? "bg-purple-500/10 border-purple-500/30 text-purple-200" : "bg-purple-50 border-purple-200 text-purple-700 shadow-sm"}`}
+            className={`inline-flex items-center gap-2 px-4 py-2 border rounded-full mb-8 animate-in fade-in slide-in-from-top-4 duration-700 ${isDark ? "bg-purple-500/20 border-purple-500/30 text-purple-200" : "bg-purple-100 border-purple-200 text-purple-700 shadow-sm"}`}
           >
-            <Zap className="w-4 h-4 text-amber-500 animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-              Next-Gen Career Growth Platform
+            <Zap className="w-4 h-4 text-yellow-500" />
+            <span className="text-sm font-semibold">
+              AI-Powered Career Growth Platform
             </span>
           </div>
 
-          <h1 className="text-6xl sm:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] mb-10 text-balance animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            Bridge your <br />
-            <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 bg-clip-text text-transparent">
-              learning & earning.
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight tracking-tight animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            Bridge the gap between <br />
+            <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
+              learning and earning
             </span>
           </h1>
 
           <p
-            className={`text-lg sm:text-xl mb-12 max-w-2xl mx-auto font-bold tracking-tight opacity-50 leading-relaxed animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200 ${isDark ? "text-slate-300" : "text-slate-600"}`}
+            className={`text-lg sm:text-xl mb-12 max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200 ${isDark ? "text-gray-400" : "text-gray-600"}`}
           >
-            SkillBridge is your neural career counselor. Map your path, verify
-            your skills, and connect with global opportunities through
-            persistent AI guidance.
+            Your personal AI career counselor that guides you from learning to
+            practice to employment. Discover trending skills, learn efficiently,
+            and become job-ready.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-32 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
             <Link
               href="/signup"
-              className="group px-10 py-5 bg-slate-950 dark:bg-white text-white dark:text-slate-950 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3 shadow-2xl"
+              className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl font-bold text-lg text-white hover:shadow-xl hover:shadow-purple-500/40 transition-all flex items-center gap-2"
             >
-              Initialize Journey
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              Start Your Journey
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
               href="#features"
-              className={`px-10 py-5 border rounded-[2rem] font-black text-xs uppercase tracking-widest transition-all ${isDark ? "bg-white/5 border-white/10 text-white hover:bg-white/10" : "bg-white border-slate-200 text-slate-900 shadow-sm hover:bg-slate-50"}`}
+              className={`px-8 py-4 border rounded-2xl font-bold text-lg transition-all ${isDark ? "border-white/10 hover:bg-white/5 text-white" : "border-gray-200 hover:bg-gray-100 text-gray-900 shadow-sm"}`}
             >
-              Explore Features
+              Explore Platform
             </Link>
           </div>
 
-          {/* Stats Bar - High fidelity */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+          {/* Stats Bar */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {stats.map((stat, idx) => (
               <div
                 key={idx}
-                className={`p-8 rounded-[2.5rem] border backdrop-blur-3xl transition-all duration-500 hover:-translate-y-2 ${isDark ? "bg-slate-900/40 border-white/5" : "bg-white border-slate-200 shadow-xl shadow-purple-500/5"}`}
+                className={`p-6 rounded-3xl border backdrop-blur-sm transition-all hover:-translate-y-1 ${isDark ? "bg-slate-900/50 border-white/5" : "bg-white border-gray-100 shadow-sm"}`}
               >
-                <div className="text-4xl font-black bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent mb-2">
+                <div className="text-3xl font-bold text-purple-500 mb-1">
                   {stat.value}
                 </div>
                 <div
-                  className={`text-[10px] font-black uppercase tracking-widest opacity-40 ${isDark ? "text-slate-400" : "text-slate-500"}`}
+                  className={`text-xs font-bold uppercase tracking-widest ${isDark ? "text-gray-500" : "text-gray-400"}`}
                 >
                   {stat.label}
                 </div>
@@ -178,39 +184,40 @@ export default function SkillBridgeLanding() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features Grid */}
       <section
         id="features"
-        className={`py-40 px-6 relative z-10 ${isDark ? "bg-slate-950/40" : "bg-white border-y border-slate-100"}`}
+        className={`py-24 px-4 sm:px-6 lg:px-8 relative z-10 ${isDark ? "bg-slate-900/20" : "bg-white"}`}
       >
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20 space-y-4">
-            <h2 className="text-4xl sm:text-6xl font-black tracking-tighter uppercase">
-              The SkillBridge Ecosystem
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Everything you need to{" "}
+              <span className="text-purple-500">succeed</span>
             </h2>
-            <p className="max-w-xl mx-auto text-sm font-bold opacity-30 uppercase tracking-widest italic tracking-[0.3em]">
-              Everything you need to succeed in the neural era.
+            <p
+              className={`${isDark ? "text-gray-400" : "text-gray-600"} font-medium`}
+            >
+              Powered by cutting-edge AI to personalize your learning journey
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {features.map((f, idx) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, idx) => (
               <div
                 key={idx}
-                className={`group p-10 rounded-[3rem] border transition-all duration-700 hover:-translate-y-3 ${isDark ? "bg-slate-900/40 border-white/5 hover:border-purple-500/30" : "bg-slate-50/50 border-slate-100 hover:bg-white hover:shadow-2xl shadow-purple-500/5 hover:border-purple-300/30"}`}
+                className={`p-8 rounded-3xl border group transition-all hover:border-purple-500/50 ${isDark ? "bg-slate-900/50 border-white/5 hover:bg-slate-900" : "bg-slate-50 border-gray-100 hover:bg-white hover:shadow-xl"}`}
               >
                 <div
-                  className={`w-14 h-14 bg-gradient-to-br ${f.color} rounded-2xl flex items-center justify-center text-white mb-8 group-hover:scale-110 group-hover:rotate-6 transition-all shadow-lg`}
+                  className={`w-12 h-12 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform shadow-lg`}
                 >
-                  {f.icon}
+                  {feature.icon}
                 </div>
-                <h3 className="text-xl font-black tracking-tight mb-4 uppercase">
-                  {f.title}
-                </h3>
+                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
                 <p
-                  className={`text-sm font-semibold leading-relaxed opacity-40 ${isDark ? "text-slate-300" : "text-slate-600"}`}
+                  className={`text-sm leading-relaxed ${isDark ? "text-gray-400" : "text-gray-600"}`}
                 >
-                  {f.description}
+                  {feature.description}
                 </p>
               </div>
             ))}
@@ -218,108 +225,98 @@ export default function SkillBridgeLanding() {
         </div>
       </section>
 
-      {/* FEATURED: CodeTwin Showpiece */}
-      <section className="py-48 px-6 relative overflow-hidden z-10">
-        <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-emerald-500/10 blur-[150px] rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2" />
-
+      {/* CodeTwin Featured Section */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-center gap-24">
-            <div className="flex-1 space-y-10 text-left">
-              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest">
-                <Code2 className="w-5 h-5" />
-                Featured Tool: CodeTwin
+          <div className="flex flex-col lg:flex-row items-center gap-16">
+            <div className="flex-1 space-y-8 text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold uppercase tracking-widest">
+                <Code2 className="w-4 h-4" />
+                Featured: CodeTwin IDE
               </div>
-              <h2 className="text-5xl sm:text-7xl font-black tracking-tighter leading-[0.85]">
-                Coding, paired <br />
-                <span className="text-emerald-500 italic">with logic.</span>
+              <h2 className="text-3xl sm:text-5xl font-bold leading-tight">
+                Pair program with your <br />
+                <span className="text-emerald-500">AI Digital Twin.</span>
               </h2>
               <p
-                className={`text-lg sm:text-xl font-bold tracking-tight opacity-40 leading-relaxed max-w-xl ${isDark ? "text-slate-300" : "text-slate-600"}`}
+                className={`text-lg leading-relaxed ${isDark ? "text-gray-400" : "text-gray-600"}`}
               >
-                Meet your CodeTwin. A world-class IDE with a real-time AI mentor
-                that understands your architectural intent. Debug, optimize, and
-                learn as you build.
+                Experience zero-latency pair programming with an AI that's
+                trained to understand your logic. Debug, optimize, and learn as
+                you build real projects.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4">
-                <div className="space-y-4">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
                     <Sparkles className="w-5 h-5" />
                   </div>
-                  <div>
-                    <h4 className="text-xs font-black uppercase tracking-widest mb-1">
-                      Live Mentorship
-                    </h4>
-                    <p className="text-[10px] font-bold opacity-30 uppercase tracking-widest leading-relaxed">
-                      Neural analysis of every line of code.
-                    </p>
-                  </div>
+                  <span className="text-sm font-semibold">
+                    Real-time Mentorship
+                  </span>
                 </div>
-                <div className="space-y-4">
-                  <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-500">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
                     <Terminal className="w-5 h-5" />
                   </div>
-                  <div>
-                    <h4 className="text-xs font-black uppercase tracking-widest mb-1">
-                      Project Context
-                    </h4>
-                    <p className="text-[10px] font-bold opacity-30 uppercase tracking-widest leading-relaxed">
-                      Full-stack awareness in a single IDE.
-                    </p>
-                  </div>
+                  <span className="text-sm font-semibold">
+                    Intelligent Context
+                  </span>
                 </div>
               </div>
 
               <Link
                 href="/code-twin"
-                className="group inline-flex items-center gap-4 px-10 py-5 bg-emerald-600 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-emerald-500/30"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20 group"
               >
-                Launch Code-Twin Studio
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+                Open CodeTwin Studio
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
-            {/* High Fidelity Mockup */}
+            {/* Refined Mockup */}
             <div className="flex-1 w-full max-w-2xl relative group">
-              <div className="absolute inset-0 bg-emerald-500/20 blur-[120px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+              <div className="absolute inset-x-0 top-0 bottom-0 bg-emerald-500/10 blur-[100px] rounded-full opacity-50 transition-opacity group-hover:opacity-100" />
               <div
-                className={`relative rounded-[3rem] border overflow-hidden shadow-2xl transition-all duration-700 ${isDark ? "bg-slate-950/80 border-white/5" : "bg-white border-slate-200"}`}
+                className={`relative rounded-3xl border overflow-hidden shadow-2xl ${isDark ? "bg-slate-900 border-white/5" : "bg-white border-gray-100"}`}
               >
                 <div
-                  className={`px-8 py-5 border-b flex items-center justify-between ${isDark ? "bg-slate-900 border-white/5" : "bg-slate-50 border-slate-100"}`}
+                  className={`p-4 border-b flex items-center gap-2 ${isDark ? "bg-slate-950 border-white/5" : "bg-gray-50 border-gray-100"}`}
                 >
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-400 opacity-40 shrink-0" />
-                    <div className="w-3 h-3 rounded-full bg-amber-400 opacity-40 shrink-0" />
-                    <div className="w-3 h-3 rounded-full bg-emerald-400 opacity-40 shrink-0" />
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500/40" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/40" />
                   </div>
-                  <span className="text-[10px] font-mono tracking-widest opacity-20 uppercase">
-                    main_logic.js
+                  <span className="text-[10px] uppercase tracking-widest font-mono opacity-40 ml-2">
+                    roadmap.js
                   </span>
                 </div>
-                <div className="flex h-[400px]">
-                  <div className="flex-1 p-10 font-mono text-[11px] leading-8 opacity-40 italic">
-                    <pre>{`// Neural Optimization
-function skillBridge(user) {
-  return AI.pair(user.logic);
-}
-
-// Experience it...`}</pre>
+                <div className="flex h-[350px]">
+                  <div className="flex-1 p-6 font-mono text-xs leading-6 opacity-40 select-none">
+                    <div className="text-purple-400">function</div> bridge()
+                    &#123; <br />
+                    &nbsp;&nbsp;
+                    <div className="text-emerald-400 inline">
+                      // AI pair programming...
+                    </div>
+                    ; <br />
+                    &#125;
                   </div>
                   <div
-                    className={`w-48 sm:w-64 border-l p-8 space-y-6 flex flex-col ${isDark ? "bg-slate-950/50" : "bg-white shadow-inner"} border-inherit`}
+                    className={`w-48 sm:w-64 border-l p-4 flex flex-col ${isDark ? "bg-slate-950/50" : "bg-gray-50"} border-inherit`}
                   >
-                    <div className="flex items-center gap-3">
-                      <Bot className="w-5 h-5 text-emerald-500" />
-                      <span className="text-[9px] font-black uppercase tracking-widest opacity-40">
-                        Mentor
+                    <div className="flex items-center gap-2 mb-4">
+                      <Bot className="w-4 h-4 text-emerald-500" />
+                      <span className="text-[10px] font-bold text-emerald-500">
+                        AI Assistant
                       </span>
                     </div>
                     <div
-                      className={`p-5 rounded-2xl rounded-tl-none border text-[11px] font-bold leading-relaxed transition-all duration-1000 ${isDark ? "bg-slate-800 border-white/5 text-slate-100" : "bg-emerald-50 border-emerald-100 text-emerald-800 shadow-sm"}`}
+                      className={`p-3 rounded-xl border text-[10px] leading-relaxed ${isDark ? "bg-slate-800 border-white/10" : "bg-white border-gray-100 shadow-sm"}`}
                     >
-                      "I suggest using a neural-map for this logic flow. Shall I
-                      refactor it?"
+                      "I've analyzed your logic and found a more efficient
+                      approach..."
                     </div>
                   </div>
                 </div>
@@ -329,58 +326,63 @@ function skillBridge(user) {
         </div>
       </section>
 
-      {/* Path to Success - Modern Path Visual */}
-      <section id="how-it-works" className="py-24 px-6 relative z-10">
+      {/* Path to Success */}
+      <section
+        id="how-it-works"
+        className="py-24 px-4 sm:px-6 lg:px-8 relative z-10"
+      >
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-24 space-y-4">
-            <h2 className="text-4xl sm:text-6xl font-black tracking-tighter uppercase">
-              Evolution Path
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Your path to <span className="text-purple-500">success</span>
             </h2>
-            <p className="max-w-xl mx-auto text-sm font-bold opacity-30 uppercase tracking-widest italic tracking-[0.3em]">
-              Phase transition to job-readiness.
+            <p
+              className={`${isDark ? "text-gray-400" : "text-gray-600"} font-medium`}
+            >
+              Four simple steps to transform your career
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-12 text-center">
+          <div className="grid md:grid-cols-4 gap-8">
             {[
               {
                 num: "01",
-                title: "Defne Goal",
-                desc: "Phase 1: Your neural career target.",
+                title: "Set Your Goal",
+                desc: "Define your dream career",
                 icon: <Target className="w-8 h-8" />,
               },
               {
                 num: "02",
-                title: "Map Road",
-                desc: "Phase 2: AI-sequenced learning path.",
+                title: "Get Your Roadmap",
+                desc: "Custom AI-generated path",
                 icon: <Brain className="w-8 h-8" />,
               },
               {
                 num: "03",
-                title: "Verify Proof",
-                desc: "Phase 3: Verify skills with projects.",
+                title: "Build & Verify",
+                desc: "Prove skills with projects",
                 icon: <Award className="w-8 h-8" />,
               },
               {
                 num: "04",
-                title: "Bridge Entry",
-                desc: "Phase 4: Direct job market integration.",
+                title: "Land Your Job",
+                desc: "Connect with global roles",
                 icon: <Rocket className="w-8 h-8" />,
               },
             ].map((step, idx) => (
-              <div key={idx} className="relative group">
+              <div key={idx} className="text-center group">
                 <div
-                  className={`w-24 h-24 rounded-[2.5rem] mx-auto mb-8 flex items-center justify-center border transition-all duration-700 group-hover:scale-110 group-hover:rotate-[15deg] ${isDark ? "bg-slate-900 border-white/5" : "bg-white border-slate-200 shadow-xl"}`}
+                  className={`w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center transition-all group-hover:scale-110 group-hover:rotate-3 ${isDark ? "bg-slate-900 border border-white/5" : "bg-white border border-gray-100 shadow-sm"}`}
                 >
-                  <div className="text-purple-500 scale-125">{step.icon}</div>
+                  <div className="text-purple-500">{step.icon}</div>
                 </div>
-                <span className="text-5xl font-black opacity-10 tracking-tighter mb-4 block group-hover:opacity-30 transition-opacity">
+                <div className="text-3xl font-bold text-gray-200 dark:text-gray-200/20 mb-2">
                   {step.num}
-                </span>
-                <h3 className="text-xl font-black uppercase tracking-tight mb-2">
-                  {step.title}
-                </h3>
-                <p className="text-[10px] font-bold opacity-30 uppercase tracking-widest leading-relaxed max-w-[150px] mx-auto">
+                </div>
+                <h3 className="text-lg font-bold mb-2">{step.title}</h3>
+                <p
+                  className={`text-sm ${isDark ? "text-gray-500" : "text-gray-500"}`}
+                >
                   {step.desc}
                 </p>
               </div>
@@ -390,34 +392,17 @@ function skillBridge(user) {
       </section>
 
       {/* CTA Section */}
-      <section className="py-40 px-6 relative z-10">
-        <div className="max-w-6xl mx-auto">
-          <div
-            className={`p-16 sm:p-24 rounded-[4rem] relative overflow-hidden text-center transition-all duration-1000 ${isDark ? "bg-slate-950 border border-white/5 shadow-2xl" : "bg-slate-950 text-white shadow-2xl"}`}
-          >
-            <div className="absolute inset-x-0 -top-20 -bottom-20 bg-gradient-to-r from-purple-600/20 via-indigo-600/20 to-pink-600/20 opacity-30 blur-[100px]" />
-            <div className="relative z-10 space-y-12">
-              <h2 className="text-5xl sm:text-7xl lg:text-[6rem] font-black tracking-tighter leading-[0.85] text-balance">
-                Bridge your <br />
-                <span className="bg-gradient-to-r from-purple-400 via-indigo-400 to-pink-400 bg-clip-text text-transparent italic">
-                  Limitless
-                </span>{" "}
-                potential.
-              </h2>
-              <p className="max-w-xl mx-auto text-lg sm:text-xl font-bold opacity-40 leading-relaxed tracking-tight">
-                Join thousands of future professionals already building their
-                dream careers with SkillBridge AI.
-              </p>
-              <div className="pt-6">
-                <Link
-                  href="/signup"
-                  className="px-12 py-6 bg-white dark:bg-white text-slate-950 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] hover:scale-105 active:scale-95 transition-all shadow-2xl"
-                >
-                  Get Started Free
-                </Link>
-              </div>
-            </div>
-          </div>
+      <section className="py-24 px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-5xl mx-auto">
+          <SharedCTABanner
+            isDark={isDark}
+            title="Ready to bridge your future?"
+            subtitle="Join thousands of learners who are already building their dream careers with AI-powered guidance"
+            primaryBtn={{
+              text: "Get Started Free",
+              onClick: () => router.push("/signup"),
+            }}
+          />
         </div>
       </section>
     </div>

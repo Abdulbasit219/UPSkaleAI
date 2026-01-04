@@ -41,6 +41,7 @@ const Navbar = () => {
   const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
   // Refs for detecting outside clicks
   const userDropdownRef = useRef(null);
@@ -51,7 +52,14 @@ const Navbar = () => {
 
   // Redux theme
   const dispatch = useDispatch();
-  const theme = useSelector((state) => state.theme.mode);
+  const themeMode = useSelector((state) => state.theme.mode);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Use 'dark' as default for server-side rendering to prevent hydration mismatch
+  const theme = mounted ? themeMode : "dark";
   const isDark = theme === "dark";
 
   useEffect(() => {
