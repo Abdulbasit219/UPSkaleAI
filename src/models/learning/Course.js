@@ -33,9 +33,7 @@ const CourseSchema = new mongoose.Schema(
       enum: ["Beginner", "Intermediate", "Advanced"],
       default: "Beginner",
     },
-    skills: [
-      { type: String }, 
-    ],
+    skills: [{ type: String }],
     tags: {
       type: [String],
       default: [],

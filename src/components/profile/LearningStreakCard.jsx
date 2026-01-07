@@ -30,7 +30,7 @@ const LearningStreakCard = ({ isDark, profile, streak }) => {
             isDark ? "text-gray-400" : "text-gray-500"
           }`}
         >
-          Keep it going! 🔥
+          Keep it going! 
         </div>
       </div>
 

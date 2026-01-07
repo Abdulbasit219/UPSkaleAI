@@ -39,12 +39,7 @@ const LessonSchema = new mongoose.Schema(
       type: String,
     },
     codeExamples: [CodeExampleSchema],
-    resources: [ResourceSchema],
-
-    // quiz: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Quiz",
-    // },
+    resources: [ResourceSchema]
   },
   { timestamps: true }
 );
