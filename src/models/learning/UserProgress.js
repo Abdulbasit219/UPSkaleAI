@@ -48,26 +48,7 @@ const UserProgressSchema = new mongoose.Schema(
     certificateIssued: {
       type: Boolean,
       default: false,
-    },
-    notes: [
-      {
-        lessonId: mongoose.Schema.Types.ObjectId,
-        content: String,
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
-    bookmarks: [
-      {
-        lessonId: mongoose.Schema.Types.ObjectId,
-        addedAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
+    } 
   },
   { timestamps: true }
 );
@@ -80,3 +61,25 @@ const UserProgress =
   mongoose.model("UserProgress", UserProgressSchema);
 
 export default UserProgress;
+
+
+
+    // notes: [
+    //   {
+    //     lessonId: mongoose.Schema.Types.ObjectId,
+    //     content: String,
+    //     createdAt: {
+    //       type: Date,
+    //       default: Date.now,
+    //     },F
+    //   },
+    // ],
+    // bookmarks: [
+    //   {
+    //     lessonId: mongoose.Schema.Types.ObjectId,
+    //     addedAt: {
+    //       type: Date,
+    //       default: Date.now,
+    //     },
+    //   },
+    // ],

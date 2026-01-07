@@ -119,16 +119,16 @@ export async function POST(request) {
       progress.isCompleted = true;
       progress.completedAt = new Date();
 
-      // Generate certificate
-      const certificateId = `CERT-${Date.now()}-${userId.toString().slice(-6)}`;
-      await Certificate.create({
-        userId,
-        courseId,
-        certificateId,
-        issuedAt: new Date(),
-      });
+      // // Generate certificate
+      // const certificateId = `CERT-${Date.now()}-${userId.toString().slice(-6)}`;
+      // await Certificate.create({
+      //   userId,
+      //   courseId,
+      //   certificateId,
+      //   issuedAt: new Date(),
+      // });
 
-      progress.certificateIssued = true;
+      // progress.certificateIssued = true;
     }
 
     await progress.save();
