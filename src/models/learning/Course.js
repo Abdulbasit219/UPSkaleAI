@@ -57,10 +57,6 @@ const CourseSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    quiz: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Quiz",
-    },
   },
   { timestamps: true }
 );

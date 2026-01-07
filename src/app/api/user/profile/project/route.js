@@ -17,8 +17,7 @@ export async function PUT(req) {
   }
 
   const userId = session.user._id;
-  // const userId = "6922ad85960624dadd579169";
-
+  
   const { title, description, techStack, projectLink, githubLink } =
     await req.json();
 

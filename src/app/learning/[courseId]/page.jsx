@@ -38,11 +38,10 @@ const CoursePage = () => {
       );
       setIsEnrolled(enrollRes?.data?.data);
 
-      if (enrollRes?.enrolled) {
+      if (enrollRes?.data?.enrolled) {
         const progressRes = await axios.get(
           `/api/learning/progress?courseId=${courseId}`
         );
-        // const progressData = await progressRes.json();
         setProgress(progressRes?.data?.data[0]);
       }
     } catch (error) {
@@ -51,6 +50,8 @@ const CoursePage = () => {
       setLoading(false);
     }
   };
+
+  console.log(progress)
 
   const handleEnroll = async () => {
     try {
@@ -74,6 +75,7 @@ const CoursePage = () => {
     if (!progress) return false;
     return progress.completedLessons.some((cl) => cl.lessonId === lessonId);
   };
+
 
   useEffect(() => {
     fetchCourseData();
@@ -205,7 +207,7 @@ const CoursePage = () => {
             )}
 
             {/* Quiz Button */}
-            {isEnrolled && (
+            {isEnrolled && progress?.progressPercentage === 100 && (
               <Link
                 href={`/learning/${courseId}/${course.title}/quiz`}
                 className="mt-6 inline-block px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl text-white font-semibold hover:shadow-lg hover:shadow-green-500/50 transition-all"

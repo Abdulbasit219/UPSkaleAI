@@ -3,7 +3,13 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Clock, CheckCircle, XCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Clock,
+  CheckCircle,
+  XCircle,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -29,11 +35,14 @@ const QuizPage = () => {
     axios
       .get(`/api/learning/quizzes?course=${courseTitle}`)
       .then((res) => {
-        const fetchedQuizzes = res.data.data;
-        setAllQuizzes(fetchedQuizzes);
+        const fetchedQuizzes = res.data.data.map((q, index) => ({
+          ...q,
+          __index: index,
+        }));
 
         const selectedQuizzes = getRandomQuestions(fetchedQuizzes, 10);
         setDisplayedQuizzes(selectedQuizzes);
+        setAllQuizzes(fetchedQuizzes);
         setLoading(false);
       })
       .catch((err) => {
@@ -68,7 +77,7 @@ const QuizPage = () => {
     setAnswers({ ...answers, [currentQuestionIndex]: option });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSubmitted(true);
     let correctCount = 0;
     displayedQuizzes.forEach((q, i) => {
@@ -77,6 +86,16 @@ const QuizPage = () => {
       }
     });
     setScore(correctCount);
+
+    const payload = displayedQuizzes.map((q, i) => ({
+      sheetRow: q._row, 
+      selectedOption: answers[i],
+    }));
+
+    await axios.post("/api/learning/quizzes", {
+      courseId,
+      answers: payload,
+    });
   };
 
   const handleStartQuiz = () => {
@@ -178,7 +197,8 @@ const QuizPage = () => {
               Question {currentQuestionIndex + 1} of {displayedQuizzes.length}
             </div>
             <div className={`text-xl font-bold ${textColor}`}>
-              Score: {score}/{displayedQuizzes.length} ({Math.round((score / displayedQuizzes.length) * 100)}%)
+              Score: {score}/{displayedQuizzes.length} (
+              {Math.round((score / displayedQuizzes.length) * 100)}%)
             </div>
           </div>
         )}
@@ -207,9 +227,11 @@ const QuizPage = () => {
               <div className="flex gap-1 flex-wrap">
                 {displayedQuizzes.map((q, i) => {
                   const isAnswered = answers[i];
-                  const isCorrectAnswer = isReviewMode && answers[i] === q.Correct;
-                  const isWrongAnswer = isReviewMode && answers[i] && answers[i] !== q.Correct;
-                  
+                  const isCorrectAnswer =
+                    isReviewMode && answers[i] === q.Correct;
+                  const isWrongAnswer =
+                    isReviewMode && answers[i] && answers[i] !== q.Correct;
+
                   return (
                     <button
                       key={i}
@@ -218,14 +240,14 @@ const QuizPage = () => {
                         i === currentQuestionIndex
                           ? "bg-purple-600 text-white scale-110"
                           : isCorrectAnswer
-                          ? "bg-green-500 text-white"
-                          : isWrongAnswer
-                          ? "bg-red-500 text-white"
-                          : isAnswered
-                          ? "bg-green-500/30 text-green-400 border border-green-500"
-                          : isDark
-                          ? "bg-slate-700 text-gray-400"
-                          : "bg-slate-200 text-gray-600"
+                            ? "bg-green-500 text-white"
+                            : isWrongAnswer
+                              ? "bg-red-500 text-white"
+                              : isAnswered
+                                ? "bg-green-500/30 text-green-400 border border-green-500"
+                                : isDark
+                                  ? "bg-slate-700 text-gray-400"
+                                  : "bg-slate-200 text-gray-600"
                       } hover:scale-105 cursor-pointer`}
                     >
                       {i + 1}
@@ -295,21 +317,25 @@ const QuizPage = () => {
                   })}
                 </div>
 
-                {(submitted || isReviewMode) && answers[currentQuestionIndex] !== currentQuestion.Correct && (
-                  <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                    <p className="text-sm text-blue-400">
-                      <strong>Explanation:</strong> {currentQuestion.Explanation}
-                    </p>
-                  </div>
-                )}
+                {(submitted || isReviewMode) &&
+                  answers[currentQuestionIndex] !== currentQuestion.Correct && (
+                    <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                      <p className="text-sm text-blue-400">
+                        <strong>Explanation:</strong>{" "}
+                        {currentQuestion.Explanation}
+                      </p>
+                    </div>
+                  )}
 
-                {isReviewMode && answers[currentQuestionIndex] === currentQuestion.Correct && (
-                  <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-                    <p className="text-sm text-green-400">
-                      <strong>✓ Correct!</strong> {currentQuestion.Explanation}
-                    </p>
-                  </div>
-                )}
+                {isReviewMode &&
+                  answers[currentQuestionIndex] === currentQuestion.Correct && (
+                    <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                      <p className="text-sm text-green-400">
+                        <strong>✓ Correct!</strong>{" "}
+                        {currentQuestion.Explanation}
+                      </p>
+                    </div>
+                  )}
               </div>
             )}
 
@@ -325,7 +351,10 @@ const QuizPage = () => {
               </button>
 
               <div className={`text-center ${subTextColor}`}>
-                <p className="text-sm">Answered: {Object.keys(answers).length} / {displayedQuizzes.length}</p>
+                <p className="text-sm">
+                  Answered: {Object.keys(answers).length} /{" "}
+                  {displayedQuizzes.length}
+                </p>
               </div>
 
               <button
