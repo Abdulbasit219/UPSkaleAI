@@ -16,11 +16,17 @@ import {
   FileText,
   Mic,
 } from "lucide-react";
+import { io } from "socket.io-client";
+import { useSession } from "next-auth/react";
+
+// Connect to our socket server (Run: node socket-server.js)
+const socket = io("http://localhost:3001");
 
 // Mock Data for Recruiters/Contacts
+// In your real FYP, you would fetch these from an API (/api/users?role=recruiter)
 const contacts = [
   {
-    id: 1,
+    id: "recruiter_sarah_123", // Real-looking unique ID
     name: "Sarah Wilson",
     role: "Senior Recruiter at TechCorp",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
@@ -30,7 +36,7 @@ const contacts = [
     unread: 2,
   },
   {
-    id: 2,
+    id: "recruiter_michael_456",
     name: "Michael Chen",
     role: "Talent Acquisition at StartupX",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Michael",
@@ -39,58 +45,38 @@ const contacts = [
     time: "Yesterday",
     unread: 0,
   },
-  {
-    id: 3,
-    name: "Emma Davis",
-    role: "HR Manager at Innovate Inc",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma",
-    status: "online",
-    lastMessage: "Thanks for applying!",
-    time: "Mon",
-    unread: 0,
-  },
 ];
 
-// Mock Messages
-const initialMessages = [
-  {
-    id: 1,
-    senderId: 1,
-    text: "Hi there! I reviewed your application for the Senior Developer role.",
-    time: "10:00 AM",
-    status: "read",
-  },
-  {
-    id: 2,
-    senderId: 1,
-    text: "Your experience with React and Node.js looks impressive.",
-    time: "10:01 AM",
-    status: "read",
-  },
-  {
-    id: 3,
-    senderId: 0, // 0 represents the current user
-    text: "Hi Sarah! Thank you for reaching out. I'm very interested in the position.",
-    time: "10:05 AM",
-    status: "read",
-  },
-  {
-    id: 4,
-    senderId: 1,
-    text: "Great! Are you available for a quick introductory call this week?",
-    time: "10:30 AM",
-    status: "read",
-  },
-];
+// Mock Messages (Initially empty in a real app, then fetched from DB)
+const initialMessages = [];
 
 export default function ChatPage() {
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
+
+  // STEP 1: Get the real logged-in user from Next-Auth
+  const { data: session } = useSession();
+  const currentUserId = session?.user?._id; // This is the unique ID from your MongoDB
+
   const [activeChat, setActiveChat] = useState(contacts[0]);
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const messagesEndRef = useRef(null);
+
+  /**
+   * LEARNING: Consistent Room IDs
+   * To ensure both users (Ali and Sarah) join the SAME room,
+   * we sort their IDs alphabetically and join them.
+   * "ali" + "sarah" = "ali_sarah"
+   * "sarah" + "ali" = "ali_sarah"
+   */
+  const getRoomID = (userId, contactId) => {
+    if (!userId || !contactId) return null;
+    return [userId, contactId].sort().join("_");
+  };
+
+  const currentRoom = getRoomID(currentUserId, activeChat.id);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -100,15 +86,42 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages]);
 
-  // Handle sending a message
+  // STEP 2: Join the Private Room
+  useEffect(() => {
+    if (currentRoom) {
+      console.log("🏫 Joining Private Room:", currentRoom);
+      socket.emit("join_room", currentRoom);
+    }
+
+    // STEP 3: Listen for incoming messages for THIS room only
+    socket.on("receive_message", (data) => {
+      console.log("📩 New message received in room:", data);
+
+      // Ensure we only show the message if it belongs to the current open chat
+      if (data.roomID === currentRoom) {
+        setMessages((prev) => [
+          ...prev,
+          { ...data, id: Date.now() + Math.random() },
+        ]);
+      }
+    });
+
+    // Cleanup: Stop listening when we switch chats or leave the page
+    return () => {
+      socket.off("receive_message");
+    };
+  }, [currentRoom]);
+
+  // STEP 4: Send Message to Specific Room
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !currentRoom || !currentUserId) return;
 
-    const message = {
-      id: messages.length + 1,
-      senderId: 0,
+    const messageData = {
+      roomID: currentRoom, // The private room ID
       text: newMessage,
+      senderId: currentUserId, // Your real ID from session
+      senderName: session?.user?.username || "User",
       time: new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -116,23 +129,11 @@ export default function ChatPage() {
       status: "sent",
     };
 
-    setMessages([...messages, message]);
-    setNewMessage("");
+    // 1. Send to socket server (The server will then 'io.to(roomID).emit' back)
+    socket.emit("send_message", messageData);
 
-    // Simulate reply
-    setTimeout(() => {
-      const reply = {
-        id: messages.length + 2,
-        senderId: activeChat.id,
-        text: "Thanks for your message! I'll get back to you shortly.",
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        status: "read",
-      };
-      setMessages((prev) => [...prev, reply]);
-    }, 2000);
+    // 2. Clear input
+    setNewMessage("");
   };
 
   return (
@@ -312,7 +313,7 @@ export default function ChatPage() {
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
               {messages.map((msg) => {
-                const isMe = msg.senderId === 0;
+                const isMe = msg.senderId === currentUserId;
                 return (
                   <div
                     key={msg.id}
@@ -323,8 +324,8 @@ export default function ChatPage() {
                         isMe
                           ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-tr-none"
                           : isDark
-                          ? "bg-slate-800 text-white rounded-tl-none border border-purple-500/20"
-                          : "bg-white text-gray-900 rounded-tl-none border border-purple-100"
+                            ? "bg-slate-800 text-white rounded-tl-none border border-purple-500/20"
+                            : "bg-white text-gray-900 rounded-tl-none border border-purple-100"
                       }`}
                     >
                       <p className="text-sm sm:text-base leading-relaxed">
@@ -361,7 +362,10 @@ export default function ChatPage() {
                   : "bg-white/50 border-purple-300/20"
               }`}
             >
-              <form onSubmit={handleSendMessage} className="flex items-end gap-2">
+              <form
+                onSubmit={handleSendMessage}
+                className="flex items-end gap-2"
+              >
                 <div className="flex gap-2">
                   <button
                     type="button"
