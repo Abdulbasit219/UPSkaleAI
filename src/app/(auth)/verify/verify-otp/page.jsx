@@ -1,34 +1,41 @@
 "use client";
 import React, { useState } from "react";
-import { Mail, ArrowRight, CheckCircle } from "lucide-react";
+import { Lock, ArrowRight } from "lucide-react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
-export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
+export default function ResetPasswordPage() {
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
+
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const email = searchParams.get("email");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email) return;
+    if (!otp || !newPassword) return;
 
     try {
       setIsLoading(true);
-      const res = await axios.post("/api/auth/forgot-password", { email });
+      const res = await axios.patch("/api/auth/reset-password", {
+        email,
+        otp,
+        newPassword,
+      });
 
       if (res.data.success) {
-        toast.success("OTP sent to your email!");
-        router.push(`/verify/verify-otp?email=${encodeURIComponent(email)}`);
+        toast.success("Password reset successfully!");
+        router.push("/sign-in"); 
       }
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Something went wrong, try again"
-      );
+      toast.error(error?.response?.data?.message || "Failed to reset password");
     } finally {
       setIsLoading(false);
     }
@@ -58,48 +65,71 @@ export default function ForgotPasswordPage() {
                   : "bg-gradient-to-br from-purple-100 to-pink-100 border-purple-300/30"
               }`}
             >
-              <Mail
+              <Lock
                 className={`w-8 h-8 ${isDark ? "text-purple-400" : "text-purple-600"}`}
               />
             </div>
-            <h2 className={`text-3xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
-              Forgot Password?
+            <h2
+              className={`text-3xl font-bold mb-2 ${
+                isDark ? "text-white" : "text-gray-900"
+              }`}
+            >
+              Reset Password
             </h2>
             <p className={isDark ? "text-gray-400" : "text-gray-600"}>
-              Enter your email to receive an OTP for password reset.
+              Enter the OTP sent to <span className="font-semibold">{email}</span> and set a new password.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label
-                htmlFor="email"
+                htmlFor="otp"
                 className={`block text-sm font-medium mb-2 ${
                   isDark ? "text-gray-300" : "text-gray-700"
                 }`}
               >
-                Email Address
+                OTP
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className={`h-5 w-5 ${isDark ? "text-gray-500" : "text-gray-400"}`} />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`block w-full pl-10 pr-4 py-3 border rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
-                    isDark
-                      ? "bg-slate-800/50 border-purple-500/20 text-white"
-                      : "bg-white border-purple-300/20 text-gray-900"
-                  }`}
-                  placeholder="Enter your email address"
-                />
-              </div>
+              <input
+                id="otp"
+                name="otp"
+                type="text"
+                required
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className={`block w-full px-4 py-3 border rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
+                  isDark
+                    ? "bg-slate-800/50 border-purple-500/20 text-white"
+                    : "bg-white border-purple-300/20 text-gray-900"
+                }`}
+                placeholder="Enter OTP"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="newPassword"
+                className={`block text-sm font-medium mb-2 ${
+                  isDark ? "text-gray-300" : "text-gray-700"
+                }`}
+              >
+                New Password
+              </label>
+              <input
+                id="newPassword"
+                name="newPassword"
+                type="password"
+                required
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className={`block w-full px-4 py-3 border rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
+                  isDark
+                    ? "bg-slate-800/50 border-purple-500/20 text-white"
+                    : "bg-white border-purple-300/20 text-gray-900"
+                }`}
+                placeholder="Enter new password"
+              />
             </div>
 
             <button
@@ -111,7 +141,7 @@ export default function ForgotPasswordPage() {
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  Send OTP
+                  Reset Password
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}

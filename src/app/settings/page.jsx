@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   User,
   Bell,
@@ -13,7 +13,7 @@ import {
   Linkedin,
   Twitter,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   SettingsSidebar,
   ProfileTab,
@@ -24,30 +24,27 @@ import {
   BillingTab,
   PrivacyTab,
 } from "@/components/settings";
+import { useSession } from "next-auth/react";
+import { fetchProfile } from "@/store/slices/profileSlice";
 
-/**
- * Settings Page
- */
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
   const theme = useSelector((state) => state.theme.mode);
+  const {
+    data: profile,
+  } = useSelector((state) => state.profile);
+  const { data } = useSession();
+  const user = data?.user;
+
+  const dispatch = useDispatch();
+
   const isDark = theme === "dark";
 
-  // Memoized user data
-  const userData = useMemo(
-    () => ({
-      name: "Ali",
-      email: "ali@example.com",
-      username: "ali",
-      bio: "Full-stack developer passionate about building scalable applications",
-      location: "Karachi, Pakistan",
-      website: "https://ali.dev",
-      phone: "+1 (555) 123-4567",
-      timezone: "Pakistan Standard Time (PKT)",
-      language: "English (US)",
-    }),
-    []
-  );
+  useEffect(() => {
+    if (user && !profile) {
+      dispatch(fetchProfile());
+    }
+  }, [user, dispatch, profile]);
 
   // Memoized tabs configuration
   const tabs = useMemo(
@@ -187,12 +184,12 @@ export default function SettingsPage() {
         return (
           <ProfileTab
             {...tabProps}
-            userData={userData}
+            userData={profile}
             connectedAccounts={connectedAccounts}
           />
         );
       case "account":
-        return <AccountTab {...tabProps} userData={userData} />;
+        return <AccountTab {...tabProps} userData={profile} />;
       case "security":
         return <SecurityTab {...tabProps} sessions={sessions} />;
       case "notifications":

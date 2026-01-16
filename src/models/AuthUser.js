@@ -34,6 +34,14 @@ const authUserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    resetPasswordOTP: {
+      type: String,
+      default: "",
+    },
+    resetPasswordOTPExpiry: {
+      type: Date,
+      default: "",
+    },
     // Profile Fields
     name: {
       type: String,
@@ -78,7 +86,7 @@ const authUserSchema = new mongoose.Schema(
       trim: true,
     },
     employees: {
-      type: String, // e.g., "1-10", "11-50"
+      type: String,
     },
     website: {
       type: String,
