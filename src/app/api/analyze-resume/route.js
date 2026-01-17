@@ -7,6 +7,25 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_API_KEY,
 });
 
+async function retryWithBackoff(fn, maxRetries = 3, initialDelay = 1000) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      // Check if it's a rate limit error (429)
+      const isRateLimit =
+        error.message?.includes("429") || error.status === 429;
+      if (isRateLimit && i < maxRetries - 1) {
+        const delay = initialDelay * Math.pow(2, i);
+        console.log(`Rate limited. Retrying in ${delay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+      throw error;
+    }
+  }
+}
+
 // -------------------------------
 // Helper: Extract TEXT from Gemini response
 // -------------------------------
@@ -24,27 +43,29 @@ function extractGeminiText(result) {
 async function extractPdfTextWithGemini(buffer) {
   const base64 = buffer.toString("base64");
 
-  const result = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
-    contents: [
-      {
-        role: "user",
-        parts: [
-          {
-            inlineData: {
-              mimeType: "application/pdf",
-              data: base64,
+  const result = await retryWithBackoff(async () => {
+    return await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              inlineData: {
+                mimeType: "application/pdf",
+                data: base64,
+              },
             },
-          },
-          {
-            text: `
+            {
+              text: `
 Extract ALL readable text from this PDF.
 Return only plain text. No summaries. No analysis.
 `,
-          },
-        ],
-      },
-    ],
+            },
+          ],
+        },
+      ],
+    });
   });
 
   return extractGeminiText(result);
@@ -81,7 +102,7 @@ export async function POST(request) {
     if (!resumeFile) {
       return NextResponse.json(
         { error: "No resume uploaded" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -93,7 +114,7 @@ export async function POST(request) {
     if (!extractedText.trim()) {
       return NextResponse.json(
         { error: "Could not extract text from PDF" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -135,9 +156,11 @@ FINAL THOUGHTS:
 `;
 
     // Call Gemini for analysis
-    const analysisResult = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
+    const analysisResult = await retryWithBackoff(async () => {
+      return await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+      });
     });
 
     const analysisText = extractGeminiText(analysisResult);
@@ -155,7 +178,7 @@ FINAL THOUGHTS:
         error: "Server error",
         details: err.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
