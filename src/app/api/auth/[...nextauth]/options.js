@@ -16,10 +16,6 @@ export const authOptions = {
         await connectDB();
         try {
           const user = await AuthUser.findOne({
-            // $or: [
-            //   { email: credentials.identifier },
-            //   { username: credentials.identifier },
-            // ],
             email: credentials.identifier,
           });
 

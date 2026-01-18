@@ -1,115 +1,70 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Mail,
   Check,
-  Languages,
-  Clock,
   AlertCircle,
   Trash2,
 } from "lucide-react";
 import SettingsCard from "../SettingsCard";
 import InputField from "../InputField";
 import Button from "../Button";
+import { useSession, signOut } from "next-auth/react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-/**
- * Account tab component
- */
-export default function AccountTab({ isDark, userData }) {
+export default function AccountTab({ isDark }) {
+  const { data } = useSession();
+  const user = data?.user;
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      "Are you sure? This will permanently delete your account and all data."
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setLoading(true);
+
+      await axios.delete("/api/user/delete-account", {
+        data: {
+          userId: user?._id,
+        },
+      });
+
+      alert("Account deleted successfully");
+
+      // logout user
+      await signOut({ redirect: false });
+
+      // redirect to home / signup
+      router.push("/");
+    } catch (error) {
+      alert(
+        error?.response?.data?.message || "Failed to delete account"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       {/* Email Address */}
       <SettingsCard title="Email Address" isDark={isDark}>
-        <div className="space-y-4">
-          <div>
-            <label
-              className={`block text-sm font-medium mb-2 ${
-                isDark ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              Current Email
-            </label>
-            <div className="flex gap-3">
-              <InputField
-                type="email"
-                icon={Mail}
-                defaultValue={userData.email}
-                isDark={isDark}
-                className="flex-1"
-              />
-              <Button variant="primary">Update</Button>
-            </div>
-            <p
-              className={`text-sm mt-2 flex items-center gap-2 ${
-                isDark ? "text-gray-400" : "text-gray-500"
-              }`}
-            >
-              <Check className="w-4 h-4 text-green-400" />
-              Email verified
-            </p>
-          </div>
-        </div>
-      </SettingsCard>
-
-      {/* Language & Region */}
-      <SettingsCard title="Language & Region" isDark={isDark}>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label
-              className={`block text-sm font-medium mb-2 ${
-                isDark ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              Language
-            </label>
-            <div className="relative">
-              <Languages
-                className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${
-                  isDark ? "text-gray-400" : "text-gray-500"
-                }`}
-              />
-              <select
-                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:border-purple-500 transition-colors appearance-none ${
-                  isDark
-                    ? "bg-slate-800 border-slate-700 text-white"
-                    : "bg-white border-gray-300 text-gray-900"
-                }`}
-              >
-                <option>English (US)</option>
-                <option>Spanish</option>
-                <option>French</option>
-                <option>German</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label
-              className={`block text-sm font-medium mb-2 ${
-                isDark ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              Timezone
-            </label>
-            <div className="relative">
-              <Clock
-                className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${
-                  isDark ? "text-gray-400" : "text-gray-500"
-                }`}
-              />
-              <select
-                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:border-purple-500 transition-colors appearance-none ${
-                  isDark
-                    ? "bg-slate-800 border-slate-700 text-white"
-                    : "bg-white border-gray-300 text-gray-900"
-                }`}
-              >
-                <option>Pacific Time (PT)</option>
-                <option>Eastern Time (ET)</option>
-                <option>Central Time (CT)</option>
-                <option>Mountain Time (MT)</option>
-              </select>
-            </div>
-          </div>
-        </div>
+        <InputField
+          type="email"
+          icon={Mail}
+          defaultValue={user?.email}
+          isDark={isDark}
+          disabled
+        />
+        <p className="text-sm mt-2 flex items-center gap-2 text-gray-500">
+          <Check className="w-4 h-4 text-green-400" />
+          Email verified
+        </p>
       </SettingsCard>
 
       {/* Danger Zone */}
@@ -123,34 +78,30 @@ export default function AccountTab({ isDark, userData }) {
         isDark={isDark}
         variant="danger"
       >
-        <div className="space-y-4">
-          <div
-            className={`flex items-start justify-between p-4 rounded-lg border ${
-              isDark
-                ? "bg-red-500/5 border-red-500/20"
-                : "bg-red-50 border-red-200"
-            }`}
-          >
-            <div>
-              <div
-                className={`font-semibold mb-1 ${
-                  isDark ? "text-white" : "text-gray-900"
-                }`}
-              >
-                Delete Account
-              </div>
-              <div
-                className={
-                  isDark ? "text-gray-400 text-sm" : "text-gray-600 text-sm"
-                }
-              >
-                Permanently delete your account and all data
-              </div>
+        <div
+          className={`flex items-start justify-between p-4 rounded-lg border ${
+            isDark
+              ? "bg-red-500/5 border-red-500/20"
+              : "bg-red-50 border-red-200"
+          }`}
+        >
+          <div>
+            <div className="font-semibold mb-1">
+              Delete Account
             </div>
-            <Button variant="danger" icon={Trash2}>
-              Delete
-            </Button>
+            <div className="text-sm text-gray-500">
+              Permanently delete your account and all data
+            </div>
           </div>
+
+          <Button
+            variant="danger"
+            icon={Trash2}
+            onClick={handleDeleteAccount}
+            disabled={loading}
+          >
+            {loading ? "Deleting..." : "Delete"}
+          </Button>
         </div>
       </SettingsCard>
     </>

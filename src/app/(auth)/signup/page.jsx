@@ -244,7 +244,7 @@ const Page = () => {
 
             <Button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-white hover:shadow-lg transition-all"
+              className="w-full cursor-pointer py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-white hover:shadow-lg transition-all"
               disabled={isSubmitting}
             >
               {isSubmitting ? (

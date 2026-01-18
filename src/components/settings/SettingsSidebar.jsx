@@ -1,9 +1,6 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
 
-/**
- * Sidebar navigation component for settings tabs
- */
 export default function SettingsSidebar({
   tabs,
   activeTab,
@@ -43,7 +40,7 @@ export default function SettingsSidebar({
         ))}
       </nav>
 
-      {onLogout && (
+      {/* {onLogout && (
         <div
           className={`mt-4 pt-4 border-t ${
             isDark ? "border-purple-500/20" : "border-purple-300/20"
@@ -61,7 +58,7 @@ export default function SettingsSidebar({
             <span>Log Out</span>
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

@@ -17,6 +17,13 @@ const SkillSchema = new mongoose.Schema({
   lastPracticed: { type: String, default: null },
 });
 
+const SocialLinksSchema = new mongoose.Schema({
+  website: { type: String, default: "" },
+  github: { type: String, default: "" },
+  linkedin: { type: String, default: "" },
+  twitter: { type: String, default: "" },
+});
+
 const RecentActivitySchema = new mongoose.Schema({
   action: { type: String },
   icon: { type: String },
@@ -41,6 +48,11 @@ const UserProfileSchema = new mongoose.Schema(
     bio: { type: String, default: "" },
     avatar: { type: String, default: "" },
     coverPhoto: { type: String, default: "" },
+
+    socialLinks: {
+      type: SocialLinksSchema,
+      default: {},
+    },
 
     // projects
     projects: { type: [ProjectSchema], default: [] },

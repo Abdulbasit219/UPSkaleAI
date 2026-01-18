@@ -158,7 +158,6 @@ const profileSlice = createSlice({
       .addCase(fetchProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
-        // Auto-generate streak
         const days = ["S", "M", "T", "W", "T", "F", "S"];
         const streakDays = action.payload?.streak || 0;
         state.streak = days.map((day, i) => ({

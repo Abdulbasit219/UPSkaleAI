@@ -10,6 +10,8 @@ const Avatar = ({ profile, isDark, avatarInputRef }) => {
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
+  const dispatch = useDispatch();
+
   const handleAvatarDelete = async () => {
     try {
       await dispatch(deleteAvatar()).unwrap();
@@ -28,8 +30,6 @@ const Avatar = ({ profile, isDark, avatarInputRef }) => {
       e.target.value = "";
     }
   };
-
-  const dispatch = useDispatch();
 
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
