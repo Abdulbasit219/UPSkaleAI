@@ -935,7 +935,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### **Built with ❤️ by the SkillBridge Team**
 
 Special thanks to:
-- [Next.js](https://nextjs.org/) - The React Framework
+- [Next.js](https://nextjs.org/) - The React  Framework
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
 - [MongoDB](https://www.mongodb.com/) - Database
 - [Vercel](https://vercel.com/) - Hosting

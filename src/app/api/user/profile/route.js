@@ -86,14 +86,22 @@ export async function PUT(req) {
         updateData.coverPhoto = uploadedCover.secure_url;
       }
     } else {
-      // Handle JSON data
       const body = await req.json();
-      const { name, role, location, bio } = body;
+      const { name, role, location, bio, socialLinks } = body;
 
       if (name) updateData.name = name;
       if (role) updateData.role = role;
       if (location) updateData.location = location;
       if (bio) updateData.bio = bio;
+
+      if (socialLinks) {
+        updateData.socialLinks = {
+          website: socialLinks.website || "",
+          github: socialLinks.github || "",
+          linkedin: socialLinks.linkedin || "",
+          twitter: socialLinks.twitter || "",
+        };
+      }
     }
 
     const updatedProfile = await UserProfile.findOneAndUpdate(

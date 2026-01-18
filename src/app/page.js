@@ -472,7 +472,7 @@ export default function SkillBridgeLanding() {
               <p
                 className={`text-lg leading-relaxed ${isDark ? "text-gray-400" : "text-gray-600"}`}
               >
-                Experience zero-latency pair programming with an AI that's
+                Experience zero-latency pair programming with an AI that&apos;s
                 trained to understand your logic. Debug, optimize, and learn as
                 you build real projects.
               </p>
@@ -529,7 +529,7 @@ export default function SkillBridgeLanding() {
                     &#123; <br />
                     &nbsp;&nbsp;
                     <div className="text-emerald-400 inline">
-                      // AI pair programming...
+                      {/* AI pair programming... */}
                     </div>
                     ; <br />
                     &#125;
@@ -546,8 +546,8 @@ export default function SkillBridgeLanding() {
                     <div
                       className={`p-3 rounded-xl border text-[10px] leading-relaxed ${isDark ? "bg-slate-800 border-white/10" : "bg-white border-gray-100 shadow-sm"}`}
                     >
-                      "I've analyzed your logic and found a more efficient
-                      approach..."
+                      &quot;I&apos;ve analyzed your logic and found a more
+                      efficient approach...&quot;
                     </div>
                   </div>
                 </div>
@@ -576,8 +576,8 @@ export default function SkillBridgeLanding() {
                 className={`text-lg leading-relaxed ${isDark ? "text-gray-400" : "text-gray-600"}`}
               >
                 Our neural matching engine analyzes your verified skills from
-                CodeTwin to connect you with roles where you'll actually thrive.
-                No more endless scrolling through irrelevant postings.
+                CodeTwin to connect you with roles where you&apos;ll actually
+                thrive. No more endless scrolling through irrelevant postings.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -727,8 +727,8 @@ export default function SkillBridgeLanding() {
             <p
               className={`text-lg max-w-2xl mx-auto ${isDark ? "text-gray-400" : "text-gray-600"} font-medium`}
             >
-              We've engineered a four-step cycle designed to take you from a
-              curious learner to a high-earning professional.
+              We&apos;ve engineered a four-step cycle designed to take you from
+              a curious learner to a high-earning professional.
             </p>
           </div>
 
