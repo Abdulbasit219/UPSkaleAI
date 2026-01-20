@@ -3,9 +3,6 @@ import { Download, FileText, HelpCircle, ChevronRight } from "lucide-react";
 import SettingsCard from "../SettingsCard";
 import ToggleSwitch from "../ToggleSwitch";
 
-/**
- * Privacy tab component
- */
 export default function PrivacyTab({ isDark }) {
   const privacySettings = [
     { label: "Show learning progress to others", enabled: true },
@@ -74,8 +71,18 @@ export default function PrivacyTab({ isDark }) {
         </div>
       </SettingsCard>
 
+    </>
+  );
+}
+
+
+
+
+
+
+
       {/* Data & Privacy */}
-      <SettingsCard title="Data & Privacy" isDark={isDark}>
+      {/* <SettingsCard title="Data & Privacy" isDark={isDark}>
         <div className="space-y-4">
           <button
             className={`w-full flex items-center justify-between p-4 rounded-lg border transition-colors ${
@@ -188,7 +195,4 @@ export default function PrivacyTab({ isDark }) {
             />
           </button>
         </div>
-      </SettingsCard>
-    </>
-  );
-}
+      </SettingsCard> */}

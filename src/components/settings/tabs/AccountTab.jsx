@@ -11,6 +11,7 @@ import Button from "../Button";
 import { useSession, signOut } from "next-auth/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function AccountTab({ isDark }) {
   const { data } = useSession();
@@ -34,12 +35,10 @@ export default function AccountTab({ isDark }) {
         },
       });
 
-      alert("Account deleted successfully");
+      toast.success("Account deleted successfully");
 
-      // logout user
       await signOut({ redirect: false });
 
-      // redirect to home / signup
       router.push("/");
     } catch (error) {
       alert(

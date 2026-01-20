@@ -24,16 +24,7 @@ const ProjectCard = ({ project, isDark, deleteProject, handleEdit }) => {
             : "bg-gradient-to-br from-gray-100 to-gray-200"
         }`}
       >
-        <div
-          className={`absolute inset-0 ${
-            isDark
-              ? "bg-gradient-to-br from-purple-500/10 to-pink-500/10"
-              : "bg-gradient-to-br from-purple-100 to-pink-100"
-          }`}
-        ></div>
-
-        <span className="relative z-10">project image</span>
-
+      
         {/* Action Buttons */}
         <div className="absolute top-2 right-2 flex gap-2 z-20">
           {/* Delete */}
@@ -89,21 +80,6 @@ const ProjectCard = ({ project, isDark, deleteProject, handleEdit }) => {
 
         {/* Stats + Link */}
         <div className="flex items-center justify-between">
-          <div
-            className={`flex items-center gap-3 text-sm ${
-              isDark ? "text-gray-400" : "text-gray-500"
-            }`}
-          >
-            <div className="flex items-center gap-1">
-              <Heart className="w-4 h-4" />
-              <span>project likes</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Eye className="w-4 h-4" />
-              <span>project views</span>
-            </div>
-          </div>
-
           <a
             href={project.projectLink}
             target="_blank"
