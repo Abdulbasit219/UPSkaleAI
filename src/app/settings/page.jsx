@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useMemo, useEffect } from "react";
+
+import React, { useEffect, useState } from "react";
 import {
   User,
   Bell,
@@ -9,11 +10,12 @@ import {
   Eye,
   Settings as SettingsIcon,
   LogOut,
-  Github,
-  Linkedin,
-  Twitter,
 } from "lucide-react";
+
 import { useDispatch, useSelector } from "react-redux";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 import {
   SettingsSidebar,
   ProfileTab,
@@ -24,227 +26,115 @@ import {
   BillingTab,
   PrivacyTab,
 } from "@/components/settings";
-import { useSession } from "next-auth/react";
+
 import { fetchProfile } from "@/store/slices/profileSlice";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
-  const theme = useSelector((state) => state.theme.mode);
-  const {
-    data: profile,
-  } = useSelector((state) => state.profile);
-  const { data } = useSession();
-  const user = data?.user;
 
   const dispatch = useDispatch();
+  const router = useRouter();
+
+  const theme = useSelector((state) => state.theme.mode);
+  const profile = useSelector((state) => state.profile.data);
+
+  const { data: session } = useSession();
+  const user = session?.user;
 
   const isDark = theme === "dark";
 
+  /* ---------------- FETCH PROFILE ---------------- */
   useEffect(() => {
     if (user && !profile) {
       dispatch(fetchProfile());
     }
-  }, [user, dispatch, profile]);
+  }, [user, profile, dispatch]);
 
-  // Memoized tabs configuration
-  const tabs = useMemo(
-    () => [
-      { id: "profile", icon: <User className="w-5 h-5" />, label: "Profile" },
-      {
-        id: "account",
-        icon: <SettingsIcon className="w-5 h-5" />,
-        label: "Account",
-      },
-      {
-        id: "security",
-        icon: <Shield className="w-5 h-5" />,
-        label: "Security",
-      },
-      {
-        id: "notifications",
-        icon: <Bell className="w-5 h-5" />,
-        label: "Notifications",
-      },
-      {
-        id: "preferences",
-        icon: <Palette className="w-5 h-5" />,
-        label: "Preferences",
-      },
-      {
-        id: "billing",
-        icon: <CreditCard className="w-5 h-5" />,
-        label: "Billing",
-      },
-      { id: "privacy", icon: <Eye className="w-5 h-5" />, label: "Privacy" },
-    ],
-    []
-  );
+  /* ---------------- SIDEBAR TABS ---------------- */
+  const tabs = [
+    { id: "profile", icon: <User className="w-5 h-5" />, label: "Profile" },
+    {
+      id: "account",
+      icon: <SettingsIcon className="w-5 h-5" />,
+      label: "Account",
+    },
+    { id: "security", icon: <Shield className="w-5 h-5" />, label: "Security" },
+    {
+      id: "notifications",
+      icon: <Bell className="w-5 h-5" />,
+      label: "Notifications",
+    },
+    {
+      id: "preferences",
+      icon: <Palette className="w-5 h-5" />,
+      label: "Preferences",
+    },
+    {
+      id: "billing",
+      icon: <CreditCard className="w-5 h-5" />,
+      label: "Billing",
+    },
+    { id: "privacy", icon: <Eye className="w-5 h-5" />, label: "Privacy" },
+  ];
 
-  // Memoized notification settings
-  const notificationSettings = useMemo(
-    () => [
-      {
-        category: "Learning Updates",
-        items: [
-          {
-            id: "course-updates",
-            label: "Course updates and announcements",
-            enabled: true,
-          },
-          { id: "new-content", label: "New content available", enabled: true },
-          {
-            id: "assignment-reminders",
-            label: "Assignment reminders",
-            enabled: true,
-          },
-        ],
-      },
-      {
-        category: "Community",
-        items: [
-          { id: "messages", label: "Direct messages", enabled: true },
-          { id: "comments", label: "Comments on your posts", enabled: true },
-          { id: "mentions", label: "Mentions and tags", enabled: false },
-        ],
-      },
-      {
-        category: "Account Activity",
-        items: [
-          { id: "security-alerts", label: "Security alerts", enabled: true },
-          { id: "login-attempts", label: "Login attempts", enabled: true },
-          { id: "account-changes", label: "Account changes", enabled: true },
-        ],
-      },
-    ],
-    []
-  );
-
-  // Memoized connected accounts
-  const connectedAccounts = useMemo(
-    () => [
-      {
-        platform: "GitHub",
-        icon: <Github className="w-5 h-5" />,
-        connected: true,
-        username: "@ali",
-      },
-      {
-        platform: "LinkedIn",
-        icon: <Linkedin className="w-5 h-5" />,
-        connected: true,
-        username: "Ali",
-      },
-      {
-        platform: "Twitter",
-        icon: <Twitter className="w-5 h-5" />,
-        connected: false,
-        username: null,
-      },
-    ],
-    []
-  );
-
-  // Memoized sessions
-  const sessions = useMemo(
-    () => [
-      {
-        device: "MacBook Pro",
-        location: "Karachi, Pakistan",
-        lastActive: "Active now",
-        current: true,
-      },
-      {
-        device: "iPhone 14",
-        location: "Karachi, Pakistan",
-        lastActive: "2 hours ago",
-        current: false,
-      },
-      {
-        device: "Chrome on Windows",
-        location: "Karachi, Pakistan",
-        lastActive: "3 days ago",
-        current: false,
-      },
-    ],
-    []
-  );
-
-  // Handle logout
-  const handleLogout = () => {
-    console.log("Logout clicked");
-    // Add logout logic here
+  /* ---------------- LOGOUT ---------------- */
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
   };
 
-  // Render active tab content
+  /* ---------------- TAB RENDER ---------------- */
   const renderTabContent = () => {
-    const tabProps = { isDark };
+    const commonProps = { isDark };
 
     switch (activeTab) {
       case "profile":
-        return (
-          <ProfileTab
-            {...tabProps}
-            userData={profile}
-            connectedAccounts={connectedAccounts}
-          />
-        );
+        return <ProfileTab {...commonProps} userData={profile} />;
+
       case "account":
-        return <AccountTab {...tabProps} userData={profile} />;
+        return <AccountTab {...commonProps} userData={profile} />;
+
       case "security":
-        return <SecurityTab {...tabProps} sessions={sessions} />;
+        return <SecurityTab {...commonProps} />;
+
       case "notifications":
-        return (
-          <NotificationsTab
-            {...tabProps}
-            notificationSettings={notificationSettings}
-          />
-        );
+        return <NotificationsTab {...commonProps} />;
+
       case "preferences":
-        return <PreferencesTab {...tabProps} />;
+        return <PreferencesTab {...commonProps} />;
+
       case "billing":
-        return <BillingTab {...tabProps} />;
+        return <BillingTab {...commonProps} />;
+
       case "privacy":
-        return <PrivacyTab {...tabProps} />;
+        return <PrivacyTab {...commonProps} />;
+
       default:
         return null;
     }
   };
 
+  /* ---------------- UI ---------------- */
   return (
     <div
-      className={`min-h-screen pt-20 pb-12 transition-colors duration-300 ${
+      className={`min-h-screen pt-20 pb-12 transition-colors ${
         isDark
           ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white"
           : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50 text-gray-900"
       }`}
     >
-      {/* Background Pattern */}
-      <div
-        className={`fixed inset-0 pointer-events-none transition-opacity duration-300 ${
-          isDark
-            ? "bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIwLjUiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"
-            : "bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgxMDIsMTE2LDE0OSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIwLjUiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20"
-        }`}
-      />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <header className="mb-8">
-          <h1
-            className={`text-3xl lg:text-4xl font-bold mb-2 ${
-              isDark ? "text-white" : "text-gray-900"
-            }`}
-          >
-            Settings
-          </h1>
+          <h1 className="text-3xl lg:text-4xl font-bold mb-2">Settings</h1>
           <p className={isDark ? "text-gray-400" : "text-gray-600"}>
             Manage your account settings and preferences
           </p>
         </header>
 
-        {/* Main Content */}
+        {/* Layout */}
         <div className="grid lg:grid-cols-4 gap-6">
-          {/* Sidebar Navigation */}
+          {/* Sidebar */}
           <aside className="lg:col-span-1">
             <SettingsSidebar
               tabs={tabs}
@@ -258,7 +148,7 @@ export default function SettingsPage() {
             />
           </aside>
 
-          {/* Content Area */}
+          {/* Content */}
           <main className="lg:col-span-3 space-y-6">{renderTabContent()}</main>
         </div>
       </div>
