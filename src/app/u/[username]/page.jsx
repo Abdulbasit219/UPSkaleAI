@@ -1,3 +1,4 @@
+import PrivateProfileUI from "@/components/profile/PrivateProfileUI";
 import PublicProfileUI from "@/components/profile/PublicProfileUI";
 import React from "react";
 
@@ -33,9 +34,7 @@ export default async function PublicProfile({ params }) {
 
   if (!profile.isPublic) {
     return (
-      <div className="p-10 text-center text-lg font-semibold">
-        This profile is private
-      </div>
+      <PrivateProfileUI />
     );
   }
 

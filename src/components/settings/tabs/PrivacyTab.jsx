@@ -1,15 +1,33 @@
-import React from "react";
-import { Download, FileText, HelpCircle, ChevronRight } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import SettingsCard from "../SettingsCard";
 import ToggleSwitch from "../ToggleSwitch";
+import { useDispatch, useSelector } from "react-redux";
+import { updateProfile } from "@/store/slices/profileSlice";
 
 export default function PrivacyTab({ isDark }) {
-  const privacySettings = [
-    { label: "Show learning progress to others", enabled: true },
-    { label: "Show skills on public profile", enabled: true },
-    { label: "Show projects portfolio", enabled: false },
-    { label: "Show email to connections", enabled: false },
-  ];
+  // const privacySettings = [
+  //   { label: "Show learning progress to others", enabled: true },
+  //   { label: "Show skills on public profile", enabled: true },
+  //   { label: "Show projects portfolio", enabled: false },
+  //   { label: "Show email to connections", enabled: false },
+  // ];
+
+  const dispatch = useDispatch();
+
+  const profile = useSelector((state) => state.profile.data);
+  const loading = useSelector((state) => state.profile.loading);
+
+  const isPublic = profile?.isPublic ?? true;
+
+  const handleChange = (e) => {
+    const value = e.target.value === "public";
+
+    dispatch(
+      updateProfile({
+        isPublic: value,
+      })
+    );
+  };
 
   return (
     <>
@@ -31,58 +49,36 @@ export default function PrivacyTab({ isDark }) {
               Who can see your profile?
             </label>
             <select
+              value={isPublic ? "public" : "private"}
+              onChange={handleChange}
+              disabled={loading}
               className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:border-purple-500 transition-colors ${
                 isDark
                   ? "bg-slate-800 border-slate-700 text-white"
                   : "bg-white border-gray-300 text-gray-900"
               }`}
             >
-              <option>Public - Anyone can view</option>
-              <option>Connections Only</option>
-              <option>Private - Only Me</option>
+              <option value="public">Public - Anyone can view</option>
+              <option value="private">Private - Only Me</option>
             </select>
-          </div>
 
-          <div className="space-y-3">
-            {privacySettings.map((item, index) => (
-              <div
-                key={index}
-                className={`flex items-center justify-between p-3 rounded-lg border ${
-                  isDark
-                    ? "bg-slate-800/50 border-purple-500/10"
-                    : "bg-gray-50/50 border-purple-300/10"
-                }`}
-              >
-                <div
-                  className={`font-medium ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
-                  {item.label}
-                </div>
-                <ToggleSwitch
-                  enabled={item.enabled}
-                  onChange={() => console.log("Toggle privacy setting", index)}
-                  isDark={isDark}
-                />
-              </div>
-            ))}
+            {loading && (
+              <p className="text-xs mt-2 text-purple-500">
+                Updating privacy...
+              </p>
+            )}
           </div>
         </div>
       </SettingsCard>
-
     </>
   );
 }
 
-
-
-
-
-
-
-      {/* Data & Privacy */}
-      {/* <SettingsCard title="Data & Privacy" isDark={isDark}>
+{
+  /* Data & Privacy */
+}
+{
+  /* <SettingsCard title="Data & Privacy" isDark={isDark}>
         <div className="space-y-4">
           <button
             className={`w-full flex items-center justify-between p-4 rounded-lg border transition-colors ${
@@ -195,4 +191,31 @@ export default function PrivacyTab({ isDark }) {
             />
           </button>
         </div>
-      </SettingsCard> */}
+      </SettingsCard> */
+}
+
+// <div className="space-y-3">
+//       {privacySettings.map((item, index) => (
+//         <div
+//           key={index}
+//           className={`flex items-center justify-between p-3 rounded-lg border ${
+//             isDark
+//               ? "bg-slate-800/50 border-purple-500/10"
+//               : "bg-gray-50/50 border-purple-300/10"
+//           }`}
+//         >
+//           <div
+//             className={`font-medium ${
+//               isDark ? "text-white" : "text-gray-900"
+//             }`}
+//           >
+//             {item.label}
+//           </div>
+//           <ToggleSwitch
+//             enabled={item.enabled}
+//             onChange={() => console.log("Toggle privacy setting", index)}
+//             isDark={isDark}
+//           />
+//         </div>
+//       ))}
+//     </div>

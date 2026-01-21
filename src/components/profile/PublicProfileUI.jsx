@@ -97,7 +97,7 @@ export default function PublicProfileUI({ profile, user }) {
       {/* Main Sections */}
       <div className="grid grid-cols-1 gap-6 mt-8">
         {/* About */}
-        <Card title="About Me" isDark={isDark}>
+        <Card title="About" isDark={isDark}>
           <p
             className={`leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}
           >

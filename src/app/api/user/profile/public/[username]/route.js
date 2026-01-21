@@ -33,11 +33,8 @@ export async function GET(req, { params }) {
     }
   );
 
-  if (!profile || profile.isPublic === false) {
-    return Response.json(
-      { message: "This profile is private" },
-      { status: 403 }
-    );
+  if (!profile) {
+    return Response.json({ message: "Profile not found" }, { status: 404 });
   }
 
   const viewerId = session?.user?._id;
