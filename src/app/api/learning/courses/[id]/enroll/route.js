@@ -88,9 +88,8 @@ export async function GET(request, { params }) {
       return NextResponse.json({ success: true, enrolled: false });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const userId = session.user._id;
-    // const userId = "6922ad85960624dadd579169"
 
     const progress = await UserProgress.findOne({
       userId,

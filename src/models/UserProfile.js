@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import AuthUser from "./AuthUser";
 
 const ProjectSchema = new mongoose.Schema({
   title: { type: String, default: "" },
@@ -76,6 +77,23 @@ const UserProfileSchema = new mongoose.Schema(
 
     // recommendation
     areasOfInterest: { type: [String], default: [] },
+
+    isPublic: {
+      type: Boolean,
+      default: true,
+    },
+
+    profileViewLogs: [
+      {
+        viewerId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "AuthUser",
+        },
+        date: {
+          type: String, 
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

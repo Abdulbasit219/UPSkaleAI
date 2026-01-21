@@ -125,6 +125,21 @@ export const deleteAvatar = createAsyncThunk(
   }
 );
 
+const generateStreak = (streakDays) => {
+  const days = ["S", "M", "T", "W", "T", "F", "S"];
+  const todayIndex = new Date().getDay();
+
+  return days.map((day, index) => {
+    let diff = todayIndex - index;
+    if (diff < 0) diff += 7;
+
+    return {
+      day,
+      active: diff < streakDays,
+    };
+  });
+};
+
 const profileSlice = createSlice({
   name: "profile",
   initialState: {
@@ -136,12 +151,8 @@ const profileSlice = createSlice({
   reducers: {
     // Generate learning streak
     setStreak: (state, action) => {
-      const days = ["S", "M", "T", "W", "T", "F", "S"];
       const streakDays = action.payload || 0;
-      state.streak = days.map((day, i) => ({
-        day,
-        active: i < streakDays,
-      }));
+      state.streak = generateStreak(streakDays);
     },
     // Clear error
     clearError: (state) => {
@@ -158,13 +169,11 @@ const profileSlice = createSlice({
       .addCase(fetchProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
-        const days = ["S", "M", "T", "W", "T", "F", "S"];
+
         const streakDays = action.payload?.streak || 0;
-        state.streak = days.map((day, i) => ({
-          day,
-          active: i < streakDays,
-        }));
+        state.streak = generateStreak(streakDays);
       })
+
       .addCase(fetchProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

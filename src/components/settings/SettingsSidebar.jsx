@@ -21,7 +21,7 @@ export default function SettingsSidebar({
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
+            className={`cursor-pointer w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
               activeTab === tab.id
                 ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30"
                 : `${
@@ -40,7 +40,7 @@ export default function SettingsSidebar({
         ))}
       </nav>
 
-      {/* {onLogout && (
+      {onLogout && (
         <div
           className={`mt-4 pt-4 border-t ${
             isDark ? "border-purple-500/20" : "border-purple-300/20"
@@ -48,7 +48,7 @@ export default function SettingsSidebar({
         >
           <button
             onClick={onLogout}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
+            className={`w-full flex cursor-pointer items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${
               isDark
                 ? "text-red-400 hover:text-red-300 hover:bg-red-500/10"
                 : "text-red-500 hover:text-red-600 hover:bg-red-50"
@@ -58,7 +58,7 @@ export default function SettingsSidebar({
             <span>Log Out</span>
           </button>
         </div>
-      )} */}
+      )}
     </div>
   );
 }

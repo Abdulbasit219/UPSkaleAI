@@ -87,12 +87,16 @@ export async function PUT(req) {
       }
     } else {
       const body = await req.json();
-      const { name, role, location, bio, socialLinks } = body;
+      const { name, role, location, bio, socialLinks, isPublic } = body;
 
       if (name) updateData.name = name;
       if (role) updateData.role = role;
       if (location) updateData.location = location;
       if (bio) updateData.bio = bio;
+
+      if (typeof isPublic === "boolean") {
+        updateData.isPublic = isPublic;
+      }
 
       if (socialLinks) {
         updateData.socialLinks = {

@@ -50,8 +50,7 @@ const CourseSchema = new mongoose.Schema(
       default: false,
     },
     author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AuthUser",
+      type: String,
     },
     enrolledCount: {
       type: Number,
