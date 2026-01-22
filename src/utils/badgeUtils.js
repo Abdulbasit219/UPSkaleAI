@@ -1,5 +1,8 @@
-export const updateBadges = (profile) => {
+export const updateBadges = (profile, options = {}) => {
   let badges = [...profile.badges];
+
+  const { courseCompletedBadge } = options;
+  console.log(options)
 
   const projectCounts = profile.projects.length;
 
@@ -13,6 +16,10 @@ export const updateBadges = (profile) => {
 
   if (profile.streak >= 7 && !badges.includes("7 Day Streak Hero")) {
     badges.push("7 Day Streak Hero");
+  }
+
+  if (courseCompletedBadge) {
+    badges.push(courseCompletedBadge);
   }
 
   profile.badges = [...new Set(badges)];

@@ -64,13 +64,13 @@ export async function POST(request) {
   try {
     await connectDB();
 
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // const session = await getServerSession(authOptions);
+    // if (!session) {
+    //   return NextResponse.json(
+    //     { success: false, message: "Unauthorized" },
+    //     { status: 401 }
+    //   );
+    // }
 
     const body = await request.json();
     
@@ -124,9 +124,7 @@ export async function POST(request) {
       isPublished: isPublished || false,
       author: author, 
     });
-
-    await course.populate("author", "username email name");
-
+    
     return NextResponse.json(
       {
         success: true,

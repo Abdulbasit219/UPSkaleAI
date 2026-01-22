@@ -16,7 +16,6 @@ export async function POST(req) {
       );
     }
 
-    // We can use the ID from the session rather than the body for security
     const userId = session.user._id;
     const { skillName, level, lastPracticed } = await req.json();
 

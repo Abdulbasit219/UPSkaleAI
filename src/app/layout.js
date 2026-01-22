@@ -4,6 +4,7 @@ import AuthProvider from "@/context/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
 import ReduxProvider from "@/providers/ReduxProvider";
 import ConditionalLayout from "@/components/ConditionalLayout";
+import ThemeToaster from "@/components/ThemeToaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,7 @@ export default function RootLayout({ children }) {
             suppressHydrationWarning
           >
             <ConditionalLayout>{children}</ConditionalLayout>
-            <Toaster />
+            <ThemeToaster />
           </body>
         </AuthProvider>
       </ReduxProvider>

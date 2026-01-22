@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Lock, Eye, EyeOff } from "lucide-react";
 import SettingsCard from "../SettingsCard";
@@ -6,7 +8,6 @@ import axios from "axios";
 import { toast } from "sonner";
 
 export default function SecurityTab({ isDark }) {
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -15,13 +16,23 @@ export default function SecurityTab({ isDark }) {
     confirmPassword: "",
   });
 
+  const [showPassword, setShowPassword] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
+
+  // Handle input changes
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Toggle show/hide password
+  const toggleShowPassword = (field) => {
+    setShowPassword((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  // Update password API call
   const handleUpdatePassword = async () => {
     const { currentPassword, newPassword, confirmPassword } = formData;
 
@@ -35,16 +46,12 @@ export default function SecurityTab({ isDark }) {
 
     try {
       setLoading(true);
-
       const res = await axios.patch("/api/user/change-password", formData);
-
       toast.success(res.data.message);
 
-      setFormData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
+      // Reset form
+      setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      setShowPassword({ currentPassword: false, newPassword: false, confirmPassword: false });
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update password");
     } finally {
@@ -52,33 +59,31 @@ export default function SecurityTab({ isDark }) {
     }
   };
 
+  const inputClasses = `w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:border-purple-500 transition-colors ${
+    isDark ? "bg-slate-800 border-slate-700 text-white" : "bg-white border-gray-300 text-gray-900"
+  }`;
+
   return (
     <SettingsCard title="Change Password" isDark={isDark}>
       <div className="space-y-4">
         {/* Current Password */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Current Password
-          </label>
+          <label className="block text-sm font-medium mb-2">Current Password</label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
-              type={showPassword ? "text" : "password"}
+              type={showPassword.currentPassword ? "text" : "password"}
               name="currentPassword"
               value={formData.currentPassword}
               onChange={handleChange}
-              className={`w-full px-4 right-3 py-2.5 border rounded-lg focus:outline-none focus:border-purple-500 transition-colors ${isDark ? "bg-slate-800 border-slate-700 text-white" : "bg-white border-gray-300 text-gray-900"}`}
+              className={inputClasses + " pl-10 pr-10"}
             />
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() => toggleShowPassword("currentPassword")}
               className="absolute right-3 top-1/2 -translate-y-1/2"
             >
-              {showPassword ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
+              {showPassword.currentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
         </div>
@@ -86,27 +91,45 @@ export default function SecurityTab({ isDark }) {
         {/* New Password */}
         <div>
           <label className="block text-sm font-medium mb-2">New Password</label>
-          <input
-            type="password"
-            name="newPassword"
-            value={formData.newPassword}
-            onChange={handleChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:border-purple-500 transition-colors ${isDark ? "bg-slate-800 border-slate-700 text-white" : "bg-white border-gray-300 text-gray-900"}`}
-          />
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type={showPassword.newPassword ? "text" : "password"}
+              name="newPassword"
+              value={formData.newPassword}
+              onChange={handleChange}
+              className={inputClasses + " pl-10 pr-10"}
+            />
+            <button
+              type="button"
+              onClick={() => toggleShowPassword("newPassword")}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+            >
+              {showPassword.newPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
 
         {/* Confirm Password */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Confirm New Password
-          </label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:border-purple-500 transition-colors ${isDark ? "bg-slate-800 border-slate-700 text-white" : "bg-white border-gray-300 text-gray-900"}`}
-          />
+          <label className="block text-sm font-medium mb-2">Confirm New Password</label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type={showPassword.confirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className={inputClasses + " pl-10 pr-10"}
+            />
+            <button
+              type="button"
+              onClick={() => toggleShowPassword("confirmPassword")}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+            >
+              {showPassword.confirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import AuthUser from "@/models/AuthUser";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
 import UserProfile from "@/models/UserProfile";
+import NotificationSettings from "@/models/NotificationSettings";
 
 export async function POST(req) {
   // Endpoint for user signup
@@ -76,6 +77,10 @@ export async function POST(req) {
         bio: "",
       });
     }
+
+    await NotificationSettings.create({
+      userId: newUser._id,
+    });
 
     // Send verification email
     const emailResponse = await sendVerificationEmail(email, name, verifyCode);
