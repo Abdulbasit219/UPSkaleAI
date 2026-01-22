@@ -1,142 +1,120 @@
-import React, { useState } from "react";
-import { Moon, Volume2 } from "lucide-react";
+"use client";
+
+import React from "react";
+import { Moon } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+
 import SettingsCard from "../SettingsCard";
 import ToggleSwitch from "../ToggleSwitch";
+import { toggleTheme } from "@/store/slices/themeSlice";
 
-/**
- * Preferences tab component
- */
 export default function PreferencesTab({ isDark }) {
-  const [darkMode, setDarkMode] = useState(true);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const dispatch = useDispatch();
+  const theme = useSelector((state) => state.theme.mode);
+
+  const isDarkMode = theme === "dark";
 
   return (
     <>
-      {/* Appearance */}
+      {/* APPEARANCE */}
       <SettingsCard title="Appearance" isDark={isDark}>
-        <div className="space-y-4">
-          <div
-            className={`flex items-center justify-between p-4 rounded-lg border ${
-              isDark
-                ? "bg-slate-800/50 border-purple-500/10"
-                : "bg-gray-50/50 border-purple-300/10"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <Moon
-                className={`w-5 h-5 ${
-                  isDark ? "text-purple-400" : "text-purple-600"
-                }`}
-              />
-              <div>
-                <div
-                  className={`font-semibold ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
-                  Dark Mode
-                </div>
-                <div
-                  className={
-                    isDark ? "text-gray-400 text-sm" : "text-gray-600 text-sm"
-                  }
-                >
-                  Use dark theme across the platform
-                </div>
-              </div>
-            </div>
-            <ToggleSwitch
-              enabled={darkMode}
-              onChange={() => setDarkMode(!darkMode)}
-              isDark={isDark}
-            />
-          </div>
-
-          <div
-            className={`flex items-center justify-between p-4 rounded-lg border ${
-              isDark
-                ? "bg-slate-800/50 border-purple-500/10"
-                : "bg-gray-50/50 border-purple-300/10"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <Volume2
-                className={`w-5 h-5 ${
-                  isDark ? "text-purple-400" : "text-purple-600"
-                }`}
-              />
-              <div>
-                <div
-                  className={`font-semibold ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
-                  Sound Effects
-                </div>
-                <div
-                  className={
-                    isDark ? "text-gray-400 text-sm" : "text-gray-600 text-sm"
-                  }
-                >
-                  Play sounds for interactions
-                </div>
-              </div>
-            </div>
-            <ToggleSwitch
-              enabled={soundEnabled}
-              onChange={() => setSoundEnabled(!soundEnabled)}
-              isDark={isDark}
-            />
-          </div>
-        </div>
+        <PreferenceRow
+          icon={<Moon />}
+          title="Dark Mode"
+          description="Use dark theme across the platform"
+          enabled={isDarkMode}
+          onToggle={() => dispatch(toggleTheme())}
+          isDark={isDark}
+        />
       </SettingsCard>
 
-      {/* Learning Preferences */}
+      {/* LEARNING */}
       <SettingsCard title="Learning Preferences" isDark={isDark}>
         <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label
-              className={`block text-sm font-medium mb-2 ${
-                isDark ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              Daily Goal
-            </label>
-            <select
-              className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:border-purple-500 transition-colors ${
-                isDark
-                  ? "bg-slate-800 border-slate-700 text-white"
-                  : "bg-white border-gray-300 text-gray-900"
-              }`}
-            >
-              <option>30 minutes</option>
-              <option>1 hour</option>
-              <option>2 hours</option>
-              <option>4 hours</option>
-            </select>
-          </div>
-          <div>
-            <label
-              className={`block text-sm font-medium mb-2 ${
-                isDark ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              Difficulty Level
-            </label>
-            <select
-              className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:border-purple-500 transition-colors ${
-                isDark
-                  ? "bg-slate-800 border-slate-700 text-white"
-                  : "bg-white border-gray-300 text-gray-900"
-              }`}
-            >
-              <option>Beginner</option>
-              <option>Intermediate</option>
-              <option>Advanced</option>
-            </select>
-          </div>
+          <SelectField
+            label="Daily Goal"
+            options={["30 minutes", "1 hour", "2 hours", "4 hours"]}
+            isDark={isDark}
+          />
+
+          <SelectField
+            label="Difficulty Level"
+            options={["Beginner", "Intermediate", "Advanced"]}
+            isDark={isDark}
+          />
         </div>
       </SettingsCard>
     </>
+  );
+}
+
+/* ---------- REUSABLE UI ---------- */
+
+function PreferenceRow({
+  icon,
+  title,
+  description,
+  enabled,
+  onToggle,
+  isDark,
+}) {
+  return (
+    <div
+      className={`flex items-center justify-between p-4 rounded-lg border ${
+        isDark
+          ? "bg-slate-800/50 border-purple-500/10"
+          : "bg-gray-50/50 border-purple-300/10"
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <span className={isDark ? "text-purple-400" : "text-purple-600"}>
+          {icon}
+        </span>
+        <div>
+          <div
+            className={`font-semibold ${
+              isDark ? "text-white" : "text-gray-900"
+            }`}
+          >
+            {title}
+          </div>
+          <div
+            className={
+              isDark ? "text-gray-400 text-sm" : "text-gray-600 text-sm"
+            }
+          >
+            {description}
+          </div>
+        </div>
+      </div>
+
+      <ToggleSwitch enabled={enabled} onChange={onToggle} isDark={isDark} />
+    </div>
+  );
+}
+
+function SelectField({ label, options, isDark }) {
+  return (
+    <div>
+      <label
+        className={`block text-sm font-medium mb-2 ${
+          isDark ? "text-gray-300" : "text-gray-700"
+        }`}
+      >
+        {label}
+      </label>
+
+      <select
+        className={`w-full px-4 py-2.5 rounded-lg border focus:outline-none focus:border-purple-500 transition ${
+          isDark
+            ? "bg-slate-800 border-slate-700 text-white"
+            : "bg-white border-gray-300 text-gray-900"
+        }`}
+      >
+        {options.map((opt) => (
+          <option key={opt}>{opt}</option>
+        ))}
+      </select>
+    </div>
   );
 }

@@ -27,7 +27,7 @@ import AchievementsCard from "@/components/profile/AchievementsCard";
 import SkillList from "@/components/profile/skills/SkillList";
 import RecentActivityCard from "@/components/profile/recentActivity/RecentActivityCard";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { deleteProjectAction, fetchProfile } from "@/store/slices/profileSlice";
+import { deleteProjectAction, fetchProfile, updateProfile } from "@/store/slices/profileSlice";
 
 export default function ProfilePage() {
   const [isEditOpen, setIsEditOpen] = useState(false);

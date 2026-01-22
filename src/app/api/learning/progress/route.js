@@ -4,11 +4,12 @@ import { authOptions } from "../../auth/[...nextauth]/options";
 import UserProgress from "@/models/learning/UserProgress";
 import { NextResponse } from "next/server";
 import Lesson from "@/models/learning/Lesson";
-import Certificate from "@/models/learning/Certificate";
-import Course from "@/models/learning/Course"
+import Course from "@/models/learning/Course";
+import UserProfile from "@/models/UserProfile";
+import { updateBadges } from "@/utils/badgeUtils";
 
 // GET USER PROGRESS (search for both query based on course or not)
-export async function GET(request) {  
+export async function GET(request) {
   try {
     await connectDB();
 
@@ -68,7 +69,7 @@ export async function POST(request) {
     const body = await request.json();
     const { courseId, lessonId } = body;
     const userId = session.user._id;
-    
+
     if (!courseId || !lessonId) {
       return NextResponse.json(
         { success: false, message: "courseId and lessonId are required" },
@@ -119,18 +120,18 @@ export async function POST(request) {
       progress.isCompleted = true;
       progress.completedAt = new Date();
 
-      // // Generate certificate
-      // const certificateId = `CERT-${Date.now()}-${userId.toString().slice(-6)}`;
-      // await Certificate.create({
-      //   userId,
-      //   courseId,
-      //   certificateId,
-      //   issuedAt: new Date(),
-      // });
+      const course = await Course.findById(courseId).select("title");
+      const badgeName = `Completed Course: ${course.title}`;
+      const profile = await UserProfile.findOne({ userId });
 
-      // progress.certificateIssued = true;
+      console.log(course, profile, badgeName)
+
+      if (profile) {
+        updateBadges(profile, {
+          courseCompletedBadge: badgeName,
+        });
+      }
     }
-
     await progress.save();
 
     return NextResponse.json({
@@ -150,3 +151,14 @@ export async function POST(request) {
     );
   }
 }
+
+// // Generate certificate
+// const certificateId = `CERT-${Date.now()}-${userId.toString().slice(-6)}`;
+// await Certificate.create({
+//   userId,
+//   courseId,
+//   certificateId,
+//   issuedAt: new Date(),
+// });
+
+// progress.certificateIssued = true;
