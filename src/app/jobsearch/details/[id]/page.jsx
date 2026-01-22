@@ -799,7 +799,15 @@ export default function JobDetailsPage() {
                     Quick Apply
                   </Link>
                   <Link
-                    href={`/chat`}
+                    href={{
+                      pathname: "/chat",
+                      query: {
+                        id: job.postedBy,
+                        name: job.company,
+                        role: "Recruiter",
+                        avatar: job.logo,
+                      },
+                    }}
                     className={`w-full py-2.5 sm:py-3 md:py-3.5 rounded-lg sm:rounded-xl font-semibold transition-all border flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base ${
                       isDark
                         ? "bg-slate-800 text-white border-slate-700 hover:bg-slate-700"

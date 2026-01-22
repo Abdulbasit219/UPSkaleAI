@@ -83,7 +83,7 @@ export default function SkillBridgeJobs() {
       job.category === activeFilter ||
       (activeFilter === "featured" && job.featured) ||
       (activeFilter === "remote" && job.remote) ||
-      (activeFilter === "recommended" && job.match >= 85)
+      (activeFilter === "recommended" && job.match >= 85),
   );
 
   return (
