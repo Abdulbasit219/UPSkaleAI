@@ -6,7 +6,8 @@ export async function GET(request, { params }) {
   await connectDB();
 
   try {
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
 
     if (!id) {
       return Response.json(
@@ -14,7 +15,7 @@ export async function GET(request, { params }) {
           success: false,
           message: "Job ID is required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -26,7 +27,7 @@ export async function GET(request, { params }) {
           success: false,
           message: "Job not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -62,7 +63,8 @@ export async function GET(request, { params }) {
       ],
       companyInfo: {
         name: jobDoc.company,
-        description: "We're a fast-growing tech company building the future of digital experiences.",
+        description:
+          "We're a fast-growing tech company building the future of digital experiences.",
         size: "50-200 employees",
         founded: "2015",
         industry: jobDoc.category || "Technology",
@@ -76,7 +78,7 @@ export async function GET(request, { params }) {
         success: true,
         data: job,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error fetching job:", error);
@@ -85,7 +87,7 @@ export async function GET(request, { params }) {
         success: false,
         message: "Error fetching job details",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
