@@ -16,7 +16,13 @@ const authUserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      required: function () {
+        return !this.isOAuth;
+      },
+    },
+    isOAuth: {
+      type: Boolean,
+      default: false,
     },
     isAdmin: {
       type: Boolean,

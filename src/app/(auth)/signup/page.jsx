@@ -3,18 +3,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import Link from "next/link";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signUpSchema } from "@/schemas/signupSchema";
 import { Input } from "@/components/ui/input";
-import { Loader2, Sparkles, Briefcase, Building2 } from "lucide-react";
+import {
+  Loader2,
+  Sparkles,
+  Briefcase,
+  Building2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 
 const Page = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
 
@@ -36,10 +44,10 @@ const Page = () => {
       const response = await axios.post("/api/user/signup", data);
       toast.success(response.data.message);
       router.replace(`/verify/${response.data.username}`);
-      setIsSubmitting(false);
     } catch (error) {
       console.error("Sign-up error:", error);
       toast.error("There was a problem. Please try again.");
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -93,18 +101,12 @@ const Page = () => {
               render={({ field, fieldState }) => (
                 <div>
                   <label
-                    htmlFor="name"
-                    className={`font-medium mb-2 block text-sm ${
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    }`}
+                    className={`font-medium mb-2 block text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}
                   >
                     Full Name
                   </label>
-
                   <Input
                     {...field}
-                    id="name"
-                    aria-invalid={fieldState.invalid}
                     placeholder="Enter your full name"
                     className={`w-full px-4 py-3 border rounded-xl placeholder:text-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none ${
                       isDark
@@ -112,8 +114,7 @@ const Page = () => {
                         : "bg-white border-purple-300/30 text-gray-900"
                     }`}
                   />
-
-                  {fieldState.invalid && fieldState.error && (
+                  {fieldState.error && (
                     <p className="text-pink-400 text-sm mt-1.5">
                       {fieldState.error.message}
                     </p>
@@ -129,17 +130,12 @@ const Page = () => {
               render={({ field, fieldState }) => (
                 <div>
                   <label
-                    htmlFor="email"
-                    className={`font-medium mb-2 block text-sm ${
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    }`}
+                    className={`font-medium mb-2 block text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}
                   >
                     Email
                   </label>
-
                   <Input
                     {...field}
-                    id="email"
                     type="email"
                     placeholder="Enter your email"
                     className={`w-full px-4 py-3 border rounded-xl ${
@@ -148,7 +144,6 @@ const Page = () => {
                         : "bg-white border-purple-300/30 text-gray-900"
                     }`}
                   />
-
                   {fieldState.error && (
                     <p className="text-pink-400 text-sm mt-1.5">
                       {fieldState.error.message}
@@ -158,25 +153,20 @@ const Page = () => {
               )}
             />
 
-            {/* Password Field */}
+            {/* Password Field with Eye Toggle */}
             <Controller
               name="password"
               control={form.control}
               render={({ field, fieldState }) => (
-                <div>
+                <div className="relative">
                   <label
-                    htmlFor="password"
-                    className={`font-medium mb-2 block text-sm ${
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    }`}
+                    className={`font-medium mb-2 block text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}
                   >
                     Password
                   </label>
-
                   <Input
                     {...field}
-                    id="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Create a strong password"
                     className={`w-full px-4 py-3 border rounded-xl ${
                       isDark
@@ -184,7 +174,13 @@ const Page = () => {
                         : "bg-white border-purple-300/30 text-gray-900"
                     }`}
                   />
-
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-11.5 cursor-pointer -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
                   {fieldState.error && (
                     <p className="text-pink-400 text-sm mt-1.5">
                       {fieldState.error.message}
@@ -202,9 +198,7 @@ const Page = () => {
               render={({ field }) => (
                 <div>
                   <label
-                    className={`font-medium mb-3 block text-sm ${
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    }`}
+                    className={`font-medium mb-3 block text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}
                   >
                     I am a...
                   </label>
@@ -242,6 +236,7 @@ const Page = () => {
               )}
             />
 
+            {/* Submit Button */}
             <Button
               type="submit"
               className="w-full cursor-pointer py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold text-white hover:shadow-lg transition-all"
@@ -258,6 +253,7 @@ const Page = () => {
             </Button>
           </form>
 
+          {/* Sign-in Link */}
           <div className="text-center mt-6">
             <p
               className={`${isDark ? "text-gray-400" : "text-gray-600"} text-sm`}
