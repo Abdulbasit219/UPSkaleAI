@@ -1,10 +1,17 @@
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import connectDB from "@/lib/connectDB";
 import AuthUser from "@/models/AuthUser";
+import UserProfile from "@/models/UserProfile";
+import NotificationSettings from "@/models/NotificationSettings";
 
 export const authOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     CredentialsProvider({
       id: "credentials",
       name: "Credentials",
@@ -51,6 +58,51 @@ export const authOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      if (account.provider === "google") {
+        await connectDB();
+
+        let existingUser = await AuthUser.findOne({ email: user.email });
+
+        if (!existingUser) {
+          const baseUsername = user.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "");
+          const randomSuffix = Math.floor(
+            1000 + Math.random() * 9000
+          ).toString();
+          const username = `${baseUsername}${randomSuffix}`;
+
+          existingUser = await AuthUser.create({
+            email: user.email,
+            username: username,
+            name: user.name,
+            isVerified: true,
+            role: "Job Seeker",
+            isOAuth: true,
+            password: "",
+            verifyCode: "000000",
+            verifyCodeExpiry: new Date()
+          });
+
+          await UserProfile.create({
+            userId: existingUser._id,
+            name: user.name,
+          });
+
+          await NotificationSettings.create({
+            userId: existingUser._id,
+          });
+        }
+
+        user._id = existingUser._id;
+        user.role = existingUser.role;
+        user.isAdmin = existingUser.isAdmin;
+        user.isVerified = true;
+      }
+      return true;
+    },
+
     async jwt({ token, user }) {
       if (user) {
         token._id = user._id?.toString();
