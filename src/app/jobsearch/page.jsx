@@ -47,12 +47,28 @@ export default function SkillBridgeJobs() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const getJobs = async () => {
+  const getJobs = async (filter = "all") => {
     try {
       setLoading(true);
-      const response = await jobsApi.getAll();
+      let response;
+
+      if (filter === "recommended") {
+        response = await jobsApi.getMatches();
+      } else {
+        response = await jobsApi.getAll();
+      }
+
       if (response.data.success) {
-        setJobs(response.data.data.jobs || []);
+        // Handle potential naming differences between matchScore and match
+        const processedJobs = (
+          response.data.data.jobs ||
+          response.data.data ||
+          []
+        ).map((j) => ({
+          ...j,
+          match: j.matchScore || j.match || 0,
+        }));
+        setJobs(processedJobs);
       }
     } catch (error) {
       console.error("Error fetching jobs:", error);
@@ -62,8 +78,8 @@ export default function SkillBridgeJobs() {
   };
 
   useEffect(() => {
-    getJobs();
-  }, []);
+    getJobs(activeFilter);
+  }, [activeFilter]);
 
   const toggleSaveJob = (jobId) => {
     setSavedJobs((prev) => {
@@ -77,14 +93,18 @@ export default function SkillBridgeJobs() {
     });
   };
 
-  const filteredJobs = jobs.filter(
-    (job) =>
-      activeFilter === "all" ||
-      job.category === activeFilter ||
-      (activeFilter === "featured" && job.featured) ||
-      (activeFilter === "remote" && job.remote) ||
-      (activeFilter === "recommended" && job.match >= 85),
-  );
+  const filteredJobs = jobs
+    .filter((job) => {
+      if (activeFilter === "all") return true;
+      if (activeFilter === "recommended") return job.match >= 70;
+      if (activeFilter === "featured") return job.featured;
+      if (activeFilter === "remote") return job.remote;
+      return job.category === activeFilter;
+    })
+    .sort((a, b) => {
+      if (activeFilter === "recommended") return b.match - a.match;
+      return 0;
+    });
 
   return (
     <div
@@ -117,11 +137,27 @@ export default function SkillBridgeJobs() {
           </h1>
 
           <p
-            className={`text-lg max-w-2xl mx-auto leading-relaxed ${isDark ? "text-gray-400" : "text-gray-600"}`}
+            className={`text-lg max-w-2xl mx-auto leading-relaxed mb-6 ${isDark ? "text-gray-400" : "text-gray-600"}`}
           >
             Discover opportunities that match your verified skills, powered by
             neural matching intelligence.
           </p>
+
+          <button
+            onClick={() => setActiveFilter("recommended")}
+            className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 ${
+              activeFilter === "recommended"
+                ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30"
+                : isDark
+                  ? "bg-slate-800 text-purple-400 border border-purple-500/30 hover:bg-slate-700"
+                  : "bg-white text-purple-600 border border-purple-200 shadow-sm hover:bg-gray-50"
+            }`}
+          >
+            <Sparkles
+              className={`w-5 h-5 ${activeFilter === "recommended" ? "animate-pulse" : ""}`}
+            />
+            Get AI Recommendations
+          </button>
 
           {/* Integrated Search Bar - Now properly positioned and styled */}
           <div className="max-w-4xl mx-auto mt-10">
