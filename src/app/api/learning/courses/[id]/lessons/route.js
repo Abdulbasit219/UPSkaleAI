@@ -1,6 +1,9 @@
+import { sendCourseUpdateEmail } from "@/helpers/sendCourseUpdateEmail";
 import connectDB from "@/lib/connectDB";
 import Course from "@/models/learning/Course";
 import Lesson from "@/models/learning/Lesson";
+import UserProgress from "@/models/learning/UserProgress";
+import NotificationSettings from "@/models/NotificationSettings";
 import { NextResponse } from "next/server";
 
 // get all chap wise lessons
@@ -17,9 +20,8 @@ export async function GET(request, { params }) {
       );
     }
 
-    const lessons = await Lesson.find({ courseId: id })
-      .sort({ order: 1 });
-      // .populate("quiz");
+    const lessons = await Lesson.find({ courseId: id }).sort({ order: 1 });
+    // .populate("quiz");
 
     return NextResponse.json({
       success: true,
@@ -39,13 +41,28 @@ export async function GET(request, { params }) {
   }
 }
 
-// post Chap (lesson) wise content 
+// post Chap (lesson) wise content
 export async function POST(request, { params }) {
   try {
     await connectDB();
 
     const { id } = await params;
     const body = await request.json();
+
+    const enrolledUsers = await UserProgress.find({ courseId: id }).select(
+      "userId"
+    );
+
+    const userIds = enrolledUsers.map((u) => u.userId);
+
+    const notificationSettings = await NotificationSettings.find({
+      userId: { $in: userIds },
+      "channels.email": true,
+      "learning.courseUpdates": true,
+    }).populate("userId", "email name");
+
+    console.log("Enrolled users:", userIds.length);
+    console.log("Notification users:", notificationSettings.length);
 
     const course = await Course.findById(id);
     if (!course) {
@@ -87,6 +104,18 @@ export async function POST(request, { params }) {
       codeExamples: codeExamples || [],
       resources: resources || [],
     });
+
+    for (const ns of notificationSettings) {
+      const user = ns.userId;
+
+      await sendCourseUpdateEmail(
+        user.email,
+        user.name,
+        course.title,
+        lesson.title,
+        course._id
+      );
+    }
 
     return NextResponse.json(
       {
