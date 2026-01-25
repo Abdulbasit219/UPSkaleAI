@@ -33,6 +33,7 @@ import {
   FileText,
   GitBranch,
   Linkedin,
+  MessagesSquare,
 } from "lucide-react";
 import Link from "next/link";
 import { useSelector } from "react-redux";
@@ -797,6 +798,13 @@ export default function JobDetailsPage() {
                   >
                     <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                     Quick Apply
+                  </Link>
+                  <Link
+                    href={`/jobsearch/interview/${jobId}`}
+                    className="w-full py-2.5 sm:py-3 md:py-3.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg sm:rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center justify-center gap-1 sm:gap-2 hover:scale-105 text-sm sm:text-base"
+                  >
+                    <MessagesSquare className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Start Mock Interview
                   </Link>
                   <Link
                     href={{
