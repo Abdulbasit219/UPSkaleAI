@@ -26,7 +26,7 @@ const LearningPage = () => {
   const fetchCourses = async () => {
     setLoading(true);
     try {
-      let url = "http://localhost:3000/api/learning/courses?isPublished=true";
+      let url = "/api/learning/courses?isPublished=true";
       if (selectedCategory) url += `&category=${selectedCategory}`;
       if (selectedDifficulty) url += `&difficulty=${selectedDifficulty}`;
       if (searchQuery) url += `&search=${searchQuery}`;
