@@ -12,7 +12,7 @@ export async function POST(req) {
     if (!session || !session.user?._id) {
       return NextResponse.json(
         { success: false, message: "Not authenticated" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -22,7 +22,7 @@ export async function POST(req) {
     if (!skillName) {
       return NextResponse.json(
         { success: false, message: "Skill name is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -45,13 +45,13 @@ export async function POST(req) {
           },
         },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!updatedProfile) {
       return NextResponse.json(
         { success: false, message: "User profile not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -59,9 +59,9 @@ export async function POST(req) {
       {
         success: true,
         message: "Skill added successfully",
-        data: updatedProfile.skills,
+        skill: updatedProfile.skills[updatedProfile.skills.length - 1],
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error adding skill:", error);
@@ -71,7 +71,7 @@ export async function POST(req) {
         message: "Internal Server Error",
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
