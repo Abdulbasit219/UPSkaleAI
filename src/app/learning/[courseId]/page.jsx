@@ -4,9 +4,10 @@ import LessonItem from "@/components/learning/LessonItem";
 import axios from "axios";
 import { ArrowLeft, BookOpen, CheckCircle, Clock, Users } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 const CoursePage = () => {
   const [loading, setLoading] = useState(true);
@@ -16,7 +17,9 @@ const CoursePage = () => {
   const [progress, setProgress] = useState(null);
 
   const params = useParams();
-  //   const router = useRouter();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data: session, status } = useSession();
 
   const { courseId } = params;
 
@@ -51,8 +54,6 @@ const CoursePage = () => {
     }
   };
 
-  console.log(progress)
-
   const handleEnroll = async () => {
     try {
       const response = await axios.post(
@@ -75,7 +76,6 @@ const CoursePage = () => {
     if (!progress) return false;
     return progress.completedLessons.some((cl) => cl.lessonId === lessonId);
   };
-
 
   useEffect(() => {
     fetchCourseData();
@@ -160,10 +160,21 @@ const CoursePage = () => {
               {/* Enroll Button */}
               {!isEnrolled && (
                 <button
-                  onClick={handleEnroll}
+                  onClick={() => {
+                    if (status === "unauthenticated") {
+                      toast.error("Please login to enroll");
+                      router.push(
+                        `/sign-in?callbackUrl=${encodeURIComponent(pathname)}`
+                      );
+                      return;
+                    }
+
+                    handleEnroll();
+                  }}
                   className="mt-6 w-full md:w-auto cursor-pointer px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+                  disabled={status === "loading"}
                 >
-                  Enroll Now - Free
+                  {status === "loading" ? "Checking..." : "Enroll Now - Free"}
                 </button>
               )}
 

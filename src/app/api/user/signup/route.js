@@ -28,6 +28,7 @@ export async function POST(req) {
     const existingUserByEmail = await AuthUser.findOne({ email });
     let verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
+    let user;
     if (existingUserByEmail) {
       if (existingUserByEmail.isVerified) {
         return Response.json(
@@ -48,6 +49,7 @@ export async function POST(req) {
         existingUserByEmail.verifyCode = verifyCode;
         existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000);
         await existingUserByEmail.save();
+        user = existingUserByEmail;
       }
     } else {
       // Create new user
@@ -55,6 +57,7 @@ export async function POST(req) {
 
       const expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + 1);
+
       const newUser = await AuthUser.create({
         username,
         name,
@@ -65,9 +68,11 @@ export async function POST(req) {
         verifyCodeExpiry: expiryDate,
       });
 
+      user = newUser;
+
       // Create user profile
       await UserProfile.create({
-        userId: newUser._id,
+        userId: user._id,
         name: name,
         avatar: "",
         coverPhoto: "",
@@ -79,7 +84,7 @@ export async function POST(req) {
     }
 
     await NotificationSettings.create({
-      userId: newUser._id,
+      userId: user._id,
     });
 
     // Send verification email

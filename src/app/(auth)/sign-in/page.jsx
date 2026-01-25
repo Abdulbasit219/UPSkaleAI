@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Loader2, Sparkles, Eye, EyeOff } from "lucide-react";
@@ -19,6 +19,9 @@ const Page = () => {
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
 
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+
   const form = useForm({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -28,21 +31,27 @@ const Page = () => {
   });
 
   const onSubmit = async (data) => {
-    setIsSubmitting(true);
-    const result = await signIn("credentials", {
-      redirect: false,
-      identifier: data.identifier,
-      password: data.password,
-    });
+    try {
+      setIsSubmitting(true);
 
-    if (result?.error) {
-      toast.error("Incorrect Username or Password");
-      setIsSubmitting(false);
-    }
+      const result = await signIn("credentials", {
+        redirect: false,
+        identifier: data.identifier,
+        password: data.password,
+        callbackUrl,
+      });
 
-    if (result?.url) {
+      if (result?.error) {
+        toast.error("Incorrect Username or Password");
+        setIsSubmitting(false);
+        return;
+      }
+
       toast.success("Welcome back!");
-      router.replace("/");
+      router.replace(result?.url || callbackUrl);
+    } catch (error) {
+      toast.error("Something went wrong");
+      setIsSubmitting(false);
     }
   };
 
@@ -215,11 +224,18 @@ const Page = () => {
           </div>
 
           {/* Social Login Button */}
+
           <Button
             type="button"
             variant="outline"
-            className={`w-full flex items-center justify-center gap-3 ${isDark ? "text-white" : "text-gray-700"} cursor-pointer`}
-            onClick={() => signIn("google", { callbackUrl: "/" })}
+            disabled={isSubmitting}
+            className={`w-full flex items-center justify-center gap-3 ${
+              isDark ? "text-white" : "text-gray-700"
+            } cursor-pointer`}
+            onClick={() => {
+              setIsSubmitting(true);
+              signIn("google", { callbackUrl });
+            }}
           >
             {/* Google Icon */}
             <svg className="w-5 h-5" viewBox="0 0 533.5 544.3">
