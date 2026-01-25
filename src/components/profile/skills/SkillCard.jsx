@@ -30,7 +30,7 @@ const SkillCard = ({ skill, isDark }) => {
                 isDark ? "text-white" : "text-gray-900"
               }`}
             >
-              {skill.skillName}
+              {skill?.skillName || "Untitled Skill"}
             </h2>
 
             <span
@@ -40,7 +40,7 @@ const SkillCard = ({ skill, isDark }) => {
                   : "bg-gray-200 text-gray-600"
               }`}
             >
-              {skill.level}
+              {skill?.level || "Beginner"}
             </span>
           </div>
 
@@ -70,7 +70,7 @@ const SkillCard = ({ skill, isDark }) => {
               isDark ? "text-gray-500" : "text-gray-400"
             }`}
           >
-            Last practiced: {skill.lastPracticed}
+            Last practiced: {skill?.lastPracticed || "Never"}
           </p>
         </div>
       </div>

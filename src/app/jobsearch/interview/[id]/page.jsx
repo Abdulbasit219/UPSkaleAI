@@ -35,6 +35,8 @@ export default function MockInterviewPage() {
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [questionCount, setQuestionCount] = useState(0);
   const [interviewEnded, setInterviewEnded] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [report, setReport] = useState(null);
 
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
@@ -160,6 +162,36 @@ export default function MockInterviewPage() {
     }
   };
 
+  const generateReport = async () => {
+    console.log("Generating report for messages:", messages);
+    try {
+      setIsGeneratingReport(true);
+      const response = await axios.post("/api/interview/report", {
+        messages,
+        jobTitle: job?.title || "Position",
+        company: job?.company || "Company",
+      });
+
+      console.log("Report response:", response.data);
+
+      if (response.data.success) {
+        setReport(response.data.data);
+      } else {
+        alert(
+          "Server failed to generate report: " +
+            (response.data.error || "Unknown Error"),
+        );
+      }
+    } catch (error) {
+      console.error("Failed to generate report:", error);
+      alert(
+        "AI was unable to finalize your report. Please check your internet connection and try again.",
+      );
+    } finally {
+      setIsGeneratingReport(false);
+    }
+  };
+
   if (loading) {
     return (
       <div
@@ -210,7 +242,7 @@ export default function MockInterviewPage() {
             </p>
           </div>
 
-          {interviewStarted && (
+          {interviewStarted && !report && (
             <div
               className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl ${
                 isDark ? "bg-white/5" : "bg-gray-100"
@@ -223,7 +255,89 @@ export default function MockInterviewPage() {
           {!interviewStarted && <div className="w-20" />}
         </div>
 
-        {!interviewStarted ? (
+        {report ? (
+          /* Report View */
+          <div className="animate-fadeIn">
+            <div
+              className={`backdrop-blur-xl border rounded-[2.5rem] overflow-hidden ${
+                isDark
+                  ? "bg-slate-900/60 border-white/10"
+                  : "bg-white border-gray-200 shadow-2xl"
+              }`}
+            >
+              <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-8 sm:p-12 text-center text-white">
+                <h2 className="text-3xl sm:text-4xl font-black mb-2">
+                  Evaluation Report
+                </h2>
+                <p className="opacity-90">
+                  Based on your conversation with our AI Recruiter
+                </p>
+
+                <div className="mt-8 relative inline-block">
+                  <div className="w-32 h-32 rounded-full border-4 border-white/20 flex items-center justify-center">
+                    <span className="text-5xl font-black">{report.score}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8 sm:p-12 space-y-10">
+                <div>
+                  <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                    <Target className="text-purple-500" />
+                    Executive Summary
+                  </h3>
+                  <p
+                    className={`leading-relaxed ${isDark ? "text-gray-300" : "text-gray-600"}`}
+                  >
+                    {report.summary}
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div
+                    className={`p-6 rounded-2xl ${isDark ? "bg-emerald-500/5 border border-emerald-500/20" : "bg-emerald-50 border border-emerald-100"}`}
+                  >
+                    <h4 className="text-emerald-500 font-bold mb-3 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      Strengths
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      {report.strengths.map((s, i) => (
+                        <li key={i} className="flex gap-2">
+                          • {s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div
+                    className={`p-6 rounded-2xl ${isDark ? "bg-purple-500/5 border border-purple-500/20" : "bg-purple-50 border border-purple-100"}`}
+                  >
+                    <h4 className="text-purple-500 font-bold mb-3 flex items-center gap-2">
+                      <Zap className="w-4 h-4" />
+                      Key Tips
+                    </h4>
+                    <ul className="space-y-2 text-sm">
+                      {report.tips.map((t, i) => (
+                        <li key={i} className="flex gap-2">
+                          • {t}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-dashed border-white/10 flex flex-col sm:flex-row gap-4 items-center justify-between">
+                  <button
+                    onClick={() => window.location.reload()}
+                    className={`px-8 py-3 rounded-xl font-bold transition-all ${isDark ? "bg-white/5 hover:bg-white/10" : "bg-gray-100 hover:bg-gray-200"}`}
+                  >
+                    Try Another Session
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : !interviewStarted ? (
           /* Premium Landing State */
           <div
             className={`backdrop-blur-xl border rounded-[2.5rem] p-8 sm:p-16 text-center relative overflow-hidden ${
@@ -448,9 +562,22 @@ export default function MockInterviewPage() {
                   <h3 className="text-lg font-bold mb-4 text-center">
                     Interview Successfully Completed
                   </h3>
-                  <button className="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-emerald-500/30 transition-all flex items-center justify-center gap-3">
-                    View My AI Performance Report
-                    <Award className="w-6 h-6" />
+                  <button
+                    onClick={generateReport}
+                    disabled={isGeneratingReport}
+                    className="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-emerald-500/30 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                  >
+                    {isGeneratingReport ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-white"></div>
+                        Analysing Performance...
+                      </>
+                    ) : (
+                      <>
+                        View My AI Performance Report
+                        <Award className="w-6 h-6" />
+                      </>
+                    )}
                   </button>
                 </div>
               )}
