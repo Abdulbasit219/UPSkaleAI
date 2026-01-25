@@ -30,7 +30,7 @@ import {
   featuredCompanies,
 } from "@/components/jobs/data/mockJobsData";
 
-export default function SkillBridgeJobs() {
+export default function UpSkaleAIJobs() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [savedJobs, setSavedJobs] = useState(new Set());
   const [searchQuery, setSearchQuery] = useState("");

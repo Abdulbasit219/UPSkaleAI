@@ -273,7 +273,7 @@ const Navbar = () => {
     const mainNavHrefs = mainNavItems.map((item) => item.href);
     return resourcesItems.some(
       (item) =>
-        pathname.startsWith(item.href) && !mainNavHrefs.includes(item.href)
+        pathname.startsWith(item.href) && !mainNavHrefs.includes(item.href),
     );
   };
 
@@ -344,7 +344,7 @@ const Navbar = () => {
               </div>
               <div className="flex flex-col">
                 <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  SkillBridge
+                  UpSkaleAI
                 </span>
                 <span
                   className={`text-xs -mt-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}
@@ -440,7 +440,7 @@ const Navbar = () => {
                         <p
                           className={`text-xs font-semibold uppercase tracking-wider ${isDark ? "text-purple-300" : "text-purple-600"}`}
                         >
-                          SkillBridge Tools
+                          UpSkaleAI Tools
                         </p>
                       </div>
                       <div className="grid grid-cols-1 gap-1 px-2">

@@ -7,4 +7,4 @@ load_dotenv()
 
 
 logging.basicConfig(level=os.getenv('LOG_LEVEL', 'INFO'))
-logger = logging.getLogger('skillbridge')
+logger = logging.getLogger('upskaleai')

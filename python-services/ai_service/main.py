@@ -10,11 +10,11 @@ from modules.llm_client import extract_skills_from_jd
 from modules.embeddings import embed_text, get_model
 from modules.vectorstore_faiss import init_index, upsert, query
 
-app = FastAPI(title="SkillBridge AI Service")
+app = FastAPI(title="UpSkaleAI AI Service")
 
 # --- MongoDB Client ---
 client = MongoClient(os.getenv('MONGODB_URL', 'mongodb://mongo:27017'))
-db = client.skillbridge
+db = client.upskaleai
 
 # --- Initialize embeddings model and vector index ---
 model = get_model()

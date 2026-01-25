@@ -36,7 +36,7 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import Link from "next/link";
 
-export default function SkillBridgeLanding() {
+export default function UpSkaleAILanding() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const themeMode = useSelector((state) => state.theme.mode);
@@ -100,7 +100,7 @@ export default function SkillBridgeLanding() {
     },
     {
       icon: <Briefcase className="w-6 h-6" />,
-      title: "Opportunity Bridge",
+      title: "Upscale Opportunities",
       description:
         "Connect with internships and global job roles matched perfectly to your skill level.",
       color: "from-emerald-500 to-teal-500",
@@ -152,9 +152,9 @@ export default function SkillBridgeLanding() {
           </div>
 
           <h1 className="text-3xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight tracking-tight animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            Bridge the gap between <br />
+            UpSkaleAI bridges your <br />
             <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
-              learning and earning
+              learning into earning
             </span>
           </h1>
 
@@ -171,7 +171,7 @@ export default function SkillBridgeLanding() {
               href="/signup"
               className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl font-bold text-lg text-white hover:shadow-xl hover:shadow-purple-500/40 transition-all flex items-center gap-2"
             >
-              Start Your Journey
+              UpSkale Your Journey
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
@@ -277,8 +277,8 @@ export default function SkillBridgeLanding() {
               className={`text-lg max-w-2xl mx-auto ${isDark ? "text-gray-400" : "text-gray-600"} font-medium`}
             >
               The first truly integrated AI career ecosystem. Each tool is
-              designed to talk to the others, creating a seamless bridge from
-              your first line of code to your dream office.
+              designed to talk to the others, creating a seamless path from your
+              first line of code to your dream office.
             </p>
           </div>
 
@@ -566,7 +566,7 @@ export default function SkillBridgeLanding() {
             <div className="flex-1 space-y-8 text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 text-xs font-bold uppercase tracking-widest">
                 <Briefcase className="w-4 h-4" />
-                New: Opportunity Bridge
+                New: Upscale Opportunities
               </div>
               <h2 className="text-3xl sm:text-5xl font-bold leading-tight">
                 Find your dream job <br />

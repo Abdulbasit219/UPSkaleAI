@@ -43,7 +43,7 @@ const Page = () => {
       console.error("Error during verification:", error);
       toast.error(
         error.response?.data?.message ||
-          "Verification failed. Please try again."
+          "Verification failed. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -94,7 +94,7 @@ const Page = () => {
                 <Sparkles className="w-7 h-7 text-white" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                SkillBridge
+                UpSkaleAI
               </span>
             </div>
           </div>

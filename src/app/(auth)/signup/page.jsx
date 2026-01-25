@@ -75,7 +75,7 @@ const Page = () => {
                 <Sparkles className="w-7 h-7 text-white" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                SkillBridge
+                UpSkaleAI
               </span>
             </div>
           </div>
@@ -89,7 +89,7 @@ const Page = () => {
             <p
               className={`${isDark ? "text-gray-400" : "text-gray-600"} text-sm`}
             >
-              Start your journey to bridge learning and earning
+              Start your journey to upscale your skills and career
             </p>
           </div>
 

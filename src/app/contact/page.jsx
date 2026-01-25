@@ -58,8 +58,8 @@ export default function ContactPage() {
       icon: <Mail className="w-6 h-6" />,
       title: "Email Us",
       description: "We'll respond within 24 hours",
-      value: "support@skillbridge.com",
-      link: "mailto:support@skillbridge.com",
+      value: "support@upskaleai.com",
+      link: "mailto:support@upskaleai.com",
       color: "from-purple-500 to-pink-500",
     },
     {
@@ -176,7 +176,7 @@ export default function ContactPage() {
             Have questions about your career journey? Our team is here to help
             you
             <br className="hidden sm:block" />
-            bridge the gap between learning and earning.
+            upscale your skills and bridge the gap between learning and earning.
           </p>
 
           {/* Feature Pills */}
