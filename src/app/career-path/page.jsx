@@ -36,219 +36,236 @@ import {
 import { useSelector } from "react-redux";
 import BackgroundPattern from "@/components/ui/BackgroundPattern";
 import SharedCTABanner from "@/components/ui/CTABanner";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 
 export default function CareerPathPage() {
+  const { data: session } = useSession();
   const [activePath, setActivePath] = useState("frontend");
   const [selectedMilestone, setSelectedMilestone] = useState(0);
+  const [careerPaths, setCareerPaths] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [customRole, setCustomRole] = useState("");
+  const [showResources, setShowResources] = useState(null);
+  const router = useRouter();
+
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
 
-  const careerPaths = [
-    {
-      id: "frontend",
-      name: "Frontend Developer",
-      icon: <Code className="w-6 h-6" />,
-      description: "Build interactive user interfaces and web applications",
-      demand: "High",
-      salary: "$85K - $150K",
-      growth: "22%",
-      popularity: 95,
-      color: "from-blue-500 to-cyan-500",
-    },
-    {
-      id: "backend",
-      name: "Backend Developer",
-      icon: <Database className="w-6 h-6" />,
-      description: "Develop server-side logic and database architecture",
-      demand: "Very High",
-      salary: "$90K - $160K",
-      growth: "25%",
-      popularity: 92,
-      color: "from-green-500 to-emerald-500",
-    },
-    {
-      id: "fullstack",
-      name: "Full Stack Developer",
-      icon: <Cpu className="w-6 h-6" />,
-      description: "Master both frontend and backend technologies",
-      demand: "Extreme",
-      salary: "$95K - $170K",
-      growth: "28%",
-      popularity: 98,
-      color: "from-purple-500 to-pink-500",
-    },
-    {
-      id: "mobile",
-      name: "Mobile Developer",
-      icon: <Smartphone className="w-6 h-6" />,
-      description: "Create native and cross-platform mobile apps",
-      demand: "High",
-      salary: "$80K - $140K",
-      growth: "20%",
-      popularity: 88,
-      color: "from-orange-500 to-red-500",
-    },
-    {
-      id: "devops",
-      name: "DevOps Engineer",
-      icon: <Cloud className="w-6 h-6" />,
-      description: "Manage infrastructure and deployment pipelines",
-      demand: "Very High",
-      salary: "$100K - $180K",
-      growth: "30%",
-      popularity: 90,
-      color: "from-yellow-500 to-orange-500",
-    },
-    {
-      id: "ai-ml",
-      name: "AI/ML Engineer",
-      icon: <Brain className="w-6 h-6" />,
-      description: "Build intelligent systems and machine learning models",
-      demand: "Extreme",
-      salary: "$120K - $200K",
-      growth: "35%",
-      popularity: 96,
-      color: "from-purple-500 to-blue-500",
-    },
-  ];
-
-  const pathDetails = {
-    frontend: {
-      overview:
-        "Frontend developers are responsible for creating the visual and interactive elements of websites and web applications that users see and interact with directly.",
-      timeline: "6-12 months to job-ready",
-      difficulty: "Intermediate",
-      skills: [
-        "HTML/CSS",
-        "JavaScript",
-        "React",
-        "TypeScript",
-        "Responsive Design",
-        "UI/UX Principles",
-      ],
-      milestones: [
-        {
-          title: "Web Fundamentals",
-          duration: "1-2 months",
-          progress: 100,
-          skills: ["HTML5", "CSS3", "Git", "Basic JavaScript"],
-          resources: 12,
-          completed: true,
-        },
-        {
-          title: "JavaScript Mastery",
-          duration: "2-3 months",
-          progress: 85,
-          skills: ["ES6+", "DOM Manipulation", "Async Programming", "APIs"],
-          resources: 18,
-          completed: false,
-        },
-        {
-          title: "React & Modern Frameworks",
-          duration: "3-4 months",
-          progress: 60,
-          skills: ["React", "State Management", "React Router", "Testing"],
-          resources: 24,
-          completed: false,
-        },
-        {
-          title: "Advanced Concepts",
-          duration: "2-3 months",
-          progress: 20,
-          skills: ["TypeScript", "Performance", "Accessibility", "PWA"],
-          resources: 16,
-          completed: false,
-        },
-        {
-          title: "Portfolio & Job Ready",
-          duration: "1-2 months",
-          progress: 10,
-          skills: ["Projects", "Interview Prep", "Resume Building"],
-          resources: 8,
-          completed: false,
-        },
-      ],
-      jobOpportunities: [
-        {
-          role: "Junior Frontend Developer",
-          companies: 234,
-          avgSalary: "$85,000",
-        },
-        { role: "Frontend Developer", companies: 567, avgSalary: "$110,000" },
-        {
-          role: "Senior Frontend Developer",
-          companies: 189,
-          avgSalary: "$145,000",
-        },
-        { role: "Frontend Architect", companies: 45, avgSalary: "$180,000" },
-      ],
-    },
-    backend: {
-      overview:
-        "Backend developers focus on server-side development, working with databases, APIs, and application logic that power web applications behind the scenes.",
-      timeline: "8-14 months to job-ready",
-      difficulty: "Intermediate",
-      skills: [
-        "Node.js",
-        "Python",
-        "Databases",
-        "APIs",
-        "Authentication",
-        "Deployment",
-      ],
-      milestones: [
-        {
-          title: "Programming Fundamentals",
-          duration: "2-3 months",
-          progress: 100,
-          skills: ["Python/JavaScript", "Data Structures", "Algorithms"],
-          resources: 15,
-          completed: true,
-        },
-        {
-          title: "Backend Basics",
-          duration: "3-4 months",
-          progress: 75,
-          skills: ["Node.js/Express", "REST APIs", "Database Design"],
-          resources: 20,
-          completed: false,
-        },
-        {
-          title: "Advanced Backend",
-          duration: "3-4 months",
-          progress: 40,
-          skills: ["Authentication", "Caching", "Microservices"],
-          resources: 18,
-          completed: false,
-        },
-        {
-          title: "DevOps & Deployment",
-          duration: "2-3 months",
-          progress: 15,
-          skills: ["Docker", "AWS", "CI/CD", "Monitoring"],
-          resources: 14,
-          completed: false,
-        },
-      ],
-      jobOpportunities: [
-        {
-          role: "Junior Backend Developer",
-          companies: 198,
-          avgSalary: "$90,000",
-        },
-        { role: "Backend Developer", companies: 432, avgSalary: "$120,000" },
-        {
-          role: "Senior Backend Developer",
-          companies: 234,
-          avgSalary: "$155,000",
-        },
-        { role: "Backend Architect", companies: 67, avgSalary: "$190,000" },
-      ],
-    },
+  // Mapping for icons since they come as strings or IDs from DB
+  const getIcon = (id) => {
+    const icons = {
+      frontend: <Code className="w-6 h-6" />,
+      backend: <Database className="w-6 h-6" />,
+      fullstack: <Cpu className="w-6 h-6" />,
+      mobile: <Smartphone className="w-6 h-6" />,
+      devops: <Cloud className="w-6 h-6" />,
+      "ai-ml": <Brain className="w-6 h-6" />,
+      default: <Rocket className="w-6 h-6" />,
+    };
+    return icons[id] || icons.default;
   };
 
-  const currentPath = careerPaths.find((path) => path.id === activePath);
-  const currentDetails = pathDetails[activePath] || pathDetails.frontend;
+  // 1. Fetch available paths on mount
+  useEffect(() => {
+    async function fetchPaths() {
+      try {
+        const res = await fetch("/api/career/roadmap");
+        const json = await res.json();
+        if (json.success && json.paths.length > 0) {
+          setCareerPaths(json.paths);
+          setActivePath(json.paths[0].id);
+        } else {
+          // Fallback to minimal static if DB is empty
+          setCareerPaths([
+            {
+              id: "frontend",
+              name: "Frontend Developer",
+              description: "Build interactive user interfaces",
+              color: "from-blue-500 to-cyan-500",
+              popularity: 95,
+              overview:
+                "Frontend developers are responsible for creating the visual and interactive elements of websites and web applications that users see and interact with directly.",
+              timeline: "6-12 months to job-ready",
+              difficulty: "Intermediate",
+              skills: [
+                "HTML/CSS",
+                "JavaScript",
+                "React",
+                "TypeScript",
+                "Responsive Design",
+                "UI/UX Principles",
+              ],
+              milestones: [
+                {
+                  title: "Web Fundamentals",
+                  duration: "1-2 months",
+                  progress: 100,
+                  skills: ["HTML5", "CSS3", "Git", "Basic JavaScript"],
+                  resources: 12,
+                  completed: true,
+                },
+                {
+                  title: "JavaScript Mastery",
+                  duration: "2-3 months",
+                  progress: 85,
+                  skills: [
+                    "ES6+",
+                    "DOM Manipulation",
+                    "Async Programming",
+                    "APIs",
+                  ],
+                  resources: 18,
+                  completed: false,
+                },
+                {
+                  title: "React & Modern Frameworks",
+                  duration: "3-4 months",
+                  progress: 60,
+                  skills: [
+                    "React",
+                    "State Management",
+                    "React Router",
+                    "Testing",
+                  ],
+                  resources: 24,
+                  completed: false,
+                },
+                {
+                  title: "Advanced Concepts",
+                  duration: "2-3 months",
+                  progress: 20,
+                  skills: ["TypeScript", "Performance", "Accessibility", "PWA"],
+                  resources: 16,
+                  completed: false,
+                },
+                {
+                  title: "Portfolio & Job Ready",
+                  duration: "1-2 months",
+                  progress: 10,
+                  skills: ["Projects", "Interview Prep", "Resume Building"],
+                  resources: 8,
+                  completed: false,
+                },
+              ],
+              jobOpportunities: [
+                {
+                  role: "Junior Frontend Developer",
+                  companies: 234,
+                  avgSalary: "$85,000",
+                },
+                {
+                  role: "Frontend Developer",
+                  companies: 567,
+                  avgSalary: "$110,000",
+                },
+                {
+                  role: "Senior Frontend Developer",
+                  companies: 189,
+                  avgSalary: "$145,000",
+                },
+                {
+                  role: "Frontend Architect",
+                  companies: 45,
+                  avgSalary: "$180,000",
+                },
+              ],
+            },
+          ]);
+        }
+      } catch (err) {
+        toast.error("Failed to load career paths");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchPaths();
+  }, []);
+
+  // 2. Handle AI Generation
+  const handleGeneratePath = async (roleName, isRefresh = false) => {
+    if (!session) return toast.error("Please login to generate AI roadmaps");
+    if (!roleName.trim()) return;
+
+    setIsGenerating(true);
+    try {
+      const res = await fetch("/api/career/roadmap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetRole: roleName, skipCache: isRefresh }),
+      });
+      const json = await res.json();
+
+      if (json.success) {
+        const newPath = json.data;
+        // Add to list and set active
+        setCareerPaths((prev) => {
+          const exists = prev.find((p) => p.id === newPath.id);
+          if (exists && !isRefresh) return prev;
+          if (exists && isRefresh) {
+            return prev.map((p) => (p.id === newPath.id ? newPath : p));
+          }
+          return [newPath, ...prev];
+        });
+        setActivePath(newPath.id);
+        setSelectedMilestone(0);
+        setCustomRole("");
+        if (isRefresh) {
+          toast.success(`Successfully refreshed links for ${newPath.name}`);
+        } else {
+          toast.success(`AI generated specialized path for ${newPath.name}`);
+        }
+      } else {
+        toast.error(json.message);
+      }
+    } catch (err) {
+      toast.error("AI Service failed to generate the roadmap.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // 3. Handle Progress Updates
+  const updateProgress = async (milestoneIdx, newProgress) => {
+    if (!session) return toast.error("Log in to track progress");
+
+    try {
+      const res = await fetch("/api/career/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          role_key: activePath,
+          milestoneIndex: milestoneIdx,
+          progress: newProgress,
+          completed: newProgress >= 100,
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        // Update local state
+        setCareerPaths((prev) =>
+          prev.map((path) => {
+            if (path.id !== activePath) return path;
+            const newMilestones = [...path.milestones];
+            newMilestones[milestoneIdx].progress = newProgress;
+            newMilestones[milestoneIdx].completed = newProgress >= 100;
+            return { ...path, milestones: newMilestones };
+          }),
+        );
+        toast.success(`Progress updated! ${newProgress}%`);
+      }
+    } catch (err) {
+      toast.error("Failed to sync progress");
+    }
+  };
+
+  const currentPath =
+    careerPaths.find((path) => path.id === activePath) || careerPaths[0];
+  const currentDetails = currentPath; // In new dynamic model, it's the same object
 
   const stats = [
     {
@@ -394,10 +411,10 @@ export default function CareerPathPage() {
                     }`}
                   >
                     <div
-                      className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 bg-gradient-to-br ${path.color} rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0`}
+                      className={`w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 bg-gradient-to-br ${path.color || "from-purple-500 to-pink-500"} rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0`}
                     >
                       <div className="text-white text-sm sm:text-base">
-                        {path.icon}
+                        {getIcon(path.id)}
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -458,21 +475,53 @@ export default function CareerPathPage() {
                     Your Skills
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`text-xs sm:text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    Confidence
-                  </span>
-                  <span className="text-green-400 font-semibold text-xs sm:text-sm">
-                    92%
-                  </span>
+              </div>
+              <div className="mt-4 pt-4 border-t border-purple-500/20">
+                <p
+                  className={`text-xs mb-2 ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                >
+                  Want a different role?
+                </p>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="e.g. Data Scientist"
+                    value={customRole}
+                    onChange={(e) => setCustomRole(e.target.value)}
+                    className={`w-full px-3 py-2 text-xs rounded-lg border outline-none transition-all ${
+                      isDark
+                        ? "bg-slate-800 border-purple-500/30 text-white focus:border-purple-500"
+                        : "bg-white border-purple-200 text-gray-900"
+                    }`}
+                  />
                 </div>
               </div>
-              <button className="w-full mt-3 sm:mt-4 py-2 sm:py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg sm:rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center justify-center gap-1 sm:gap-2 text-sm">
-                <Brain className="w-3 h-3 sm:w-4 sm:h-4" />
-                Get Personalized Path
+
+              <button
+                onClick={() =>
+                  handleGeneratePath(customRole || "Full Stack Developer")
+                }
+                disabled={isGenerating}
+                className="w-full mt-3 sm:mt-4 py-2 sm:py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg sm:rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center justify-center gap-1 sm:gap-2 text-sm disabled:opacity-50"
+              >
+                {isGenerating ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                ) : (
+                  <Brain className="w-3 h-3 sm:w-4 sm:h-4" />
+                )}
+                {isGenerating ? "Analyzing..." : "Get Personalized Path"}
               </button>
+
+              {session && (
+                <button
+                  onClick={() => {
+                    handleGeneratePath(currentPath?.name || "", true);
+                  }}
+                  className={`w-full mt-2 py-1.5 text-xs font-medium rounded-lg border transition-all ${isDark ? "border-white/10 text-gray-500 hover:text-white" : "border-gray-200 text-gray-400 hover:text-gray-900"}`}
+                >
+                  Force Refresh AI Links
+                </button>
+              )}
             </div>
           </div>
 
@@ -489,22 +538,22 @@ export default function CareerPathPage() {
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6 mb-4 sm:mb-6">
                 <div className="flex items-start gap-3 sm:gap-4">
                   <div
-                    className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br ${currentPath.color} rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0`}
+                    className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br ${currentPath?.color || "from-purple-500 to-pink-500"} rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0`}
                   >
                     <div className="text-white text-xl sm:text-2xl">
-                      {currentPath.icon}
+                      {getIcon(currentPath?.id)}
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <h2
                       className={`text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 ${isDark ? "text-white" : "text-gray-900"}`}
                     >
-                      {currentPath.name}
+                      {currentPath?.name}
                     </h2>
                     <p
                       className={`text-sm sm:text-base lg:text-lg mb-2 sm:mb-4 ${isDark ? "text-gray-400" : "text-gray-600"}`}
                     >
-                      {currentPath.description}
+                      {currentPath?.description}
                     </p>
                     <div className="flex flex-col xs:flex-row xs:items-center gap-2 sm:gap-4 md:gap-6 text-xs sm:text-sm">
                       <div className="flex items-center gap-1 sm:gap-2">
@@ -512,7 +561,7 @@ export default function CareerPathPage() {
                         <span
                           className={isDark ? "text-white" : "text-gray-900"}
                         >
-                          {currentPath.demand} Demand
+                          {currentPath?.demand} Demand
                         </span>
                       </div>
                       <div className="flex items-center gap-1 sm:gap-2">
@@ -520,7 +569,7 @@ export default function CareerPathPage() {
                         <span
                           className={isDark ? "text-white" : "text-gray-900"}
                         >
-                          {currentPath.salary}
+                          {currentPath?.salary}
                         </span>
                       </div>
                       <div className="flex items-center gap-1 sm:gap-2">
@@ -528,7 +577,7 @@ export default function CareerPathPage() {
                         <span
                           className={isDark ? "text-white" : "text-gray-900"}
                         >
-                          {currentPath.growth} Growth
+                          {currentPath?.growth} Growth
                         </span>
                       </div>
                     </div>
@@ -536,7 +585,7 @@ export default function CareerPathPage() {
                 </div>
                 <div className="text-center sm:text-right self-center sm:self-auto">
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    {currentPath.popularity}%
+                    {currentPath?.popularity}%
                   </div>
                   <div
                     className={`text-xs sm:text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
@@ -556,7 +605,7 @@ export default function CareerPathPage() {
                   <div
                     className={`text-lg sm:text-xl md:text-2xl font-bold mb-0.5 sm:mb-1 ${isDark ? "text-white" : "text-gray-900"}`}
                   >
-                    {currentDetails.timeline}
+                    {currentDetails?.timeline}
                   </div>
                   <div
                     className={`text-xs sm:text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
@@ -568,7 +617,7 @@ export default function CareerPathPage() {
                   <div
                     className={`text-lg sm:text-xl md:text-2xl font-bold mb-0.5 sm:mb-1 ${isDark ? "text-white" : "text-gray-900"}`}
                   >
-                    {currentDetails.difficulty}
+                    {currentDetails?.difficulty}
                   </div>
                   <div
                     className={`text-xs sm:text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
@@ -580,7 +629,7 @@ export default function CareerPathPage() {
                   <div
                     className={`text-lg sm:text-xl md:text-2xl font-bold mb-0.5 sm:mb-1 ${isDark ? "text-white" : "text-gray-900"}`}
                   >
-                    {currentDetails.skills.length}
+                    {currentDetails?.skills.length}
                   </div>
                   <div
                     className={`text-xs sm:text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
@@ -609,7 +658,7 @@ export default function CareerPathPage() {
               </h3>
 
               <div className="space-y-4 sm:space-y-6">
-                {currentDetails.milestones.map((milestone, index) => (
+                {currentDetails?.milestones.map((milestone, index) => (
                   <div
                     key={index}
                     className={`flex gap-3 sm:gap-4 md:gap-6 p-3 sm:p-4 rounded-lg sm:rounded-xl border transition-all cursor-pointer ${
@@ -642,7 +691,7 @@ export default function CareerPathPage() {
                           index + 1
                         )}
                       </div>
-                      {index < currentDetails.milestones.length - 1 && (
+                      {index < currentDetails?.milestones.length - 1 && (
                         <div
                           className={`w-0.5 h-4 sm:h-6 md:h-8 mt-1 sm:mt-2 ${
                             isDark ? "bg-purple-500/20" : "bg-purple-300/20"
@@ -719,19 +768,12 @@ export default function CareerPathPage() {
 
                       {/* Action Buttons */}
                       <div className="flex items-center gap-2 sm:gap-3">
-                        <button className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
-                          <Play className="w-3 h-3 sm:w-4 sm:h-4" />
-                          Start Learning
-                        </button>
                         <button
-                          className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold transition-all flex items-center gap-1 sm:gap-2 text-xs sm:text-sm ${
-                            isDark
-                              ? "bg-slate-700 text-white hover:bg-slate-600"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                          }`}
+                          onClick={() => setShowResources(milestone)}
+                          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
                         >
                           <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" />
-                          Resources
+                          View Resources
                         </button>
                       </div>
                     </div>
@@ -758,7 +800,7 @@ export default function CareerPathPage() {
               </h3>
 
               <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
-                {currentDetails.jobOpportunities.map((job, index) => (
+                {currentDetails?.jobOpportunities.map((job, index) => (
                   <div
                     key={index}
                     className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border transition-all ${
@@ -788,6 +830,7 @@ export default function CareerPathPage() {
                       </span>
                     </div>
                     <button
+                      onClick={() => router.push(`/jobsearch?q=${job.role}`)}
                       className={`w-full mt-2 sm:mt-3 py-1.5 sm:py-2 rounded-lg font-semibold transition-all text-xs sm:text-sm ${
                         isDark
                           ? "bg-slate-700 text-white hover:bg-slate-600"
@@ -807,10 +850,10 @@ export default function CareerPathPage() {
           <SharedCTABanner
             isDark={isDark}
             className="rounded-[2rem] shadow-2xl"
-            title="Ready to Start Your Journey?"
+            title="Ready to Scale Your Career?"
             subtitle="Take our AI-powered assessment to get a personalized career path tailored to your skills and goals."
             primaryBtn={{
-              text: "Start Career Assessment",
+              text: "Start Learning",
               icon: (
                 <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
               ),
@@ -823,6 +866,101 @@ export default function CareerPathPage() {
           />
         </div>
       </div>
+
+      {/* Resources Modal */}
+      {showResources && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div
+            className={`w-full max-w-lg rounded-2xl border shadow-2xl p-6 transition-all ${isDark ? "bg-slate-900 border-purple-500/30 text-white" : "bg-white border-purple-200 text-gray-900"}`}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400">
+                  <BookOpen className="w-6 h-6" />
+                </div>
+                <h2 className="text-xl font-bold">
+                  {currentPath?.name} {showResources.title}
+                </h2>
+              </div>
+              <button
+                onClick={() => setShowResources(null)}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {showResources.resources_list &&
+              showResources.resources_list.length > 0 ? (
+                showResources.resources_list.map((res, i) => (
+                  <a
+                    key={i}
+                    href={res.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`block p-4 rounded-xl border transition-all flex items-center justify-between group ${isDark ? "bg-slate-800/50 border-white/5 hover:border-purple-500/50" : "bg-gray-50 border-gray-100 hover:border-purple-300"}`}
+                  >
+                    <div>
+                      <h4 className="font-bold text-sm">{res.name}</h4>
+                      <p className="text-xs text-gray-400">Official Link</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-purple-400 group-hover:translate-x-1 transition-all" />
+                  </a>
+                ))
+              ) : (
+                <div className="grid gap-3">
+                  <p className="text-xs text-center text-gray-500 mb-2">
+                    AI-provided links were not found for this roadmap. Use these
+                    smart search links instead:
+                  </p>
+                  {[
+                    {
+                      name: `Official ${currentPath?.name} ${showResources.title} Documentation`,
+                      url: `https://www.google.com/search?q=${currentPath?.name}+${showResources.title}+official+documentation`,
+                    },
+                    {
+                      name: `Watch ${currentPath?.name} ${showResources.title} Tutorials`,
+                      url: `https://www.youtube.com/results?search_query=${currentPath?.name}+${showResources.title}+tutorial`,
+                    },
+                    {
+                      name: `${currentPath?.name} Interactive Roadmap`,
+                      url: `https://roadmap.sh`,
+                    },
+                    {
+                      name: `Community Discussions (StackOverflow)`,
+                      url: `https://stackoverflow.com/questions/tagged/${currentPath?.name?.toLowerCase()?.replace(/\s+/g, "-")}`,
+                    },
+                  ].map((res, i) => (
+                    <a
+                      key={i}
+                      href={res.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={`block p-4 rounded-xl border transition-all flex items-center justify-between group ${isDark ? "bg-slate-800/50 border-white/5 hover:border-purple-500/50" : "bg-gray-50 border-gray-100 hover:border-purple-300"}`}
+                    >
+                      <div>
+                        <h4 className="font-bold text-sm">{res.name}</h4>
+                        <p className="text-xs text-purple-400">
+                          Dynamic Search Link
+                        </p>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-purple-400 group-hover:translate-x-1 transition-all" />
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => setShowResources(null)}
+              className="w-full mt-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold hover:shadow-lg transition-all"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
