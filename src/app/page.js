@@ -152,7 +152,7 @@ export default function UpSkaleAILanding() {
           </div>
 
           <h1 className="text-3xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight tracking-tight animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            UpSkaleAI bridges your <br />
+            UpSkaleAI turns your <br />
             <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
               learning into earning
             </span>
