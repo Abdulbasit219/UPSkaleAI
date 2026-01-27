@@ -54,7 +54,7 @@ const Page = () => {
 
   return (
     <div
-      className={`min-h-screen flex items-center justify-center p-4 pt-24 ${
+      className={`min-h-screen flex items-center justify-center p-4 ${
         isDark
           ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950"
           : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50"

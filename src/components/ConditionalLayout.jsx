@@ -9,7 +9,10 @@ export default function ConditionalLayout({ children }) {
   // Check if current path is admin dashboard or code-twin
   const isAdminRoute = pathname?.startsWith("/admin");
   const isCodeTwinRoute = pathname?.startsWith("/code-twin");
-  const hideLayout = isAdminRoute || isCodeTwinRoute;
+  const isLoginRoute = pathname?.startsWith("/sign-in");
+  const isSignupRoute = pathname?.startsWith("/signup");
+  const hideLayout =
+    isAdminRoute || isCodeTwinRoute || isLoginRoute || isSignupRoute;
 
   return (
     <>

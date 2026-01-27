@@ -108,7 +108,9 @@ const CodeTwinChat = ({
       );
     },
     strong: ({ children }) => (
-      <strong className="font-bold text-purple-600 dark:text-purple-400">
+      <strong
+        className={`font-bold ${isDark ? "text-purple-400" : "text-purple-600"}`}
+      >
         {children}
       </strong>
     ),
@@ -138,7 +140,9 @@ const CodeTwinChat = ({
               <div className="w-10 h-10 sm:w-14 h-14 bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg transform -rotate-3 hover:rotate-0 transition-all duration-300">
                 <Bot className="w-5 h-5 sm:w-8 h-8 text-white" />
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 border-2 border-white dark:border-slate-950 rounded-full animate-pulse shadow-sm"></div>
+              <div
+                className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 border-2 rounded-full animate-pulse shadow-sm ${isDark ? "border-slate-950" : "border-white"}`}
+              ></div>
             </div>
             <div>
               <h2
@@ -324,7 +328,7 @@ const CodeTwinChat = ({
                 >
                   {suggestion}
                 </button>
-              )
+              ),
             )}
           </div>
         </div>

@@ -57,7 +57,7 @@ const Page = () => {
 
   return (
     <div
-      className={`min-h-screen flex items-center justify-center p-4 pt-24 transition-colors duration-300 ${
+      className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-300 ${
         isDark
           ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950"
           : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50"
@@ -276,20 +276,15 @@ const Page = () => {
         </div>
 
         {/* Bottom Text */}
-        <p
-          className={`text-center text-xs mt-6 px-4 ${isDark ? "text-gray-500" : "text-gray-400"}`}
-        >
-          By signing in, you agree to our
-          <Link
-            href="/terms"
-            className="text-purple-400 hover:text-purple-300 transition-colors"
-          >
+        <p className="text-center text-xs mt-6 px-4 text-gray-400">
+          <span>By signing in, you agree to our </span>
+          <Link href="/terms" className="text-purple-400 hover:text-purple-300">
             Terms of Service
           </Link>
-          and
+          <span> and </span>
           <Link
             href="/privacy"
-            className="text-purple-400 hover:text-purple-300 transition-colors"
+            className="text-purple-400 hover:text-purple-300"
           >
             Privacy Policy
           </Link>

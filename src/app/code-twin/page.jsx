@@ -272,7 +272,7 @@ welcome();`);
 
   return (
     <div
-      className={`h-screen w-screen flex flex-col overflow-hidden relative ${isDark ? "bg-[#020617] text-white" : "bg-slate-50 text-slate-900"}`}
+      className={`h-screen w-screen flex flex-col overflow-hidden relative ${isDark ? "bg-[#020617] text-white dark" : "bg-slate-50 text-slate-900"}`}
     >
       {/* Background Underneath */}
       <BackgroundPattern />
@@ -309,24 +309,50 @@ welcome();`);
           </div>
 
           {/* Layout Controls - The "Switcher" */}
-          <div className="flex items-center gap-1 p-1 bg-slate-200/50 dark:bg-white/5 rounded-xl sm:rounded-2xl border border-slate-300/50 dark:border-white/5 shadow-inner">
+          <div
+            className={`flex items-center gap-1 p-1 rounded-xl sm:rounded-2xl border transition-all duration-500 ${isDark ? "bg-white/5 border-white/10 shadow-2xl shadow-black/20" : "bg-slate-200/50 border-slate-300/50 shadow-inner"}`}
+          >
             <button
               onClick={() => setFullscreenComp(null)}
-              className={`hidden md:flex px-4 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${!fullscreenComp ? "bg-white dark:bg-white/10 shadow-lg text-purple-600 dark:text-purple-400" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
+              className={`hidden md:flex px-4 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${
+                !fullscreenComp
+                  ? isDark
+                    ? "bg-white/10 shadow-[0_0_20px_rgba(168,85,247,0.15)] text-purple-400"
+                    : "bg-white shadow-lg text-purple-600"
+                  : isDark
+                    ? "text-slate-400 hover:text-white"
+                    : "text-slate-500 hover:text-slate-900"
+              }`}
             >
               <Layout className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden lg:inline">Split</span>
             </button>
             <button
               onClick={() => setFullscreenComp("editor")}
-              className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all flex items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${fullscreenComp === "editor" ? "bg-white dark:bg-white/10 shadow-lg text-purple-600 dark:text-purple-400" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
+              className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all flex items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${
+                fullscreenComp === "editor"
+                  ? isDark
+                    ? "bg-white/10 shadow-[0_0_20px_rgba(168,85,247,0.15)] text-purple-400"
+                    : "bg-white shadow-lg text-purple-600"
+                  : isDark
+                    ? "text-slate-400 hover:text-white"
+                    : "text-slate-500 hover:text-slate-900"
+              }`}
             >
               <PanelLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden lg:inline">Editor</span>
             </button>
             <button
               onClick={() => setFullscreenComp("chat")}
-              className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all flex items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${fullscreenComp === "chat" ? "bg-white dark:bg-white/10 shadow-lg text-purple-600 dark:text-purple-400" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
+              className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all flex items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${
+                fullscreenComp === "chat"
+                  ? isDark
+                    ? "bg-white/10 shadow-[0_0_20px_rgba(168,85,247,0.15)] text-purple-400"
+                    : "bg-white shadow-lg text-purple-600"
+                  : isDark
+                    ? "text-slate-400 hover:text-white"
+                    : "text-slate-500 hover:text-slate-900"
+              }`}
             >
               <PanelRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden lg:inline">Assistant</span>
@@ -344,7 +370,9 @@ welcome();`);
                 <Moon className="w-4 h-4 sm:w-5 sm:h-5" />
               )}
             </button>
-            <div className="w-px h-5 sm:h-6 bg-slate-200 dark:bg-white/10 hidden xs:block" />
+            <div
+              className={`w-px h-5 sm:h-6 hidden xs:block ${isDark ? "bg-white/10" : "bg-slate-200"}`}
+            />
             {status === "authenticated" ? (
               <div className="relative" ref={userDropdownRef}>
                 <button
@@ -423,7 +451,9 @@ welcome();`);
           ref={userDropdownRef}
           className={`fixed top-[3.75rem] sm:top-[4.25rem] right-4 sm:right-6 w-56 sm:w-64 backdrop-blur-3xl border rounded-2xl sm:rounded-[2rem] shadow-2xl py-2 sm:py-3 z-[10000] animate-in fade-in zoom-in-95 duration-200 ${isDark ? "bg-slate-950/90 border-white/10" : "bg-white/95 border-slate-200"}`}
         >
-          <div className="px-5 sm:px-6 py-3 sm:py-4 border-b dark:border-white/5 border-slate-100">
+          <div
+            className={`px-5 sm:px-6 py-3 sm:py-4 border-b border-slate-100 ${isDark ? "border-white/5" : "border-slate-100"}`}
+          >
             <p className="text-xs sm:text-sm font-black tracking-tight dark:text-white text-slate-900">
               {getUserDisplayName()}
             </p>
@@ -442,7 +472,9 @@ welcome();`);
                 {item.name}
               </Link>
             ))}
-            <div className="mx-4 sm:mx-6 my-2 sm:my-3 border-t dark:border-white/5 border-slate-100" />
+            <div
+              className={`mx-4 sm:mx-6 my-2 sm:my-3 border-t ${isDark ? "border-white/5" : "border-slate-100"}`}
+            />
             <button
               onClick={handleSignOut}
               className="w-[calc(100%-1.5rem)] sm:w-[calc(100%-2rem)] flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-xs font-black uppercase tracking-wider mx-3 sm:mx-4 rounded-xl sm:rounded-2xl text-red-500 hover:bg-red-500/10 transition-all font-bold"

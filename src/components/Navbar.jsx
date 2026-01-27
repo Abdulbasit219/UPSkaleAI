@@ -167,17 +167,17 @@ const Navbar = () => {
       icon: <Trophy className="w-4 h-4" />,
       description: "Test your skills",
     },
-    {
-      name: "Resume Builder",
-      href: "/resume-builder",
-      icon: <FileUser className="w-4 h-4" />,
-      description: "Build resume with AI",
-    },
+    // {
+    //   name: "Resume Builder",
+    //   href: "/resume-builder",
+    //   icon: <FileUser className="w-4 h-4" />,
+    //   description: "Build resume with AI",
+    // },
     {
       name: "Learning",
       href: "/learning",
       icon: <FileUser className="w-4 h-4" />,
-      description: "Build resume with AI",
+      description: "Learning resources",
     },
   ];
 
