@@ -34,10 +34,8 @@ export async function GET(req) {
       ? await UserCareerProgress.find({ userId: session.user._id }).lean()
       : [];
 
-    // 2. Fetch all available roadmap templates from DB
     const paths = await CareerRoadmap.find({}).lean();
 
-    // 3. Transform and Merge Progress
     let sanitizedPaths = paths.map((p) => {
       const myProgress = userProgress.find((up) => up.role_key === p.role_key);
       return {
@@ -48,7 +46,6 @@ export async function GET(req) {
       };
     });
 
-    // if DB is empty, provide starter defaults
     if (sanitizedPaths.length === 0) {
       sanitizedPaths = [
         {
@@ -111,7 +108,7 @@ export async function GET(req) {
 
     return NextResponse.json({ success: true, paths: sanitizedPaths });
   } catch (error) {
-    console.error("❌ CAREER API ERROR (GET):", error.message);
+    console.error(" CAREER API ERROR (GET):", error.message);
     return NextResponse.json({
       success: false,
       paths: [],
@@ -165,52 +162,104 @@ export async function POST(req) {
     const currentSkills = profile?.skills?.map((s) => s.skillName) || [];
 
     const prompt = `
-      You are an AI Career Advisor. Generate a structured career roadmap to become a "${targetRole}".
-      
-      USER CURRENT SKILLS: ${currentSkills.length > 0 ? currentSkills.join(", ") : "None listed"}
-      
-      Generate exactly 4-5 milestones representing the learning path.
-      Focus on the "Skill Gap" (what's missing between their current skills and the target role).
-      
-      CRITICAL: For EVERY milestone, you MUST provide exactly 3-4 REAL-WORLD, FUNCTIONAL documentation or tutorial URLs. 
-      - Prioritize official project sites (e.g., react.dev, nodejs.org, mdn.io).
-      - NEVER use placeholders like "https://..." or "https://example.com".
-      - Ensure the URL is specific to the milestone topic.
-      
-      RETURN ONLY A VALID JSON OBJECT. NO MARKDOWN. NO COMMENTS.
-      Format:
-      {
-        "role_key": "${role_key}",
-        "name": "${targetRole}",
-        "overview": "A brief professional summary",
-        "timeline": "Estimated duration (e.g. 6-8 months)",
-        "difficulty": "Beginner|Intermediate|Advanced",
-        "skills": ["Array of skills"],
-        "milestones": [
-          {
-            "title": "Module Name",
-            "duration": "Duration",
-            "progress": 0,
-            "skills": ["skill1", "skill2"],
-            "resources": 10,
-            "resources_list": [
-               { "name": "Google Maps SDK - Getting Started", "url": "https://developers.google.com/maps/documentation" },
-               { "name": "React Navigation - Native Stack Navigator", "url": "https://reactnavigation.org/docs/native-stack-navigator/" },
-               { "name": "MDN - Fetch API Guide", "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" }
-            ],
-            "completed": false
-          }
-        ],
-        "jobOpportunities": [
-          { "role": "Full Stack Engineer", "companies": 500, "avgSalary": "$95k" }
-        ],
-        "color": "from-purple-500 to-pink-500",
-        "popularity": 90
-      }
-    `;
+You are an expert AI Career Mentor inside an AI-powered career growth platform.
+
+Your responsibility is to generate a **personalized, realistic, and job-oriented career roadmap** for the target role provided.
+
+This roadmap will be used in a UI where:
+- Each milestone is clickable
+- Clicking a milestone opens a modal with a short explanation
+- Users are students, junior developers, or early-career professionals
+
+--------------------------------
+TARGET ROLE:
+"${targetRole}"
+
+USER CONTEXT:
+- Current Skills: ${currentSkills.length > 0 ? currentSkills.join(", ") : "Beginner / No formal skills"}
+- Experience Level: Student / Junior Developer
+- Goal: Become job-ready for the target role
+
+--------------------------------
+INSTRUCTIONS (CRITICAL):
+
+1. Generate **exactly 4–5 milestones** that represent clear career phases.
+2. Each milestone must:
+   - Close a real skill gap
+   - Be practical and industry-aligned
+   - Move the user closer to employability
+
+3. For EACH milestone:
+   - Title must be simple and beginner-friendly
+   - Duration must be realistic
+   - Skills must be concrete (no buzzwords)
+   - Explanation must be suitable for a modal:
+     Explain clearly:
+       • What to learn
+       • Why this step matters
+       • What practical actions to take
+       • How this helps in real jobs
+   - Do NOT provide full code solutions
+
+4. Learning Resources (STRICT):
+   - Provide exactly **3–4 REAL, WORKING URLs per milestone**
+   - Prefer:
+     • Official documentation
+     • Trusted platforms (MDN, React.dev, Node.js, Google)
+   - NO placeholders
+   - URLs must match the milestone topic
+
+5. Tone:
+   - Professional
+   - Encouraging
+   - Mentor-like
+   - Beginner-friendly
+   - Career-focused (not academic)
+
+--------------------------------
+OUTPUT RULES (MANDATORY):
+
+- Return ONLY valid JSON
+- No markdown
+- No comments
+- No extra text
+
+--------------------------------
+EXPECTED JSON FORMAT:
+
+{
+  "role_key": "${role_key}",
+  "name": "${targetRole}",
+  "overview": "A concise professional overview of this career path",
+  "timeline": "Estimated total time to become job-ready",
+  "difficulty": "Beginner | Intermediate | Advanced",
+  "skills": ["Key skill 1", "Key skill 2"],
+  "milestones": [
+    {
+      "title": "Milestone Title",
+      "duration": "X months",
+      "progress": 0,
+      "skills": ["Skill 1", "Skill 2"],
+      "resources": 3,
+      "resources_list": [
+        { "name": "Resource Name", "url": "https://real-link.com" }
+      ],
+      "completed": false
+    }
+  ],
+  "jobOpportunities": [
+    { "role": "Relevant Job Title", "companies": 300, "avgSalary": "$XXk" }
+  ],
+  "color": "from-purple-500 to-pink-500",
+  "popularity": 85,
+  "demand": "High",
+  "salary": "$80k - $120k",
+  "growth": "25%"
+}
+`;
 
     const result = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       contents: [{ text: prompt }],
     });
     const text = result.candidates[0].content.parts[0].text

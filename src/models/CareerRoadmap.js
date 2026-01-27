@@ -41,6 +41,9 @@ const CareerRoadmapSchema = new mongoose.Schema(
     ],
     color: String,
     popularity: Number,
+    demand: String,
+    salary: String,
+    growth: String,
   },
   { timestamps: true },
 );
