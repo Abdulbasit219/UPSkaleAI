@@ -259,7 +259,7 @@ EXPECTED JSON FORMAT:
 `;
 
     const result = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       contents: [{ text: prompt }],
     });
     const text = result.candidates[0].content.parts[0].text
