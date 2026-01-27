@@ -523,17 +523,6 @@ export default function CareerPathPage() {
                   )}
                   {isGenerating ? "Analyzing..." : "Get Personalized Path"}
                 </button>
-
-                {session && (
-                  <button
-                    onClick={() => {
-                      handleGeneratePath(currentPath?.name || "", true);
-                    }}
-                    className={`w-full mt-2 py-1.5 text-xs font-medium rounded-lg border transition-all ${isDark ? "border-white/10 text-gray-500 hover:text-white" : "border-gray-200 text-gray-400 hover:text-gray-900"}`}
-                  >
-                    Force Refresh AI Links
-                  </button>
-                )}
               </div>
             </div>
 
