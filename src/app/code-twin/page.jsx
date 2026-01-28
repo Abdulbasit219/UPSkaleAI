@@ -28,6 +28,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "@/store/slices/themeSlice";
 import BackgroundPattern from "@/components/ui/BackgroundPattern";
+import Spotlight from "@/components/ui/Spotlight";
 
 // Components
 import CodeEditor from "@/components/code-twin/CodeEditor";
@@ -272,135 +273,135 @@ welcome();`);
 
   return (
     <div
-      className={`h-screen w-screen flex flex-col overflow-hidden relative ${isDark ? "bg-[#020617] text-white dark" : "bg-slate-50 text-slate-900"}`}
+      className={`h-screen w-screen flex flex-col overflow-hidden relative ${isDark ? "bg-[#020617] text-white" : "bg-slate-50 text-slate-900"}`}
     >
-      {/* Background Underneath */}
-      <BackgroundPattern />
-      <div className="absolute top-0 left-0 w-[50%] h-[50%] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none z-0" />
-      <div className="absolute bottom-0 right-0 w-[50%] h-[50%] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none z-0" />
+      {/* Background Effects */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <BackgroundPattern />
+        <div
+          className={`absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] opacity-30 ${isDark ? "bg-purple-900/20" : "bg-purple-500/10"} blur-[100px]`}
+        />
+      </div>
 
-      {/* Nav as first child of flex-col to force visibility */}
+      {/* IDE Navbar */}
       <nav
-        className={`w-full shrink-0 h-14 sm:h-16 border-b z-[9999] transition-all duration-500 backdrop-blur-3xl relative top-0 ${isDark ? "bg-slate-950/80 border-white/5 shadow-2xl shadow-black/20" : "bg-white/95 border-slate-200 shadow-sm"}`}
+        className={`w-full shrink-0 h-16 border-b z-50 transition-all duration-300 backdrop-blur-xl ${
+          isDark
+            ? "bg-slate-950/80 border-white/5"
+            : "bg-white/80 border-slate-200"
+        }`}
       >
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-2 sm:gap-6">
-          {/* Brand Section */}
-          <div className="flex items-center gap-2 sm:gap-6">
-            <button
-              onClick={() => router.push("/")}
-              className={`p-2 sm:p-2.5 rounded-xl sm:rounded-2xl transition-all border ${isDark ? "bg-white/5 border-white/5 text-slate-400 hover:text-white" : "bg-white border-slate-200 text-slate-500 hover:text-slate-900 shadow-sm"}`}
+        <div className="h-full px-4 sm:px-6 flex items-center justify-between">
+          {/* Left: Brand & Back */}
+          <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              className={`p-2 rounded-xl transition-all ${
+                isDark
+                  ? "hover:bg-white/10 text-slate-400 hover:text-white"
+                  : "hover:bg-slate-100 text-slate-500 hover:text-slate-900"
+              }`}
             >
-              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
-            <div className="flex items-center gap-2 sm:gap-4 group cursor-default">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] transform group-hover:rotate-6 transition-all duration-500">
-                <Code2 className="w-4 h-4 sm:w-6 sm:h-6" />
+              <ChevronLeft className="w-5 h-5" />
+            </Link>
+
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                <Code2 className="w-5 h-5 text-white" />
               </div>
-              <div className="hidden xs:block">
-                <h1 className="text-[10px] sm:text-sm font-black tracking-tighter uppercase">
+              <div className="hidden sm:block">
+                <h1 className="text-sm font-bold tracking-tight">
                   CodeTwin IDE
                 </h1>
-                <div className="hidden sm:flex items-center gap-2 text-[8px] sm:text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-0.5">
-                  <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                  Cloud Sync Active
+                <div className="flex items-center gap-1.5">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                  </span>
+                  <span className="text-[10px] font-medium text-emerald-500 uppercase tracking-wider">
+                    Online
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Layout Controls - The "Switcher" */}
+          {/* Center: View Controls */}
           <div
-            className={`flex items-center gap-1 p-1 rounded-xl sm:rounded-2xl border transition-all duration-500 ${isDark ? "bg-white/5 border-white/10 shadow-2xl shadow-black/20" : "bg-slate-200/50 border-slate-300/50 shadow-inner"}`}
+            className={`flex items-center p-1 rounded-xl border ${
+              isDark
+                ? "bg-slate-900/50 border-white/5"
+                : "bg-slate-100/50 border-slate-200"
+            }`}
           >
-            <button
-              onClick={() => setFullscreenComp(null)}
-              className={`hidden md:flex px-4 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${
-                !fullscreenComp
-                  ? isDark
-                    ? "bg-white/10 shadow-[0_0_20px_rgba(168,85,247,0.15)] text-purple-400"
-                    : "bg-white shadow-lg text-purple-600"
-                  : isDark
-                    ? "text-slate-400 hover:text-white"
-                    : "text-slate-500 hover:text-slate-900"
-              }`}
-            >
-              <Layout className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="hidden lg:inline">Split</span>
-            </button>
-            <button
-              onClick={() => setFullscreenComp("editor")}
-              className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all flex items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${
-                fullscreenComp === "editor"
-                  ? isDark
-                    ? "bg-white/10 shadow-[0_0_20px_rgba(168,85,247,0.15)] text-purple-400"
-                    : "bg-white shadow-lg text-purple-600"
-                  : isDark
-                    ? "text-slate-400 hover:text-white"
-                    : "text-slate-500 hover:text-slate-900"
-              }`}
-            >
-              <PanelLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="hidden lg:inline">Editor</span>
-            </button>
-            <button
-              onClick={() => setFullscreenComp("chat")}
-              className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all flex items-center gap-2 text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${
-                fullscreenComp === "chat"
-                  ? isDark
-                    ? "bg-white/10 shadow-[0_0_20px_rgba(168,85,247,0.15)] text-purple-400"
-                    : "bg-white shadow-lg text-purple-600"
-                  : isDark
-                    ? "text-slate-400 hover:text-white"
-                    : "text-slate-500 hover:text-slate-900"
-              }`}
-            >
-              <PanelRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="hidden lg:inline">Assistant</span>
-            </button>
+            {[
+              { id: "editor", icon: PanelLeft, label: "Editor" },
+              { id: null, icon: Layout, label: "Split", mobileHide: true },
+              { id: "chat", icon: PanelRight, label: "Chat" },
+            ].map((view) => (
+              <button
+                key={view.id || "split"}
+                onClick={() => setFullscreenComp(view.id)}
+                className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  fullscreenComp === view.id
+                    ? isDark
+                      ? "bg-white/10 text-white shadow-sm"
+                      : "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                } ${view.mobileHide ? "hidden md:flex" : "flex"}`}
+              >
+                <view.icon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                <span className="hidden sm:inline">{view.label}</span>
+              </button>
+            ))}
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4">
+          {/* Right: Actions */}
+          <div className="flex items-center gap-3">
             <button
               onClick={() => dispatch(toggleTheme())}
-              className={`p-2 sm:p-2.5 rounded-xl sm:rounded-2xl transition-all border ${isDark ? "bg-white/5 border-white/5 text-yellow-500" : "bg-white border-slate-200 text-purple-600 shadow-sm"}`}
+              className={`p-2 rounded-lg transition-all ${
+                isDark
+                  ? "hover:bg-white/10 text-slate-400"
+                  : "hover:bg-slate-100 text-slate-500"
+              }`}
             >
               {isDark ? (
-                <Sun className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Sun className="w-5 h-5" />
               ) : (
-                <Moon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Moon className="w-5 h-5" />
               )}
             </button>
+
             <div
-              className={`w-px h-5 sm:h-6 hidden xs:block ${isDark ? "bg-white/10" : "bg-slate-200"}`}
+              className={`h-6 w-px ${isDark ? "bg-white/10" : "bg-slate-200"}`}
             />
+
             {status === "authenticated" ? (
-              <div className="relative" ref={userDropdownRef}>
-                <button
-                  ref={userButtonRef}
-                  onClick={toggleUserDropdown}
-                  className="flex items-center gap-1 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all p-0.5"
-                >
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-2xl bg-gradient-to-tr from-purple-500 to-pink-500 p-[1.5px]">
-                    <div className="w-full h-full rounded-[6px] sm:rounded-[14px] bg-slate-950 flex items-center justify-center overflow-hidden">
-                      {session.user?.image ? (
-                        <img
-                          src={session.user.image}
-                          alt="Profile"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-white text-[10px] sm:text-sm font-black">
-                          {getUserDisplayName().substring(0, 1).toUpperCase()}
-                        </span>
-                      )}
-                    </div>
+              <button
+                onClick={toggleUserDropdown}
+                className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-transparent hover:border-purple-500/20 transition-all"
+              >
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 p-[2px]">
+                  <div className="w-full h-full rounded-full bg-slate-950 overflow-hidden">
+                    {session.user?.image ? (
+                      <img
+                        src={session.user.image}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-xs font-bold text-white">
+                        {getUserDisplayName().charAt(0)}
+                      </div>
+                    )}
                   </div>
-                </button>
-              </div>
+                </div>
+              </button>
             ) : (
               <Link
                 href="/sign-in"
-                className="px-4 sm:px-6 py-1.5 sm:py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg sm:rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-xl shadow-purple-500/20 hover:scale-105 active:scale-95 transition-all"
+                className="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-lg transition-colors"
               >
                 Sign In
               </Link>
