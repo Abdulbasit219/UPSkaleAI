@@ -11,6 +11,7 @@ import {
   Plus,
 } from "lucide-react";
 import { useSelector } from "react-redux";
+import Spotlight from "@/components/ui/Spotlight";
 import BackgroundPattern from "@/components/ui/BackgroundPattern";
 import { jobsApi } from "@/lib/api.config";
 
@@ -109,38 +110,42 @@ export default function UpSkaleAIJobs() {
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
-        isDark
-          ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white"
-          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50 text-gray-900"
+        isDark ? "bg-slate-950 text-white" : "bg-slate-50 text-gray-900"
       }`}
     >
       {/* Background Pattern */}
       <BackgroundPattern />
 
+      {/* Spotlight Effect */}
+      <Spotlight
+        className="-top-40 left-0 md:left-60 md:-top-20"
+        fill={isDark ? "white" : "#a855f7"}
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10 pt-28 sm:pt-36">
         {/* Header Section */}
-        <div className="text-center mb-16 space-y-4">
+        <div className="text-center mb-16 space-y-6">
           <div
-            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border mb-4 ${isDark ? "bg-purple-500/20 border-purple-500/30 text-purple-200" : "bg-purple-100 border-purple-200 text-purple-700"}`}
+            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border mb-4 backdrop-blur-md animate-in fade-in slide-in-from-bottom-4 duration-1000 ${isDark ? "bg-purple-500/10 border-purple-500/20 text-purple-300" : "bg-white/80 border-purple-200 text-purple-700 shadow-sm"}`}
           >
-            <Sparkles className="w-4 h-4 text-yellow-500" />
-            <span className="text-sm font-semibold">
+            <Sparkles className="w-4 h-4 text-purple-500" />
+            <span className="text-xs font-bold uppercase tracking-widest">
               AI-Powered Job Matching
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-bold leading-tight tracking-tight">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black leading-tight tracking-tight animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
             Find your next <br />
-            <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
-              career bridge
+            <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 bg-clip-text text-transparent animate-gradient-x">
+              career breakthrough
             </span>
           </h1>
 
           <p
-            className={`text-lg max-w-2xl mx-auto leading-relaxed mb-6 ${isDark ? "text-gray-400" : "text-gray-600"}`}
+            className={`text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-8 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200 ${isDark ? "text-slate-400" : "text-slate-600"}`}
           >
-            Discover opportunities that match your verified skills, powered by
-            neural matching intelligence.
+            Stop searching, start matching. Our neural engine connects your
+            verified skills directly with top-tier opportunities.
           </p>
 
           <button

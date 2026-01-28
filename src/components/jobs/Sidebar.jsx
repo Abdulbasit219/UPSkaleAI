@@ -108,7 +108,9 @@ const Sidebar = ({ isDark, featuredCompanies, savedJobs }) => (
                 {company.logo}
               </div>
               <div>
-                <div className="text-sm font-bold text-gray-900 dark:text-white">
+                <div
+                  className={`text-sm font-bold ${isDark ? "text-white" : "text-gray-900"}`}
+                >
                   {company.name}
                 </div>
                 <div className="text-xs text-gray-400">

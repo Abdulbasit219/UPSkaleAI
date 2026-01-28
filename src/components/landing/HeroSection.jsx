@@ -18,7 +18,7 @@ export default function HeroSection() {
 
   return (
     <div
-      className={`relative w-full mt-5 overflow-hidden min-h-[90vh] flex flex-col items-center justify-center ${
+      className={`relative w-full  overflow-hidden min-h-[90vh] flex flex-col items-center justify-center ${
         isDark ? "bg-slate-950" : "bg-white"
       }`}
     >
