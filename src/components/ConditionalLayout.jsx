@@ -2,6 +2,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import CodeTwinWidget from "./code-twin/CodeTwinWidget";
 
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
@@ -18,6 +19,7 @@ export default function ConditionalLayout({ children }) {
     <>
       {!hideLayout && <Navbar />}
       {children}
+      <CodeTwinWidget />
       {!hideLayout && <Footer />}
     </>
   );
