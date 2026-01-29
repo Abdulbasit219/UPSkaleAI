@@ -56,8 +56,16 @@ const CourseSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    totalLessons: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    strict: true,
+  }
 );
 
 // Indexes

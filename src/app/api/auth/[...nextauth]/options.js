@@ -75,14 +75,14 @@ export const authOptions = {
 
           existingUser = await AuthUser.create({
             email: user.email,
-            username: username,
+            username,
             name: user.name,
             isVerified: true,
             role: "Job Seeker",
             isOAuth: true,
             password: "",
             verifyCode: "000000",
-            verifyCodeExpiry: new Date()
+            verifyCodeExpiry: new Date(),
           });
 
           await UserProfile.create({
@@ -96,6 +96,7 @@ export const authOptions = {
         }
 
         user._id = existingUser._id;
+        user.username = existingUser.username;
         user.role = existingUser.role;
         user.isAdmin = existingUser.isAdmin;
         user.isVerified = true;

@@ -48,7 +48,6 @@ const Navbar = () => {
   const userButtonRef = useRef(null);
 
   const { data: session, status } = useSession();
-  const user = session?.user;
 
   // Redux theme
   const dispatch = useDispatch();
@@ -176,8 +175,8 @@ const Navbar = () => {
     {
       name: "Learning",
       href: "/learning",
-      icon: <FileUser className="w-4 h-4" />,
-      description: "Build resume with AI",
+      icon: <BookOpen className="w-4 h-4" />,
+      description: "Smart courses & skill building",
     },
   ];
 
@@ -313,7 +312,7 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed w-full z-50 transition-all duration-500 ${
+        className={`fixed w-full z-[100] transition-all duration-500 ${
           scrolled
             ? isDark
               ? "bg-slate-950/95 backdrop-blur-xl shadow-2xl shadow-purple-500/20"

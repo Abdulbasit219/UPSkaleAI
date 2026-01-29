@@ -64,33 +64,38 @@ export async function POST(request) {
   try {
     await connectDB();
 
-    // const session = await getServerSession(authOptions);
-    // if (!session) {
-    //   return NextResponse.json(
-    //     { success: false, message: "Unauthorized" },
-    //     { status: 401 }
-    //   );
-    // }
-
     const body = await request.json();
-    
+
     const {
       title,
       description,
       category,
       difficulty,
+      skills,
       tags,
       estimatedTime,
       prerequisites,
       isPublished,
       author,
+      totalLessons,
     } = body;
 
-    if (!title || !description || !category) {
+    if (!title || !description || !category || !totalLessons) {
       return NextResponse.json(
         {
           success: false,
-          message: "Title, description, and category are required",
+          message:
+            "Title, description, category, and totalLessons are required",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!Number.isInteger(totalLessons) || totalLessons < 1) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Total lessons must be a positive integer (minimum 1)",
         },
         { status: 400 }
       );
@@ -118,13 +123,17 @@ export async function POST(request) {
       description,
       category,
       difficulty: difficulty || "Beginner",
+      skills: skills || [],
       tags: tags || [],
       estimatedTime: estimatedTime || "2 hours",
       prerequisites: prerequisites || [],
       isPublished: isPublished || false,
-      author: author, 
+      author: author,
+      totalLessons,
     });
-    
+
+    console.log(totalLessons)
+
     return NextResponse.json(
       {
         success: true,

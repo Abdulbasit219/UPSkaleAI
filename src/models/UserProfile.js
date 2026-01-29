@@ -32,6 +32,29 @@ const RecentActivitySchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
 });
 
+const ExperienceSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  company: { type: String, required: true },
+  location: { type: String, default: "" },
+  startDate: { type: String, required: true },
+  endDate: { type: String, default: "" },
+  current: { type: Boolean, default: false },
+  description: { type: String, default: "" },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const EducationSchema = new mongoose.Schema({
+  institution: { type: String, required: true },
+  degree: { type: String, required: true },
+  fieldOfStudy: { type: String, default: "" },
+  startDate: { type: String, required: true },
+  endDate: { type: String, default: "" },
+  current: { type: Boolean, default: false },
+  grade: { type: String, default: "" },
+  description: { type: String, default: "" },
+  createdAt: { type: Date, default: Date.now },
+});
+
 const UserProfileSchema = new mongoose.Schema(
   {
     userId: {
@@ -55,6 +78,8 @@ const UserProfileSchema = new mongoose.Schema(
       default: {},
     },
 
+    experience: { type: [ExperienceSchema], default: [] },
+    education: { type: [EducationSchema], default: [] },
     // projects
     projects: { type: [ProjectSchema], default: [] },
 
@@ -90,7 +115,7 @@ const UserProfileSchema = new mongoose.Schema(
           ref: "AuthUser",
         },
         date: {
-          type: String, 
+          type: String,
         },
       },
     ],

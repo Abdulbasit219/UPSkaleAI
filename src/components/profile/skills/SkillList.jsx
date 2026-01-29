@@ -33,7 +33,7 @@ const SkillList = ({ isDark, handleAddSkill, skills }) => {
               : "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200"
           }`}
         >
-          <Plus size={16} /> Add Skill
+          <Plus size={16} /> Add
         </button>
       </div>
 
