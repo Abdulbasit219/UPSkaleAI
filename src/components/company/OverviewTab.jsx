@@ -7,11 +7,13 @@ import {
   Users,
   TrendingUp,
   Clock,
+  MessageCircle,
 } from "lucide-react";
+import Link from "next/link";
 
 const OverviewTab = ({ isDark, onPostJob, onViewApplications }) => {
   const [recentApplications, setRecentApplications] = useState([]);
-  
+
   useEffect(() => {
     const fetchApplications = async () => {
       try {
@@ -57,7 +59,7 @@ const OverviewTab = ({ isDark, onPostJob, onViewApplications }) => {
         >
           Quick Actions 🚀
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <button
             onClick={onPostJob}
             className="group p-6 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 text-left"
@@ -70,7 +72,7 @@ const OverviewTab = ({ isDark, onPostJob, onViewApplications }) => {
             <h3 className="font-bold text-lg mb-1">Post New Job</h3>
             <p className="text-purple-100 text-sm">Create a new job listing</p>
           </button>
-          
+
           <button
             onClick={onViewApplications}
             className={`group p-6 rounded-xl border text-left transition-all duration-300 hover:scale-105 ${
@@ -80,18 +82,22 @@ const OverviewTab = ({ isDark, onPostJob, onViewApplications }) => {
             }`}
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className={`p-2 rounded-lg ${
-                isDark ? "bg-blue-500/20" : "bg-blue-500/10"
-              }`}>
+              <div
+                className={`p-2 rounded-lg ${
+                  isDark ? "bg-blue-500/20" : "bg-blue-500/10"
+                }`}
+              >
                 <FileText className="w-5 h-5 text-blue-500" />
               </div>
             </div>
             <h3 className="font-bold text-lg mb-1">Review Applications</h3>
-            <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+            <p
+              className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+            >
               View all applications
             </p>
           </button>
-          
+
           <button
             className={`group p-6 rounded-xl border text-left transition-all duration-300 hover:scale-105 ${
               isDark
@@ -100,17 +106,45 @@ const OverviewTab = ({ isDark, onPostJob, onViewApplications }) => {
             }`}
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className={`p-2 rounded-lg ${
-                isDark ? "bg-green-500/20" : "bg-green-500/10"
-              }`}>
+              <div
+                className={`p-2 rounded-lg ${
+                  isDark ? "bg-green-500/20" : "bg-green-500/10"
+                }`}
+              >
                 <BarChart3 className="w-5 h-5 text-green-500" />
               </div>
             </div>
             <h3 className="font-bold text-lg mb-1">View Analytics</h3>
-            <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+            <p
+              className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+            >
               Performance insights
             </p>
           </button>
+          <Link
+            href="/chat"
+            className={`group p-6 rounded-xl border text-left transition-all duration-300 hover:scale-105 ${
+              isDark
+                ? "bg-slate-800/50 border-purple-500/30 text-white hover:bg-slate-700/50"
+                : "bg-white border-purple-300/30 text-gray-900 hover:bg-gray-50"
+            }`}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className={`p-2 rounded-lg ${
+                  isDark ? "bg-pink-500/20" : "bg-pink-500/10"
+                }`}
+              >
+                <MessageCircle className="w-5 h-5 text-pink-500" />
+              </div>
+            </div>
+            <h3 className="font-bold text-lg mb-1">Messages</h3>
+            <p
+              className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+            >
+              Chat with candidates
+            </p>
+          </Link>
         </div>
       </div>
 
@@ -133,13 +167,15 @@ const OverviewTab = ({ isDark, onPostJob, onViewApplications }) => {
           <button
             onClick={onViewApplications}
             className={`text-sm font-semibold ${
-              isDark ? "text-purple-400 hover:text-purple-300" : "text-purple-600 hover:text-purple-700"
+              isDark
+                ? "text-purple-400 hover:text-purple-300"
+                : "text-purple-600 hover:text-purple-700"
             } transition-colors`}
           >
             View All →
           </button>
         </div>
-        
+
         <div className="space-y-4">
           {recentApplications.length > 0 ? (
             recentApplications.map((app) => (
@@ -154,7 +190,11 @@ const OverviewTab = ({ isDark, onPostJob, onViewApplications }) => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm">
-                      {app.user?.name ? app.user.name.substring(0, 2).toUpperCase() : (app.user?.username ? app.user.username.substring(0, 2).toUpperCase() : "??")}
+                      {app.user?.name
+                        ? app.user.name.substring(0, 2).toUpperCase()
+                        : app.user?.username
+                          ? app.user.username.substring(0, 2).toUpperCase()
+                          : "??"}
                     </div>
                     <div>
                       <h3
@@ -176,20 +216,26 @@ const OverviewTab = ({ isDark, onPostJob, onViewApplications }) => {
                   <div className="flex items-center gap-4">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                        app.status
+                        app.status,
                       )}`}
                     >
                       {app.status}
                     </span>
-                    <div className={`text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>
-                      {new Date(app.createdAt || app.appliedAt).toLocaleDateString()}
+                    <div
+                      className={`text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}
+                    >
+                      {new Date(
+                        app.createdAt || app.appliedAt,
+                      ).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className={`text-center py-8 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+            <div
+              className={`text-center py-8 ${isDark ? "text-gray-400" : "text-gray-600"}`}
+            >
               <div className="text-4xl mb-3">📭</div>
               <p>No recent applications found.</p>
             </div>

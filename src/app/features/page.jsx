@@ -255,7 +255,7 @@ export default function FeaturesPage() {
       role: "Full-Stack Developer",
       company: "TechSolutions Inc.",
       content:
-        "SkillBridge helped me transition from marketing to tech in 6 months. The AI roadmap was incredibly accurate!",
+        "UpSkaleAI helped me transition from marketing to tech in 6 months. The AI roadmap was incredibly accurate!",
       avatar: "SC",
       rating: 5,
     },
@@ -349,7 +349,7 @@ export default function FeaturesPage() {
               isDark ? "text-gray-400" : "text-gray-600"
             }`}
           >
-            Discover how SkillBridge's AI-powered platform transforms your
+            Discover how UpSkaleAI's AI-powered platform transforms your
             learning journey and accelerates your career growth
           </p>
 
@@ -502,8 +502,8 @@ export default function FeaturesPage() {
                 isDark ? "text-gray-400" : "text-gray-600"
               }`}
             >
-              See how SkillBridge has transformed careers and accelerated
-              learning journeys
+              See how UpSkaleAI has transformed careers and accelerated learning
+              journeys
             </p>
           </div>
 
@@ -575,7 +575,7 @@ export default function FeaturesPage() {
             isDark={isDark}
             className="rounded-[2rem] shadow-2xl"
             title="Ready to Experience These Features?"
-            subtitle="Join thousands of learners who are already accelerating their careers with SkillBridge's powerful platform."
+            subtitle="Join thousands of learners who are already accelerating their careers with UpSkaleAI's powerful platform."
             primaryBtn={{
               text: "Start Free Trial",
               icon: (

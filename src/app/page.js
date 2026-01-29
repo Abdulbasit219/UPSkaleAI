@@ -31,12 +31,13 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import SharedCTABanner from "@/components/ui/CTABanner";
 import BackgroundPattern from "@/components/ui/BackgroundPattern";
+import HeroSection from "@/components/landing/HeroSection";
 import { fetchProfile } from "@/store/slices/profileSlice";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import Link from "next/link";
 
-export default function SkillBridgeLanding() {
+export default function UpSkaleAILanding() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const themeMode = useSelector((state) => state.theme.mode);
@@ -100,7 +101,7 @@ export default function SkillBridgeLanding() {
     },
     {
       icon: <Briefcase className="w-6 h-6" />,
-      title: "Opportunity Bridge",
+      title: "Upscale Opportunities",
       description:
         "Connect with internships and global job roles matched perfectly to your skill level.",
       color: "from-emerald-500 to-teal-500",
@@ -132,76 +133,8 @@ export default function SkillBridgeLanding() {
       {/* Background Pattern */}
       <BackgroundPattern />
 
-      {/* Hero Spotlight Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-600/20 blur-[120px] rounded-full animate-pulse" />
-        <div className="absolute top-[10%] left-[20%] w-[300px] h-[300px] bg-pink-500/10 blur-[100px] rounded-full" />
-        <div className="absolute top-[15%] right-[20%] w-[350px] h-[350px] bg-indigo-500/10 blur-[110px] rounded-full" />
-      </div>
-
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 z-10 overflow-hidden">
-        <div className="max-w-7xl mx-auto text-center">
-          <div
-            className={`inline-flex items-center gap-2 px-4 py-2 border rounded-full mb-8 animate-in fade-in slide-in-from-top-4 duration-700 ${isDark ? "bg-purple-500/20 border-purple-500/30 text-purple-200" : "bg-purple-100 border-purple-200 text-purple-700 shadow-sm"}`}
-          >
-            <Zap className="w-4 h-4 text-yellow-500" />
-            <span className="text-sm font-semibold">
-              AI-Powered Career Growth Platform
-            </span>
-          </div>
-
-          <h1 className="text-3xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight tracking-tight animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            Bridge the gap between <br />
-            <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
-              learning and earning
-            </span>
-          </h1>
-
-          <p
-            className={`text-lg sm:text-xl mb-12 max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200 ${isDark ? "text-gray-400" : "text-gray-600"}`}
-          >
-            Your personal AI career counselor that guides you from learning to
-            practice to employment. Discover trending skills, learn efficiently,
-            and become job-ready.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
-            <Link
-              href="/signup"
-              className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl font-bold text-lg text-white hover:shadow-xl hover:shadow-purple-500/40 transition-all flex items-center gap-2"
-            >
-              Start Your Journey
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              href="#features"
-              className={`px-8 py-4 border rounded-2xl font-bold text-lg transition-all ${isDark ? "border-white/10 hover:bg-white/5 text-white" : "border-gray-200 hover:bg-gray-100 text-gray-900 shadow-sm"}`}
-            >
-              Explore Platform
-            </Link>
-          </div>
-
-          {/* Stats Bar */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 max-w-5xl mx-auto px-2 md:px-0">
-            {stats.map((stat, idx) => (
-              <div
-                key={idx}
-                className={`p-4 md:p-6 rounded-3xl border backdrop-blur-sm transition-all hover:-translate-y-1 ${isDark ? "bg-slate-900/50 border-white/5" : "bg-white border-gray-100 shadow-sm"}`}
-              >
-                <div className="text-2xl md:text-3xl font-bold text-purple-500 mb-1">
-                  {stat.value}
-                </div>
-                <div
-                  className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${isDark ? "text-gray-500" : "text-gray-400"}`}
-                >
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Hero Section  */}
+      <HeroSection />
 
       {/* Features Grid */}
       <section
@@ -277,8 +210,8 @@ export default function SkillBridgeLanding() {
               className={`text-lg max-w-2xl mx-auto ${isDark ? "text-gray-400" : "text-gray-600"} font-medium`}
             >
               The first truly integrated AI career ecosystem. Each tool is
-              designed to talk to the others, creating a seamless bridge from
-              your first line of code to your dream office.
+              designed to talk to the others, creating a seamless path from your
+              first line of code to your dream office.
             </p>
           </div>
 
@@ -566,7 +499,7 @@ export default function SkillBridgeLanding() {
             <div className="flex-1 space-y-8 text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 text-xs font-bold uppercase tracking-widest">
                 <Briefcase className="w-4 h-4" />
-                New: Opportunity Bridge
+                New: Upscale Opportunities
               </div>
               <h2 className="text-3xl sm:text-5xl font-bold leading-tight">
                 Find your dream job <br />

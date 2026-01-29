@@ -1,4 +1,4 @@
-This repository contains the Python backend microservices for the SkillBridge project.
+This repository contains the Python backend microservices for the UpSkaleAI project.
 
 ## Services
 
@@ -18,17 +18,18 @@ This repository contains the Python backend microservices for the SkillBridge pr
 
 ```bash
 docker-compose up --build
-````
+```
 
 3. Endpoints:
 
-* AI Service: [http://localhost:8001](http://localhost:8001)
-* Resume Service: [http://localhost:8002](http://localhost:8002)
-* Recommender Service: [http://localhost:8003](http://localhost:8003)
+- AI Service: [http://localhost:8001](http://localhost:8001)
+- Resume Service: [http://localhost:8002](http://localhost:8002)
+- Recommender Service: [http://localhost:8003](http://localhost:8003)
 
 ## Development
 
 For local development without Docker, create a virtualenv inside each service and run `uvicorn main:app --reload --port <PORT>`.
 
 ```
+
 ```

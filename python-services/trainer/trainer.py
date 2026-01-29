@@ -2,7 +2,7 @@ import os
 
 
 client = MongoClient(os.getenv('MONGODB_URL', 'mongodb://mongo:27017'))
-db = client.skillbridge
+db = client.upskaleai
 
 
 MODEL_OUT = os.getenv('RECOMMENDER_MODEL_PATH', '/data/models/recommender.pkl')

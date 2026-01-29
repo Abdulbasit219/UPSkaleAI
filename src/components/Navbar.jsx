@@ -166,12 +166,12 @@ const Navbar = () => {
       icon: <Trophy className="w-4 h-4" />,
       description: "Test your skills",
     },
-    {
-      name: "Resume Builder",
-      href: "/resume-builder",
-      icon: <FileUser className="w-4 h-4" />,
-      description: "Build resume with AI",
-    },
+    // {
+    //   name: "Resume Builder",
+    //   href: "/resume-builder",
+    //   icon: <FileUser className="w-4 h-4" />,
+    //   description: "Build resume with AI",
+    // },
     {
       name: "Learning",
       href: "/learning",
@@ -272,7 +272,7 @@ const Navbar = () => {
     const mainNavHrefs = mainNavItems.map((item) => item.href);
     return resourcesItems.some(
       (item) =>
-        pathname.startsWith(item.href) && !mainNavHrefs.includes(item.href)
+        pathname.startsWith(item.href) && !mainNavHrefs.includes(item.href),
     );
   };
 
@@ -332,24 +332,26 @@ const Navbar = () => {
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-3 group relative"
+              className="flex items-center gap-2.5 group"
               onClick={() => setIsMenuOpen(false)}
             >
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-purple-500/30">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <div className="absolute -inset-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl opacity-0 group-hover:opacity-30 blur transition-opacity duration-500"></div>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  SkillBridge
-                </span>
-                <span
-                  className={`text-xs -mt-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-tr from-purple-600 to-pink-600 rounded-xl blur-[2px] opacity-70 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div
+                  className={`relative w-full h-full rounded-xl flex items-center justify-center border backdrop-blur-sm transition-all duration-300 ${
+                    isDark
+                      ? "bg-slate-900/90 border-white/10 group-hover:border-purple-500/50"
+                      : "bg-white/90 border-slate-200 group-hover:border-purple-500/50"
+                  }`}
                 >
-                  Learn • Earn • Grow
+                  <Sparkles className="w-5 h-5 text-purple-500 fill-purple-500/20" />
+                </div>
+              </div>
+              <div className="font-bold text-xl tracking-tight leading-none">
+                <span className={isDark ? "text-white" : "text-slate-900"}>
+                  UpSkale
                 </span>
+                <span className="text-purple-500">AI</span>
               </div>
             </Link>
 
@@ -439,7 +441,7 @@ const Navbar = () => {
                         <p
                           className={`text-xs font-semibold uppercase tracking-wider ${isDark ? "text-purple-300" : "text-purple-600"}`}
                         >
-                          SkillBridge Tools
+                          UpSkaleAI Tools
                         </p>
                       </div>
                       <div className="grid grid-cols-1 gap-1 px-2">

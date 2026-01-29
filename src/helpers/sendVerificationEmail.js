@@ -6,7 +6,7 @@ export async function sendVerificationEmail(email, username, verifyCode) {
     const emailHtml = VerificationEmailTemplate(username, verifyCode);
 
     await transporter.sendMail({
-      from: `"UpScaleAI" <${process.env.EMAIL_USER}>`,
+      from: `"UpSkaleAI" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "AI Coding Assistant Verification Code",
       html: emailHtml,

@@ -6,7 +6,7 @@ export async function sendSecurityAlertEmail(email, username) {
     const html = SecurityAlertEmailTemplate(username);
 
     await transporter.sendMail({
-      from: `"UpScaleAI" <${process.env.EMAIL_USER}>`,
+      from: `"UpSkaleAI" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Security Alert: Password Changed",
       html,

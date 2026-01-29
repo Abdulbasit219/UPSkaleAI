@@ -98,7 +98,7 @@ export default function AdminLayout({ children }) {
                     isDark ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
-                  SkillBridge
+                  UpSkaleAI
                 </p>
               </div>
             </div>
@@ -216,7 +216,7 @@ export default function AdminLayout({ children }) {
                       isDark ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    SkillBridge
+                    UpSkaleAI
                   </p>
                 </div>
               </div>

@@ -186,7 +186,7 @@ export default function HowItWorksPage() {
             How
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-gradient">
               {" "}
-              SkillBridge{" "}
+              UpSkaleAI{" "}
             </span>
             Works
           </h1>
@@ -414,7 +414,7 @@ export default function HowItWorksPage() {
             Why Choose
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
               {" "}
-              SkillBridge?
+              UpSkaleAI?
             </span>
           </h2>
           <p
@@ -600,7 +600,7 @@ export default function HowItWorksPage() {
             isDark={isDark}
             className="rounded-[2rem] shadow-2xl"
             title="Ready to Start Your Journey?"
-            subtitle="Join thousands of learners who transformed their careers with SkillBridge's AI-powered platform."
+            subtitle="Join thousands of learners who transformed their careers with UpSkaleAI's AI-powered platform."
             primaryBtn={{
               text: "Start Free Trial",
               icon: (

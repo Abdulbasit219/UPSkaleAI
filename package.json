@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
-    "start": "next start",
+    "dev": "node server.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js",
     "lint": "eslint"
   },
   "dependencies": {
@@ -27,7 +27,7 @@
     "clsx": "^2.1.1",
     "cropperjs": "^2.1.0",
     "input-otp": "^1.4.2",
-    "jspdf": "^3.0.4",
+    "jspdf": "^4.0.0",
     "lucide-react": "^0.552.0",
     "mongoose": "^8.19.1",
     "multer": "^2.0.2",
@@ -45,6 +45,8 @@
     "react-redux": "^9.2.0",
     "recharts": "^3.5.1",
     "resend": "^6.2.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "usehooks-ts": "^3.1.1",

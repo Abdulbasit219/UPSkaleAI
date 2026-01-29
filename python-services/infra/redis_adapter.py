@@ -4,7 +4,7 @@ import json
 
 
 r = redis.Redis(host=os.getenv('REDIS_HOST', 'localhost'), port=int(os.getenv('REDIS_PORT', 6379)))
-STREAM_KEY = 'skillbridge_events'
+STREAM_KEY = 'upskaleai_events'
 
 
 

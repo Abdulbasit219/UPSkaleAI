@@ -5,7 +5,7 @@ import os
 from pymongo import MongoClient
 
 # --- MongoDB client ---
-db = MongoClient(os.getenv('MONGODB_URL', 'mongodb://mongo:27017')).skillbridge
+db = MongoClient(os.getenv('MONGODB_URL', 'mongodb://mongo:27017')).upskaleai
 
 # --- FAISS Index variables ---
 _index = None

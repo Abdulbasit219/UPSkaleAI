@@ -89,7 +89,7 @@ export default function ProfilePage() {
           skillName: skillData.skillName,
           level: skillData.level,
           lastPracticed: skillData.lastPracticed,
-        })
+        }),
       ).unwrap();
       toast.success("Skill added successfully!");
       return true;
@@ -124,7 +124,7 @@ export default function ProfilePage() {
         ((profile?.projects?.length || 0) * 20 +
           (profile?.streak || 0) * 5 +
           (profile?.badges?.length || 0) * 10) /
-          3
+          3,
       )}%`,
       label: "Career Ready",
       color: "from-green-500 to-emerald-500",
