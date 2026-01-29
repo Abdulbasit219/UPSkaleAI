@@ -17,7 +17,7 @@ export async function PATCH(request, { params }) {
           success: false,
           message: "You must be logged in to update applications",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -28,11 +28,12 @@ export async function PATCH(request, { params }) {
           success: false,
           message: "Only company users can update applications",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
     const body = await request.json();
     const { status, notes } = body;
 
@@ -50,7 +51,7 @@ export async function PATCH(request, { params }) {
           success: false,
           message: `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -63,7 +64,7 @@ export async function PATCH(request, { params }) {
           success: false,
           message: "Application not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -75,7 +76,7 @@ export async function PATCH(request, { params }) {
           success: false,
           message: "You are not authorized to update this application",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -98,7 +99,7 @@ export async function PATCH(request, { params }) {
         data: application,
         message: `Application ${status === "accepted" ? "approved" : status === "rejected" ? "rejected" : "updated"} successfully`,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error updating application:", error);
@@ -108,7 +109,7 @@ export async function PATCH(request, { params }) {
         message: "Error updating application",
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -126,7 +127,7 @@ export async function DELETE(request, { params }) {
           success: false,
           message: "You must be logged in to delete applications",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -137,11 +138,12 @@ export async function DELETE(request, { params }) {
           success: false,
           message: "Only company users can delete applications",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
-    const { id } = params;
+    const resolvedParams = await params; // ✅ the promise first
+    const { id } = resolvedParams;
 
     // Find the application
     const application = await JobApplication.findById(id).populate("job");
@@ -152,7 +154,7 @@ export async function DELETE(request, { params }) {
           success: false,
           message: "Application not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -164,7 +166,7 @@ export async function DELETE(request, { params }) {
           success: false,
           message: "You are not authorized to delete this application",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -176,7 +178,7 @@ export async function DELETE(request, { params }) {
         success: true,
         message: "Application deleted successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error deleting application:", error);
@@ -186,7 +188,7 @@ export async function DELETE(request, { params }) {
         message: "Error deleting application",
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

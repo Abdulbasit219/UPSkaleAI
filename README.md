@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🌉 SkillBridge
+# 🌉 UpSkaleAI
 
-### _Bridge the gap between learning and earning._
+### _Upscale your skills and bridge the gap between learning and earning._
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=28&duration=3000&pause=1000&color=A855F7&center=true&vCenter=true&multiline=true&repeat=false&width=600&height=100&lines=AI-Powered+Career+Growth;Learn+%E2%80%A2+Earn+%E2%80%A2+Grow" alt="Typing SVG" />
 
@@ -14,7 +14,7 @@
 
 **An AI-powered career growth platform helping students and professionals discover skills, learn efficiently, and land their dream jobs.**
 
-[🚀 Live Demo](#) • [📖 Documentation](#-table-of-contents) • [🐛 Report Bug](https://github.com/yourusername/skillbridge/issues) • [✨ Request Feature](https://github.com/yourusername/skillbridge/issues)
+[🚀 Live Demo](#) • [📖 Documentation](#-table-of-contents) • [🐛 Report Bug](https://github.com/Abdulbasit219/UpSkaleAI/issues) • [✨ Request Feature](https://github.com/Abdulbasit219/UpSkaleAI/issues)
 
 <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="1000">
 
@@ -28,7 +28,7 @@
 <summary><b>Click to expand/collapse</b></summary>
 
 - [✨ Features](#-features)
-- [🎯 Why SkillBridge?](#-why-skillbridge)
+- [🎯 Why UpSkaleAI?](#-why-upskaleai)
 - [🛠️ Tech Stack](#️-tech-stack)
 - [🚀 Quick Start](#-quick-start)
 - [📁 Project Structure](#-project-structure)
@@ -99,23 +99,23 @@
 
 <br>
 
-| Feature                   | Description                                | Status         |
-| ------------------------- | ------------------------------------------ | -------------- |
-| ✅ **ATS Resume Checker** | Optimize for Applicant Tracking Systems    | 🟢 Live        |
-| 🤖 **Code Twin AI**       | Your AI-powered coding assistant           | 🟢 Live        |
-| 📊 **Progress Tracking**  | Visual insights into your learning journey | 🟢 Live        |
-| 🔍 **Smart Job Search**   | Filter, save, and quick-apply to jobs      | 🟢 Live        |
-| 🎯 **Goal Milestones**    | Set and track career objectives            | 🟢 Live        |
-| 🌙 **Dark Mode**          | Beautiful dark/light theme support         | 🟢 Live        |
-| 📧 **Email Verification** | Secure account verification                | 🟢 Live        |
-| 💾 **Save Jobs**          | Bookmark jobs for later                    | 🟢 Live        |
-| 📱 **Responsive Design**  | Works on all devices                       | 🟢 Live        |
+| Feature                   | Description                                | Status  |
+| ------------------------- | ------------------------------------------ | ------- |
+| ✅ **ATS Resume Checker** | Optimize for Applicant Tracking Systems    | 🟢 Live |
+| 🤖 **Code Twin AI**       | Your AI-powered coding assistant           | 🟢 Live |
+| 📊 **Progress Tracking**  | Visual insights into your learning journey | 🟢 Live |
+| 🔍 **Smart Job Search**   | Filter, save, and quick-apply to jobs      | 🟢 Live |
+| 🎯 **Goal Milestones**    | Set and track career objectives            | 🟢 Live |
+| 🌙 **Dark Mode**          | Beautiful dark/light theme support         | 🟢 Live |
+| 📧 **Email Verification** | Secure account verification                | 🟢 Live |
+| 💾 **Save Jobs**          | Bookmark jobs for later                    | 🟢 Live |
+| 📱 **Responsive Design**  | Works on all devices                       | 🟢 Live |
 
 </details>
 
 ---
 
-## 🎯 Why SkillBridge?
+## 🎯 Why UpSkaleAI?
 
 <div align="center">
 
@@ -303,9 +303,9 @@ Create a `.env.local` file in the root directory:
 
 ```env
 # 🗄️ Database Configuration
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/skillbridge
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/upskaleai
 # Alternative: For local MongoDB
-# MONGODB_URI=mongodb://localhost:27017/skillbridge
+# MONGODB_URI=mongodb://localhost:27017/upskaleai
 
 # 🔐 Authentication
 NEXTAUTH_URL=http://localhost:3000
@@ -331,6 +331,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 ```
 
 > 💡 **Pro Tips:**
+>
 > - Use `openssl rand -base64 32` to generate a secure `NEXTAUTH_SECRET`
 > - For Gmail, use [App Passwords](https://support.google.com/accounts/answer/185833)
 > - Get Google AI API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
@@ -362,10 +363,10 @@ npm run start
 
 ```bash
 # Build the image
-docker build -t skillbridge .
+docker build -t upskaleai .
 
 # Run the container
-docker run -p 3000:3000 --env-file .env.local skillbridge
+docker run -p 3000:3000 --env-file .env.local upskaleai
 
 # Using Docker Compose
 docker-compose up -d
@@ -577,6 +578,7 @@ Ai-Coding-Assistant-FYP/
 ```
 
 **Indexes:**
+
 - Text search: `title`, `company`, `description`
 - Compound: `category + status`, `remote`, `createdAt`
 
@@ -600,6 +602,7 @@ Ai-Coding-Assistant-FYP/
 ```
 
 **Indexes:**
+
 - Unique: `job + user` (prevent duplicate applications)
 - Compound: `user + status`, `job + status`
 
@@ -610,52 +613,52 @@ Ai-Coding-Assistant-FYP/
 <details>
 <summary><b>Authentication Endpoints</b></summary>
 
-| Method | Endpoint                  | Description           | Auth Required |
-| ------ | ------------------------- | --------------------- | ------------- |
-| POST   | `/api/user/signup`        | Create new account    | No            |
-| POST   | `/api/auth/[...nextauth]` | Sign in (NextAuth)    | No            |
-| POST   | `/api/verify-code`        | Verify email code     | No            |
-| POST   | `/api/resend-code`        | Resend verification   | No            |
-| GET    | `/api/check-username-unique` | Check username availability | No |
+| Method | Endpoint                     | Description                 | Auth Required |
+| ------ | ---------------------------- | --------------------------- | ------------- |
+| POST   | `/api/user/signup`           | Create new account          | No            |
+| POST   | `/api/auth/[...nextauth]`    | Sign in (NextAuth)          | No            |
+| POST   | `/api/verify-code`           | Verify email code           | No            |
+| POST   | `/api/resend-code`           | Resend verification         | No            |
+| GET    | `/api/check-username-unique` | Check username availability | No            |
 
 </details>
 
 <details>
 <summary><b>Job Endpoints</b></summary>
 
-| Method | Endpoint                  | Description              | Auth Required |
-| ------ | ------------------------- | ------------------------ | ------------- |
-| GET    | `/api/jobs`               | Get all jobs (filtered)  | No            |
-| GET    | `/api/jobs/[id]`          | Get single job           | No            |
-| POST   | `/api/jobs/create`        | Create job (admin)       | Yes (Admin)   |
-| PUT    | `/api/jobs/update/[id]`   | Update job (admin)       | Yes (Admin)   |
-| DELETE | `/api/jobs/update/[id]`   | Delete job (admin)       | Yes (Admin)   |
-| POST   | `/api/jobs/apply`         | Apply to job             | Yes           |
-| GET    | `/api/jobs/applications`  | Get user's applications  | Yes           |
-| GET    | `/api/jobs/match`         | Get matched jobs         | Yes           |
-| GET    | `/api/jobs/saved`         | Get saved jobs           | Yes           |
-| POST   | `/api/jobs/saved`         | Save a job               | Yes           |
-| DELETE | `/api/jobs/saved/[id]`    | Unsave a job             | Yes           |
+| Method | Endpoint                 | Description             | Auth Required |
+| ------ | ------------------------ | ----------------------- | ------------- |
+| GET    | `/api/jobs`              | Get all jobs (filtered) | No            |
+| GET    | `/api/jobs/[id]`         | Get single job          | No            |
+| POST   | `/api/jobs/create`       | Create job (admin)      | Yes (Admin)   |
+| PUT    | `/api/jobs/update/[id]`  | Update job (admin)      | Yes (Admin)   |
+| DELETE | `/api/jobs/update/[id]`  | Delete job (admin)      | Yes (Admin)   |
+| POST   | `/api/jobs/apply`        | Apply to job            | Yes           |
+| GET    | `/api/jobs/applications` | Get user's applications | Yes           |
+| GET    | `/api/jobs/match`        | Get matched jobs        | Yes           |
+| GET    | `/api/jobs/saved`        | Get saved jobs          | Yes           |
+| POST   | `/api/jobs/saved`        | Save a job              | Yes           |
+| DELETE | `/api/jobs/saved/[id]`   | Unsave a job            | Yes           |
 
 </details>
 
 <details>
 <summary><b>Company Endpoints</b></summary>
 
-| Method | Endpoint                     | Description                  | Auth Required |
-| ------ | ---------------------------- | ---------------------------- | ------------- |
-| GET    | `/api/company/jobs`          | Get company's posted jobs    | Yes (Admin)   |
-| GET    | `/api/company/applications`  | Get applications for company | Yes (Admin)   |
+| Method | Endpoint                    | Description                  | Auth Required |
+| ------ | --------------------------- | ---------------------------- | ------------- |
+| GET    | `/api/company/jobs`         | Get company's posted jobs    | Yes (Admin)   |
+| GET    | `/api/company/applications` | Get applications for company | Yes (Admin)   |
 
 </details>
 
 <details>
 <summary><b>AI & Utility Endpoints</b></summary>
 
-| Method | Endpoint               | Description           | Auth Required |
-| ------ | ---------------------- | --------------------- | ------------- |
-| POST   | `/api/analyze-resume`  | AI resume analysis    | Yes           |
-| POST   | `/api/upload`          | File upload           | Yes           |
+| Method | Endpoint              | Description        | Auth Required |
+| ------ | --------------------- | ------------------ | ------------- |
+| POST   | `/api/analyze-resume` | AI resume analysis | Yes           |
+| POST   | `/api/upload`         | File upload        | Yes           |
 
 </details>
 
@@ -669,6 +672,7 @@ Ai-Coding-Assistant-FYP/
 <summary><b>GET /api/jobs</b> - Fetch jobs with filtering</summary>
 
 **Query Parameters:**
+
 ```javascript
 {
   search: string,          // Search in title, company, description
@@ -683,6 +687,7 @@ Ai-Coding-Assistant-FYP/
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -728,12 +733,14 @@ Ai-Coding-Assistant-FYP/
 <summary><b>POST /api/jobs/apply</b> - Submit job application</summary>
 
 **Headers:**
+
 ```
 Authorization: Bearer <session-token>
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "jobId": "6501234567890abcdef12345",
@@ -748,6 +755,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -812,6 +820,7 @@ tests/
 <summary><b>Deploy to Vercel</b></summary>
 
 1. **Push to GitHub:**
+
    ```bash
    git add .
    git commit -m "Ready for deployment"
@@ -914,6 +923,7 @@ We love contributions! Here's how you can help:
 ### Reporting Bugs
 
 Found a bug? Please open an issue with:
+
 - Clear description
 - Steps to reproduce
 - Expected vs actual behavior
@@ -932,10 +942,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-### **Built with ❤️ by the SkillBridge Team**
+### **Built with ❤️ by the UpSkaleAI Team**
 
 Special thanks to:
-- [Next.js](https://nextjs.org/) - The React  Framework
+
+- [Next.js](https://nextjs.org/) - The React Framework
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
 - [MongoDB](https://www.mongodb.com/) - Database
 - [Vercel](https://vercel.com/) - Hosting
@@ -946,9 +957,9 @@ Special thanks to:
 
 ### 📞 **Contact & Support**
 
-[![Email](https://img.shields.io/badge/Email-support%40skillbridge.com-red?style=for-the-badge&logo=gmail)](mailto:support@skillbridge.com)
-[![Discord](https://img.shields.io/badge/Discord-Join_Server-7289DA?style=for-the-badge&logo=discord)](https://discord.gg/skillbridge)
-[![Twitter](https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=for-the-badge&logo=twitter)](https://twitter.com/skillbridge)
+[![Email](https://img.shields.io/badge/Email-support%40upskaleai.com-red?style=for-the-badge&logo=gmail)](mailto:support@upskaleai.com)
+[![Discord](https://img.shields.io/badge/Discord-Join_Server-7289DA?style=for-the-badge&logo=discord)](https://discord.gg/upskaleai)
+[![Twitter](https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=for-the-badge&logo=twitter)](https://twitter.com/upskaleai)
 
 ---
 
@@ -962,7 +973,7 @@ If you find this project helpful, please give it a ⭐️
 
 <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="1000">
 
-**Made with 💜 and ☕ by the SkillBridge Team**
+**Made with 💜 and ☕ by the UpSkaleAI Team**
 
 </div>
 

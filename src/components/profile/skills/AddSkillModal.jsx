@@ -29,10 +29,10 @@ const AddSkillModal = ({
   };
 
   const handleSubmit = () => {
-    handleAddSkill(localSkill)
-    setLocalSkill({ name: "", level: "", lastPracticed: "" });
-    setOpenSkillsModal(false)
-  }
+    handleAddSkill(localSkill);
+    setLocalSkill({ skillName: "", level: "", lastPracticed: "" });
+    setOpenSkillsModal(false);
+  };
 
   return (
     <Dialog open={openSkillsModal} onOpenChange={setOpenSkillsModal}>

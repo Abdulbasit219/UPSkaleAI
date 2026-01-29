@@ -31,14 +31,14 @@ const Footer = () => {
               <span
                 className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
               >
-                SkillBridge
+                UpSkaleAI
               </span>
             </div>
             <p
               className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
             >
-              Bridge the gap between learning and earning with AI-powered career
-              growth.
+              Upscale your skills and bridge the gap to your dream career with
+              AI-powered career growth.
             </p>
           </div>
           <div>
@@ -170,7 +170,7 @@ const Footer = () => {
               : "border-purple-300/20 text-gray-600"
           }`}
         >
-          <p>&copy; 2025 SkillBridge. All rights reserved.</p>
+          <p>&copy; 2025 UpSkaleAI. All rights reserved.</p>
         </div>
       </div>
     </footer>

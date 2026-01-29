@@ -7,7 +7,8 @@ export async function PATCH(req, { params }) {
   await connectDB();
 
   try {
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
     const { action } = await req.json();
 
     const company = await AuthUser.findById(id);
@@ -48,7 +49,7 @@ export async function PATCH(req, { params }) {
     console.error("Error updating company:", error);
     return NextResponse.json(
       { error: "Failed to update company" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -58,7 +59,8 @@ export async function DELETE(req, { params }) {
   await connectDB();
 
   try {
-    const { id } = params;
+    const resolvedParams = await params; // ✅ the promise first
+    const { id } = resolvedParams;
 
     const company = await AuthUser.findById(id);
 
@@ -76,7 +78,7 @@ export async function DELETE(req, { params }) {
     console.error("Error deleting company:", error);
     return NextResponse.json(
       { error: "Failed to delete company" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

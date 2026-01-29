@@ -44,6 +44,7 @@ export const filters = [
   { id: "internship", name: "Internship", icon: <Award />, count: 567 },
   // { id: "contract", name: "Contract", icon: <Code />, count: 890 },
   // { id: "featured", name: "Featured", icon: <Star />, count: 123 },
+  { id: "recommended", name: "Recommended", icon: <Sparkles />, count: 123 },
   { id: "urgent", name: "Urgent", icon: <Zap />, count: 45 },
 ];
 
@@ -62,7 +63,8 @@ export const jobs = [
     location: "San Francisco, CA",
     remote: true,
     posted: "2 days ago",
-    description: "We are looking for a passionate Senior Frontend Developer to join our dynamic team. You will be responsible for building and maintaining user-facing applications.",
+    description:
+      "We are looking for a passionate Senior Frontend Developer to join our dynamic team. You will be responsible for building and maintaining user-facing applications.",
     skills: ["React", "TypeScript", "GraphQL", "Tailwind CSS", "Next.js"],
     match: 92,
     type: "Full-time",
@@ -80,7 +82,8 @@ export const jobs = [
     location: "Seattle, WA",
     remote: false,
     posted: "1 day ago",
-    description: "Join our AI team to develop cutting-edge machine learning models and integrate them into our core products. Strong Python skills required.",
+    description:
+      "Join our AI team to develop cutting-edge machine learning models and integrate them into our core products. Strong Python skills required.",
     skills: ["Python", "TensorFlow", "PyTorch", "AWS", "NLP"],
     match: 88,
     type: "Full-time",
@@ -98,7 +101,8 @@ export const jobs = [
     location: "New York, NY",
     remote: true,
     posted: "3 days ago",
-    description: "We need a creative Product Designer to craft intuitive and beautiful user experiences. Experience with Figma and user research is a plus.",
+    description:
+      "We need a creative Product Designer to craft intuitive and beautiful user experiences. Experience with Figma and user research is a plus.",
     skills: ["Figma", "UI/UX", "User Research", "Prototyping", "Adobe XD"],
     match: 85,
     type: "Full-time",
@@ -116,7 +120,8 @@ export const jobs = [
     location: "Austin, TX",
     remote: true,
     posted: "4 days ago",
-    description: "Automate and optimize our cloud infrastructure. Experience with Kubernetes, Docker, and CI/CD pipelines is essential.",
+    description:
+      "Automate and optimize our cloud infrastructure. Experience with Kubernetes, Docker, and CI/CD pipelines is essential.",
     skills: ["AWS", "Docker", "Kubernetes", "Terraform", "CI/CD"],
     match: 90,
     type: "Full-time",
@@ -134,7 +139,8 @@ export const jobs = [
     location: "Boston, MA",
     remote: false,
     posted: "5 days ago",
-    description: "Analyze large datasets to extract actionable insights. Proficiency in R or Python for data analysis is required.",
+    description:
+      "Analyze large datasets to extract actionable insights. Proficiency in R or Python for data analysis is required.",
     skills: ["Python", "R", "SQL", "Machine Learning", "Data Visualization"],
     match: 87,
     type: "Full-time",
@@ -152,7 +158,8 @@ export const jobs = [
     location: "Remote",
     remote: true,
     posted: "6 days ago",
-    description: "Develop and maintain high-performance mobile applications for iOS and Android platforms. Experience with React Native or Flutter.",
+    description:
+      "Develop and maintain high-performance mobile applications for iOS and Android platforms. Experience with React Native or Flutter.",
     skills: ["React Native", "Flutter", "iOS", "Android", "JavaScript"],
     match: 89,
     type: "Full-time",
@@ -170,8 +177,14 @@ export const jobs = [
     location: "Washington, D.C.",
     remote: false,
     posted: "1 week ago",
-    description: "Protect our systems from cyber threats. Monitor, detect, and respond to security incidents.",
-    skills: ["SIEM", "Penetration Testing", "Network Security", "Incident Response"],
+    description:
+      "Protect our systems from cyber threats. Monitor, detect, and respond to security incidents.",
+    skills: [
+      "SIEM",
+      "Penetration Testing",
+      "Network Security",
+      "Incident Response",
+    ],
     match: 86,
     type: "Full-time",
     experience: "Junior Level",
@@ -188,7 +201,8 @@ export const jobs = [
     location: "Remote",
     remote: true,
     posted: "1 week ago",
-    description: "Create clear and concise technical documentation for our software products. Excellent writing and communication skills are a must.",
+    description:
+      "Create clear and concise technical documentation for our software products. Excellent writing and communication skills are a must.",
     skills: ["Documentation", "API Docs", "Markdown", "Confluence", "Editing"],
     match: 80,
     type: "Contract",
@@ -199,5 +213,4 @@ export const jobs = [
     urgent: false,
     logo: "DT",
   },
-];  
-
+];

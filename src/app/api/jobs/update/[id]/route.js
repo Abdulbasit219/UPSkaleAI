@@ -17,11 +17,12 @@ export async function PUT(request, { params }) {
           success: false,
           message: "You must be logged in to update jobs",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
 
     if (!id) {
       return Response.json(
@@ -29,7 +30,7 @@ export async function PUT(request, { params }) {
           success: false,
           message: "Job ID is required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -42,7 +43,7 @@ export async function PUT(request, { params }) {
           success: false,
           message: "Job not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -53,7 +54,7 @@ export async function PUT(request, { params }) {
           success: false,
           message: "You don't have permission to update this job",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -70,7 +71,7 @@ export async function PUT(request, { params }) {
           message: "Invalid job data",
           errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -78,7 +79,7 @@ export async function PUT(request, { params }) {
     const updatedJob = await Job.findByIdAndUpdate(
       id,
       { ...result.data },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     return Response.json(
@@ -87,7 +88,7 @@ export async function PUT(request, { params }) {
         message: "Job updated successfully",
         data: updatedJob,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error updating job:", error);
@@ -96,7 +97,7 @@ export async function PUT(request, { params }) {
         success: false,
         message: "Error updating job",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -114,11 +115,12 @@ export async function DELETE(request, { params }) {
           success: false,
           message: "You must be logged in to delete jobs",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const { id } = params;
+    const resolvedParams = await params; // ✅ the promise first
+    const { id } = resolvedParams;
 
     if (!id) {
       return Response.json(
@@ -126,7 +128,7 @@ export async function DELETE(request, { params }) {
           success: false,
           message: "Job ID is required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -139,7 +141,7 @@ export async function DELETE(request, { params }) {
           success: false,
           message: "Job not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -150,7 +152,7 @@ export async function DELETE(request, { params }) {
           success: false,
           message: "You don't have permission to delete this job",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -162,7 +164,7 @@ export async function DELETE(request, { params }) {
         success: true,
         message: "Job deleted successfully",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error deleting job:", error);
@@ -171,7 +173,7 @@ export async function DELETE(request, { params }) {
         success: false,
         message: "Error deleting job",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

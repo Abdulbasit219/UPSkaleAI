@@ -16,11 +16,12 @@ export async function DELETE(request, { params }) {
           success: false,
           message: "You must be logged in to remove saved jobs",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
 
     if (!id) {
       return Response.json(
@@ -28,7 +29,7 @@ export async function DELETE(request, { params }) {
           success: false,
           message: "Job ID is required",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +45,7 @@ export async function DELETE(request, { params }) {
           success: false,
           message: "Saved job not found",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -53,7 +54,7 @@ export async function DELETE(request, { params }) {
         success: true,
         message: "Job removed from saved list",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error removing saved job:", error);
@@ -62,7 +63,7 @@ export async function DELETE(request, { params }) {
         success: false,
         message: "Error removing saved job",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -17,8 +17,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "SkillBridge - Connect, Learn, and Grow Your Skills",
-  description: "A platform to bridge the gap between learning and earning",
+  title: "UpSkaleAI - Connect, Learn, and Grow Your Skills",
+  description:
+    "An AI-powered platform to upscale your skills and bridge the gap between learning and earning",
   icons: {
     icon: "/icon.png",
   },

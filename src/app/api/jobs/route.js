@@ -11,7 +11,7 @@ export async function GET(request) {
 
   try {
     const { searchParams } = new URL(request.url);
-    
+
     const queryParams = {
       search: searchParams.get("search") || undefined,
       category: searchParams.get("category") || undefined,
@@ -25,7 +25,7 @@ export async function GET(request) {
 
     // Validate query parameters
     const result = jobFilterSchema.safeParse(queryParams);
-    
+
     if (!result.success) {
       const errors = result.error.format();
       return Response.json(
@@ -34,11 +34,12 @@ export async function GET(request) {
           message: "Invalid query parameters",
           errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const { search, category, type, remote, featured, page, limit, sortBy } = result.data;
+    const { search, category, type, remote, featured, page, limit, sortBy } =
+      result.data;
 
     // Build filter query
     const filter = { status: "active" };
@@ -93,6 +94,57 @@ export async function GET(request) {
       .select("-__v")
       .lean();
 
+    // 6. Calculate Match Scores (AI or Fallback)
+    const { authOptions } = await import(
+      "@/app/api/auth/[...nextauth]/options"
+    );
+    const session = await getServerSession(authOptions);
+    let recommendations = [];
+    let userSkills = [];
+
+    if (session?.user) {
+      try {
+        const UserProfile = (await import("@/models/UserProfile")).default;
+        const axios = (await import("axios")).default;
+        const mongoose = (await import("mongoose")).default;
+
+        const userId = session.user._id || session.user.id;
+        const profile = await UserProfile.findOne({
+          userId: new mongoose.Types.ObjectId(userId),
+        });
+
+        if (profile) {
+          userSkills = profile.skills?.map((s) => s.skillName) || [];
+          const RECOMMENDER_SERVICE_URL =
+            process.env.RECOMMENDER_SERVICE_URL ||
+            "http://127.0.0.1:8000/jobs/recommend";
+
+          const aiResponse = await axios.post(
+            RECOMMENDER_SERVICE_URL,
+            {
+              user_skills: userSkills,
+              user_bio: profile.bio || "",
+              jobs: jobsData.map((j) => ({
+                id: j._id.toString(),
+                title: j.title,
+                skills: j.skills || [],
+                description: j.description || "",
+              })),
+            },
+            { timeout: 3000 },
+          );
+
+          if (aiResponse.data.success) {
+            recommendations = aiResponse.data.recommendations;
+          }
+        }
+      } catch (err) {
+        console.warn(
+          "Global Jobs API: Match Service Unavailable or Profile missing. Using fallback.",
+        );
+      }
+    }
+
     const jobs = jobsData.map((job) => {
       const created = new Date(job.createdAt);
       const now = new Date();
@@ -109,10 +161,28 @@ export async function GET(request) {
         posted = "Just now";
       }
 
+      // 1. Check AI recommendations first
+      const aiMatch = recommendations.find(
+        (r) => r.job_id === job._id.toString(),
+      );
+
+      // 2. Fallback to keyword matching if AI isn't available
+      let finalMatch = 0;
+      if (aiMatch) {
+        finalMatch = Math.round(aiMatch.score * 100);
+      } else if (userSkills.length > 0 && job.skills?.length > 0) {
+        // Simple Jaccard fallback
+        const s1 = new Set(userSkills.map((s) => s.toLowerCase()));
+        const s2 = new Set(job.skills.map((s) => s.toLowerCase()));
+        const intersection = new Set([...s1].filter((x) => s2.has(x)));
+        const union = new Set([...s1, ...s2]);
+        finalMatch = Math.round((intersection.size / union.size) * 100);
+      }
+
       return {
         ...job,
         id: job._id.toString(),
-        match: Math.floor(Math.random() * 20) + 80, // Mock match score for now
+        match: finalMatch,
         posted,
       };
     });
@@ -133,7 +203,7 @@ export async function GET(request) {
           },
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error fetching jobs:", error);
@@ -142,7 +212,7 @@ export async function GET(request) {
         success: false,
         message: "Error fetching jobs",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

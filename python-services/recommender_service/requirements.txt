@@ -6,3 +6,4 @@ scikit-learn
 pymongo
 lightgbm
 python-dotenv
+sentence-transformers
