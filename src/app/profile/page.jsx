@@ -1,16 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Trophy,
-  Target,
-  Briefcase,
-  Book,
-  CheckCircle,
-  Sparkles,
-  ChevronRight,
-  BookOpen,
-  Flame,
-} from "lucide-react";
+import { Trophy, Target, Briefcase, Flame } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
 import EditProfileModal from "@/components/profile/EditProfileModal";
@@ -30,9 +20,14 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import {
   addSkill,
   deleteProjectAction,
+  fetchLearningPath,
   fetchProfile,
   updateProfile,
 } from "@/store/slices/profileSlice";
+import CurrentLearningPath from "@/components/profile/CurrentLearningPath";
+import ExperienceSection from "@/components/profile/ExperienceSection";
+import SocialLinksCard from "@/components/profile/Sociallinkscard";
+import EducationSection from "@/components/profile/EducationSection";
 
 export default function ProfilePage() {
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -44,6 +39,8 @@ export default function ProfilePage() {
     data: profile,
     loading,
     streak,
+    learningPath,
+    learningPathLoading,
   } = useSelector((state) => state.profile);
   const isDark = theme === "dark";
 
@@ -137,18 +134,11 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user && !profile) {
       dispatch(fetchProfile());
+      dispatch(fetchLearningPath());
     }
   }, [user, dispatch, profile]);
 
-  if (loading && !profile) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
-
-  if (loading)
+  if (loading && !profile)
     return (
       <div>
         <LoadingSpinner />
@@ -190,137 +180,20 @@ export default function ProfilePage() {
               isDark={isDark}
               setIsEditOpen={setIsEditOpen}
             />
-
             {/* Current Learning Path */}
-            <div
-              className={`backdrop-blur-sm border rounded-xl p-6 transition-colors ${
-                isDark
-                  ? "bg-gradient-to-br from-slate-900/80 to-slate-900/40 border-purple-500/20 hover:border-purple-500/30"
-                  : "bg-gradient-to-br from-white/80 to-white/40 border-purple-300/20 hover:border-purple-300/30"
-              }`}
-            >
-              <h3
-                className={`text-xl font-bold mb-4 flex items-center gap-2 ${
-                  isDark ? "text-white" : "text-gray-900"
-                }`}
-              >
-                <BookOpen className="w-5 h-5 text-purple-400" />
-                Current Learning Path
-              </h3>
-
-              <div className="space-y-4">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span
-                      className={`font-semibold ${
-                        isDark ? "text-gray-300" : "text-gray-700"
-                      }`}
-                    >
-                      Full-Stack Development
-                    </span>
-                    <span className="text-purple-400 font-bold">65%</span>
-                  </div>
-                  <div
-                    className={`relative w-full rounded-full h-3 overflow-hidden ${
-                      isDark ? "bg-slate-800" : "bg-gray-200"
-                    }`}
-                  >
-                    <div
-                      className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-                      style={{ width: "65%" }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 animate-pulse"></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid gap-3 mt-6">
-                  {[
-                    {
-                      name: "Advanced React Patterns",
-                      progress: 80,
-                      status: "In Progress",
-                    },
-                    {
-                      name: "Node.js Backend Development",
-                      progress: 65,
-                      status: "In Progress",
-                    },
-                    {
-                      name: "Database Design",
-                      progress: 40,
-                      status: "Started",
-                    },
-                  ].map((item, index) => (
-                    <div
-                      key={index}
-                      className={`flex items-center justify-between p-4 rounded-lg border transition-colors group ${
-                        isDark
-                          ? "bg-slate-800/50 border-purple-500/10 hover:border-purple-500/30"
-                          : "bg-gray-50/50 border-purple-300/10 hover:border-purple-300/30"
-                      }`}
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span
-                            className={`font-medium ${
-                              isDark ? "text-white" : "text-gray-900"
-                            }`}
-                          >
-                            {item.name}
-                          </span>
-                          <span
-                            className={`px-2 py-0.5 text-xs rounded-full border ${
-                              isDark
-                                ? "bg-green-500/10 text-green-400 border-green-500/20"
-                                : "bg-green-100 text-green-700 border-green-200"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`flex-1 rounded-full h-2 ${
-                              isDark ? "bg-slate-700" : "bg-gray-300"
-                            }`}
-                          >
-                            <div
-                              className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500"
-                              style={{ width: `${item.progress}%` }}
-                            ></div>
-                          </div>
-                          <span
-                            className={`text-sm font-medium w-12 ${
-                              isDark ? "text-gray-400" : "text-gray-500"
-                            }`}
-                          >
-                            {item.progress}%
-                          </span>
-                        </div>
-                      </div>
-                      <button
-                        className={`ml-4 px-4 py-2 rounded-lg text-sm border transition-all opacity-0 group-hover:opacity-100 ${
-                          isDark
-                            ? "bg-purple-500/10 text-purple-300 border-purple-500/20 hover:bg-purple-500/20"
-                            : "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200"
-                        }`}
-                      >
-                        Continue
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
+            <CurrentLearningPath
+              learningPath={learningPath}
+              learningPathLoading={learningPathLoading}
+              isDark={isDark}
+            />
             {/* Skills & Expertise */}
             <SkillList
               isDark={isDark}
               handleAddSkill={handleAddSkill}
               skills={profile?.skills}
             />
-
+            <EducationSection education={profile?.education} isDark={isDark} />
+            
             <ProjectPortfolio
               profile={profile}
               isDark={isDark}
@@ -328,233 +201,36 @@ export default function ProfilePage() {
               deleteProject={deleteProject}
               handleEdit={handleEdit}
             />
+            <ExperienceSection
+              experience={profile?.experience}
+              isDark={isDark}
+            />
           </div>
 
           {/* Right Column - Sidebar */}
           <div className="space-y-6">
-            {/* Career Goal Card */}
-            <div
-              className={`backdrop-blur-sm border rounded-xl p-6 transition-colors ${
-                isDark
-                  ? "bg-gradient-to-br from-slate-900/80 to-slate-900/40 border-purple-500/20 hover:border-purple-500/30"
-                  : "bg-gradient-to-br from-white/80 to-white/40 border-purple-300/20 hover:border-purple-300/30"
-              }`}
-            >
-              <h3
-                className={`text-xl font-bold mb-4 flex items-center gap-2 ${
-                  isDark ? "text-white" : "text-gray-900"
-                }`}
-              >
-                <Target className="w-5 h-5 text-purple-400" />
-                Career Goal
-              </h3>
-              <div className="text-center mb-6">
-                <div className="relative w-28 h-28 mx-auto mb-4">
-                  <svg
-                    className="w-28 h-28 transform -rotate-90"
-                    viewBox="0 0 100 100"
-                  >
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      stroke={isDark ? "#1e293b" : "#e2e8f0"}
-                      strokeWidth="8"
-                      fill="none"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="40"
-                      stroke="url(#gradient)"
-                      strokeWidth="8"
-                      fill="none"
-                      strokeDasharray="251.2"
-                      strokeDashoffset="87.92"
-                      strokeLinecap="round"
-                    />
-                    <defs>
-                      <linearGradient
-                        id="gradient"
-                        x1="0%"
-                        y1="0%"
-                        x2="100%"
-                        y2="0%"
-                      >
-                        <stop offset="0%" stopColor="#a855f7" />
-                        <stop offset="100%" stopColor="#ec4899" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span
-                      className={`text-3xl font-bold ${
-                        isDark ? "text-white" : "text-gray-900"
-                      }`}
-                    >
-                      65%
-                    </span>
-                  </div>
-                </div>
-                <div
-                  className={`font-bold text-lg ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
-                  Full-Stack Developer
-                </div>
-                <div
-                  className={
-                    isDark ? "text-gray-400 text-sm" : "text-gray-500 text-sm"
-                  }
-                >
-                  Target Role
-                </div>
-              </div>
-
-              {/* Requirements Checklist */}
-              <div className="space-y-2 mb-4">
-                {[
-                  { label: "Frontend Skills", completed: true },
-                  { label: "Backend Skills", completed: false },
-                  { label: "Portfolio Projects", completed: true },
-                  { label: "Interview Prep", completed: false },
-                ].map((req, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm">
-                    <CheckCircle
-                      className={`w-4 h-4 ${req.completed ? "text-green-400" : isDark ? "text-gray-600" : "text-gray-400"}`}
-                    />
-                    <span
-                      className={
-                        req.completed
-                          ? isDark
-                            ? "text-gray-300"
-                            : "text-gray-700"
-                          : isDark
-                            ? "text-gray-500"
-                            : "text-gray-500"
-                      }
-                    >
-                      {req.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                className={`w-full py-2.5 backdrop-blur-sm rounded-lg font-semibold transition-all border hover:scale-105 ${
-                  isDark
-                    ? "bg-slate-800/50 text-white border-slate-700 hover:bg-slate-700"
-                    : "bg-white/50 text-gray-700 border-gray-300 hover:bg-white"
-                }`}
-              >
-                Update Goal
-              </button>
-            </div>
-
+            <SocialLinksCard
+              socialLinks={profile?.socialLinks}
+              isDark={isDark}
+            />
             {/* Learning Streak */}
             <LearningStreakCard
               isDark={isDark}
               profile={profile}
               streak={streak}
             />
-
             {/* Recent Activity */}
             <RecentActivityCard
               recentActivity={profile?.recentActivity}
               isDark={isDark}
               userId={profile?.userId}
             />
-
             {/* Achievements */}
             <AchievementsCard
               isDark={isDark}
               profile={profile}
               badgeStyles={badgeStyles}
             />
-
-            {/* Recommended for You */}
-            <div
-              className={`backdrop-blur-sm border rounded-xl p-6 transition-colors ${
-                isDark
-                  ? "bg-gradient-to-br from-slate-900/80 to-slate-900/40 border-purple-500/20 hover:border-purple-500/30"
-                  : "bg-gradient-to-br from-white/80 to-white/40 border-purple-300/20 hover:border-purple-300/30"
-              }`}
-            >
-              <h3
-                className={`text-xl font-bold mb-4 flex items-center gap-2 ${
-                  isDark ? "text-white" : "text-gray-900"
-                }`}
-              >
-                <Sparkles className="w-5 h-5 text-purple-400" />
-                Recommended
-              </h3>
-              <div className="space-y-3">
-                {[
-                  {
-                    title: "Advanced TypeScript",
-                    type: "Course",
-                    icon: <Book className="w-4 h-4" />,
-                  },
-                  {
-                    title: "AWS Fundamentals",
-                    type: "Course",
-                    icon: <Book className="w-4 h-4" />,
-                  },
-                  {
-                    title: "Senior Developer @ Tech Co",
-                    type: "Job",
-                    icon: <Briefcase className="w-4 h-4" />,
-                  },
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className={`flex items-center justify-between p-3 rounded-lg transition-colors group cursor-pointer ${
-                      isDark
-                        ? "bg-slate-800/50 hover:bg-slate-700/50"
-                        : "bg-gray-100/50 hover:bg-gray-200/50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform ${
-                          isDark
-                            ? "bg-purple-500/10 text-purple-400"
-                            : "bg-purple-100 text-purple-600"
-                        }`}
-                      >
-                        {item.icon}
-                      </div>
-                      <div>
-                        <div
-                          className={`text-sm font-medium ${
-                            isDark ? "text-white" : "text-gray-900"
-                          }`}
-                        >
-                          {item.title}
-                        </div>
-                        <div
-                          className={
-                            isDark
-                              ? "text-gray-500 text-xs"
-                              : "text-gray-500 text-xs"
-                          }
-                        >
-                          {item.type}
-                        </div>
-                      </div>
-                    </div>
-                    <ChevronRight
-                      className={`w-4 h-4 transition-colors ${
-                        isDark
-                          ? "text-gray-400 group-hover:text-white"
-                          : "text-gray-400 group-hover:text-gray-600"
-                      }`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -575,7 +251,6 @@ export default function ProfilePage() {
           setOpen={setShowProjectModal}
           editData={selectedProject}
         />
-        // onSuccess={refreshProfile} />
       )}
     </div>
   );

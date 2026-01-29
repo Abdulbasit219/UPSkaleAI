@@ -9,8 +9,6 @@ export async function GET(request, context) {
     const params = await context.params;
     const { id } = params;
 
-    console.log(id);
-
     if (!id) {
       return NextResponse.json(
         { message: "User ID is required" },
