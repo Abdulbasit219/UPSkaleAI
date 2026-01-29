@@ -28,10 +28,14 @@ const ProjectPortfolio = ({
         </h3>
 
         <button
-          className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-sm font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-2 hover:scale-105 cursor-pointer"
+          className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+            isDark
+              ? "bg-purple-500/10 hover:bg-purple-500/20 text-purple-400"
+              : "bg-purple-100 hover:bg-purple-200 text-purple-600"
+          }`}
           onClick={() => setShowProjectModal(true)}
         >
-          <Plus className="w-4 h-4" /> Add Project
+          <Plus className="w-4 h-4" /> Add
         </button>
       </div>
 

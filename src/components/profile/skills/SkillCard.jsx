@@ -30,7 +30,7 @@ const SkillCard = ({ skill, isDark }) => {
                 isDark ? "text-white" : "text-gray-900"
               }`}
             >
-              {skill?.skillName || "Untitled Skill"}
+              {skill?.skillName}
             </h2>
 
             <span
@@ -40,7 +40,7 @@ const SkillCard = ({ skill, isDark }) => {
                   : "bg-gray-200 text-gray-600"
               }`}
             >
-              {skill?.level || "Beginner"}
+              {skill?.level}
             </span>
           </div>
 
@@ -70,21 +70,10 @@ const SkillCard = ({ skill, isDark }) => {
               isDark ? "text-gray-500" : "text-gray-400"
             }`}
           >
-            Last practiced: {skill?.lastPracticed || "Never"}
+            Last practiced: {skill?.lastPracticed}
           </p>
         </div>
       </div>
-
-      {/* TAKE QUIZ BUTTON */}
-      <button
-        className={`ml-4 px-4 py-2 rounded-lg text-sm font-semibold border transition-all hover:scale-105 cursor-pointer ${
-          isDark
-            ? "bg-purple-500/20 text-purple-300 border-purple-500/20 hover:bg-purple-500/30"
-            : "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200"
-        }`}
-      >
-        Take Quiz
-      </button>
     </div>
   );
 };

@@ -125,6 +125,118 @@ export const deleteAvatar = createAsyncThunk(
   }
 );
 
+export const fetchLearningPath = createAsyncThunk(
+  "profile/fetchLearningPath",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch("/api/user/profile/learning-path");
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error);
+      return data.data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const addExperience = createAsyncThunk(
+  "profile/addExperience",
+  async (experienceData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        "/api/user/profile/experience",
+        experienceData
+      );
+      return response.data.experience;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to add experience"
+      );
+    }
+  }
+);
+
+export const updateExperience = createAsyncThunk(
+  "profile/updateExperience",
+  async ({ experienceId, data }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put("/api/user/profile/experience", {
+        experienceId,
+        ...data,
+      });
+      return response.data.experience;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to update experience"
+      );
+    }
+  }
+);
+
+export const deleteExperience = createAsyncThunk(
+  "profile/deleteExperience",
+  async (experienceId, { rejectWithValue }) => {
+    try {
+      await axios.delete("/api/user/profile/experience", {
+        data: { experienceId },
+      });
+      return experienceId;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to delete experience"
+      );
+    }
+  }
+);
+
+export const addEducation = createAsyncThunk(
+  "profile/addEducation",
+  async (educationData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        "/api/user/profile/education",
+        educationData
+      );
+      return response.data.education;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to add education");
+    }
+  }
+);
+
+export const updateEducation = createAsyncThunk(
+  "profile/updateEducation",
+  async ({ educationId, data }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put("/api/user/profile/education", {
+        educationId,
+        ...data,
+      });
+      return response.data.education;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to update education"
+      );
+    }
+  }
+);
+
+export const deleteEducation = createAsyncThunk(
+  "profile/deleteEducation",
+  async (educationId, { rejectWithValue }) => {
+    try {
+      await axios.delete("/api/user/profile/education", {
+        data: { educationId },
+      });
+      return educationId;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || "Failed to delete education"
+      );
+    }
+  }
+);
+
 const generateStreak = (streakDays) => {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
   const todayIndex = new Date().getDay();
@@ -147,6 +259,8 @@ const profileSlice = createSlice({
     loading: false,
     error: null,
     streak: [],
+    learningPath: [],
+    learningPathLoading: false,
   },
   reducers: {
     // Generate learning streak
@@ -241,6 +355,71 @@ const profileSlice = createSlice({
       .addCase(addSkill.fulfilled, (state, action) => {
         if (state.data?.skills) {
           state.data.skills.push(action.payload);
+        }
+      })
+
+      .addCase(fetchLearningPath.pending, (state) => {
+        state.learningPathLoading = true;
+      })
+      .addCase(fetchLearningPath.fulfilled, (state, action) => {
+        state.learningPath = action.payload;
+        state.learningPathLoading = false;
+      })
+      .addCase(fetchLearningPath.rejected, (state) => {
+        state.learningPathLoading = false;
+      })
+
+      .addCase(addExperience.fulfilled, (state, action) => {
+        if (state.data?.experience) {
+          state.data.experience.push(action.payload);
+        } else {
+          state.data.experience = [action.payload];
+        }
+      })
+
+      .addCase(updateExperience.fulfilled, (state, action) => {
+        if (state.data?.experience) {
+          const index = state.data.experience.findIndex(
+            (exp) => exp._id === action.payload._id
+          );
+          if (index !== -1) {
+            state.data.experience[index] = action.payload;
+          }
+        }
+      })
+
+      .addCase(deleteExperience.fulfilled, (state, action) => {
+        if (state.data?.experience) {
+          state.data.experience = state.data.experience.filter(
+            (exp) => exp._id !== action.payload
+          );
+        }
+      })
+      
+      .addCase(addEducation.fulfilled, (state, action) => {
+        if (state.data?.education) {
+          state.data.education.push(action.payload);
+        } else {
+          state.data.education = [action.payload];
+        }
+      })
+
+      .addCase(updateEducation.fulfilled, (state, action) => {
+        if (state.data?.education) {
+          const index = state.data.education.findIndex(
+            (edu) => edu._id === action.payload._id
+          );
+          if (index !== -1) {
+            state.data.education[index] = action.payload;
+          }
+        }
+      })
+
+      .addCase(deleteEducation.fulfilled, (state, action) => {
+        if (state.data?.education) {
+          state.data.education = state.data.education.filter(
+            (edu) => edu._id !== action.payload
+          );
         }
       });
   },

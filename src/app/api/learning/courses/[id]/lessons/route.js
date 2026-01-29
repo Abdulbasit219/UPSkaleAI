@@ -21,12 +21,12 @@ export async function GET(request, { params }) {
     }
 
     const lessons = await Lesson.find({ courseId: id }).sort({ order: 1 });
-    // .populate("quiz");
 
     return NextResponse.json({
       success: true,
       count: lessons.length,
       data: lessons,
+      totalAllowed: course.totalLessons,
     });
   } catch (error) {
     console.error("Get lessons error:", error);
@@ -49,26 +49,35 @@ export async function POST(request, { params }) {
     const { id } = await params;
     const body = await request.json();
 
-    const enrolledUsers = await UserProgress.find({ courseId: id }).select(
-      "userId"
-    );
+    const course = await Course.findById(id).select("title totalLessons");
 
-    const userIds = enrolledUsers.map((u) => u.userId);
-
-    const notificationSettings = await NotificationSettings.find({
-      userId: { $in: userIds },
-      "channels.email": true,
-      "learning.courseUpdates": true,
-    }).populate("userId", "email name");
-
-    console.log("Enrolled users:", userIds.length);
-    console.log("Notification users:", notificationSettings.length);
-
-    const course = await Course.findById(id);
+    console.log(course)
     if (!course) {
       return NextResponse.json(
         { success: false, message: "Course not found" },
         { status: 404 }
+      );
+    }
+
+    if (!course.totalLessons) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Course totalLessons not configured",
+        },
+        { status: 400 }
+      );
+    }
+
+    const existingLessonsCount = await Lesson.countDocuments({ courseId: id });
+
+    if (existingLessonsCount >= course.totalLessons) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Cannot add more lessons. Course limit is ${course.totalLessons} lessons. Current: ${existingLessonsCount}`,
+        },
+        { status: 400 }
       );
     }
 
@@ -105,6 +114,20 @@ export async function POST(request, { params }) {
       resources: resources || [],
     });
 
+    await recalculateProgressForCourse(id);
+
+    const enrolledUsers = await UserProgress.find({ courseId: id }).select(
+      "userId"
+    );
+
+    const userIds = enrolledUsers.map((u) => u.userId);
+
+    const notificationSettings = await NotificationSettings.find({
+      userId: { $in: userIds },
+      "channels.email": true,
+      "learning.courseUpdates": true,
+    }).populate("userId", "email name");
+
     for (const ns of notificationSettings) {
       const user = ns.userId;
 
@@ -116,12 +139,12 @@ export async function POST(request, { params }) {
         course._id
       );
     }
-
     return NextResponse.json(
       {
         success: true,
-        message: "Lesson created successfully",
+        message: `Lesson created successfully (${existingLessonsCount + 1}/${course.totalLessons})`,
         data: lesson,
+        remaining: course.totalLessons - (existingLessonsCount + 1),
       },
       { status: 201 }
     );
@@ -135,5 +158,32 @@ export async function POST(request, { params }) {
       },
       { status: 500 }
     );
+  }
+}
+
+async function recalculateProgressForCourse(courseId) {
+  try {
+    const totalLessons = await Lesson.countDocuments({ courseId });
+    const allProgress = await UserProgress.find({ courseId });
+
+    for (let progress of allProgress) {
+      const completedCount = progress.completedLessons.length;
+      const newPercentage =
+        totalLessons > 0
+          ? Math.round((completedCount / totalLessons) * 100)
+          : 0;
+
+      progress.progressPercentage = newPercentage;
+
+      // Reset completion if new lessons added
+      if (progress.isCompleted && newPercentage < 100) {
+        progress.isCompleted = false;
+        progress.completedAt = null;
+      }
+
+      await progress.save();
+    }
+  } catch (error) {
+    console.error("Recalculation error:", error);
   }
 }

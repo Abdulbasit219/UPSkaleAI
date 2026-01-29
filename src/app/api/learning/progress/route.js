@@ -97,9 +97,10 @@ export async function POST(request) {
       });
     }
 
-    const totalLessons = await Lesson.countDocuments({ courseId });
-
+    const course = await Course.findById(courseId).select("totalLessons title");
+    const totalLessons = course.totalLessons;
     const completedCount = progress.completedLessons.length;
+
     progress.progressPercentage = Math.round(
       (completedCount / totalLessons) * 100
     );
@@ -123,8 +124,6 @@ export async function POST(request) {
       const course = await Course.findById(courseId).select("title");
       const badgeName = `Completed Course: ${course.title}`;
       const profile = await UserProfile.findOne({ userId });
-
-      console.log(course, profile, badgeName)
 
       if (profile) {
         updateBadges(profile, {
