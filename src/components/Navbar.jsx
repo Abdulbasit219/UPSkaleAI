@@ -26,12 +26,16 @@ import {
   Sun,
   Shield,
   Users,
+  MessageSquare,
+  PlusCircle,
+  ClipboardList,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "@/store/slices/themeSlice";
 import { useSession, signOut } from "next-auth/react";
+import PostJobModal from "@/components/company/PostJobModal";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -39,6 +43,7 @@ const Navbar = () => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [closingTimeout, setClosingTimeout] = useState(null);
   const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
+  const [isPostJobModalOpen, setIsPostJobModalOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -121,19 +126,90 @@ const Navbar = () => {
     router.push("/");
   };
 
-  const mainNavItems = [
-    { name: "Home", href: "/", icon: <Home className="w-4 h-4" /> },
-    {
-      name: "Find Jobs",
-      href: "/jobsearch",
-      icon: <Briefcase className="w-4 h-4" />,
-    },
-    {
-      name: "Resume Checker",
-      href: "/resume-checker",
-      icon: <FileCheck className="w-4 h-4" />,
-    },
-  ];
+  // Role-based main navigation items
+  const getMainNavItems = () => {
+    if (!session) {
+      // Unauthenticated users see default items
+      return [
+        { name: "Home", href: "/", icon: <Home className="w-4 h-4" /> },
+        {
+          name: "Find Jobs",
+          href: "/jobsearch",
+          icon: <Briefcase className="w-4 h-4" />,
+        },
+        {
+          name: "Resume Checker",
+          href: "/resume-checker",
+          icon: <FileCheck className="w-4 h-4" />,
+        },
+      ];
+    }
+
+    const role = session.user.role;
+
+    switch (role) {
+      case "Admin":
+        return [
+          { name: "Home", href: "/", icon: <Home className="w-4 h-4" /> },
+          {
+            name: "Dashboard",
+            href: "/admin",
+            icon: <Shield className="w-4 h-4" />,
+          },
+          {
+            name: "Users",
+            href: "/admin/users",
+            icon: <Users className="w-4 h-4" />,
+          },
+          {
+            name: "Companies",
+            href: "/admin/companies",
+            icon: <Building2 className="w-4 h-4" />,
+          },
+          {
+            name: "Jobs",
+            href: "/admin/jobs",
+            icon: <Briefcase className="w-4 h-4" />,
+          },
+        ];
+      case "Company":
+        return [
+          { name: "Home", href: "/", icon: <Home className="w-4 h-4" /> },
+          {
+            name: "Dashboard",
+            href: "/company/dashboard",
+            icon: <Building2 className="w-4 h-4" />,
+          },
+          {
+            name: "Messages",
+            href: "/chat",
+            icon: <MessageSquare className="w-4 h-4" />,
+          },
+          {
+            name: "Post Job",
+            action: () => setIsPostJobModalOpen(true),
+            icon: <PlusCircle className="w-4 h-4" />,
+          },
+        ];
+      case "Job Seeker":
+      default:
+        return [
+          { name: "Home", href: "/", icon: <Home className="w-4 h-4" /> },
+          {
+            name: "Find Jobs",
+            href: "/jobsearch",
+            icon: <Briefcase className="w-4 h-4" />,
+          },
+          {
+            name: "Resume Checker",
+            href: "/resume-checker",
+            icon: <FileCheck className="w-4 h-4" />,
+          },
+        ];
+    }
+  };
+
+  const mainNavItems = getMainNavItems();
 
   const resourcesItems = [
     {
@@ -357,49 +433,34 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-1">
-              {mainNavItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`relative flex items-center gap-2 px-4 py-2.5 mx-1 rounded-xl font-medium transition-all duration-300 group ${
-                    isActiveLink(item.href)
-                      ? isDark
-                        ? "text-white bg-gradient-to-r from-purple-500/20 to-pink-500/20 shadow-lg shadow-purple-500/10"
-                        : "text-gray-900 bg-gradient-to-r from-purple-100 to-pink-100 shadow-lg shadow-purple-300/10"
-                      : isDark
+              {mainNavItems.map((item) =>
+                item.action ? (
+                  <button
+                    key={item.name}
+                    onClick={item.action}
+                    className={`relative flex items-center gap-2 px-4 py-2.5 mx-1 rounded-xl font-medium transition-all duration-300 group ${
+                      isDark
                         ? "text-gray-300 hover:text-white hover:bg-white/5"
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                  }`}
-                >
-                  <div
-                    className={`transition-colors duration-300 ${
-                      isActiveLink(item.href)
-                        ? "text-purple-400"
-                        : isDark
-                          ? "text-gray-400 group-hover:text-purple-300"
-                          : "text-gray-500 group-hover:text-purple-500"
                     }`}
                   >
-                    {item.icon}
-                  </div>
-                  {item.name}
-
-                  {isActiveLink(item.href) && (
-                    <div className="absolute -bottom-1 left-1/2 w-1 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transform -translate-x-1/2"></div>
-                  )}
-                </Link>
-              ))}
-
-              {/* Resources Dropdown */}
-              <div className="relative">
-                <div
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                  className="relative"
-                >
-                  <button
+                    <div
+                      className={`transition-colors duration-300 ${
+                        isDark
+                          ? "text-gray-400 group-hover:text-purple-300"
+                          : "text-gray-500 group-hover:text-purple-500"
+                      }`}
+                    >
+                      {item.icon}
+                    </div>
+                    {item.name}
+                  </button>
+                ) : (
+                  <Link
+                    key={item.name}
+                    href={item.href}
                     className={`relative flex items-center gap-2 px-4 py-2.5 mx-1 rounded-xl font-medium transition-all duration-300 group ${
-                      isResourcesActive()
+                      isActiveLink(item.href)
                         ? isDark
                           ? "text-white bg-gradient-to-r from-purple-500/20 to-pink-500/20 shadow-lg shadow-purple-500/10"
                           : "text-gray-900 bg-gradient-to-r from-purple-100 to-pink-100 shadow-lg shadow-purple-300/10"
@@ -408,84 +469,126 @@ const Navbar = () => {
                           : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                     }`}
                   >
-                    <Layers
-                      className={`w-4 h-4 transition-colors duration-300 ${
-                        isResourcesActive()
+                    <div
+                      className={`transition-colors duration-300 ${
+                        isActiveLink(item.href)
                           ? "text-purple-400"
                           : isDark
                             ? "text-gray-400 group-hover:text-purple-300"
                             : "text-gray-500 group-hover:text-purple-500"
                       }`}
-                    />
-                    Tools
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform duration-300 ${isResourcesDropdownOpen ? "rotate-180" : ""}`}
-                    />
-                    {isResourcesActive() && (
+                    >
+                      {item.icon}
+                    </div>
+                    {item.name}
+
+                    {isActiveLink(item.href) && (
                       <div className="absolute -bottom-1 left-1/2 w-1 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transform -translate-x-1/2"></div>
                     )}
-                  </button>
+                  </Link>
+                ),
+              )}
 
-                  {/* Dropdown Menu */}
-                  {isResourcesDropdownOpen && (
-                    <div
-                      className={`absolute left-0 mt-2 w-80 backdrop-blur-xl border rounded-2xl shadow-2xl py-3 animate-in fade-in-0 zoom-in-95 ${
-                        isDark
-                          ? "bg-slate-900/98 border-purple-500/30 shadow-purple-500/20"
-                          : "bg-white/98 border-purple-300/30 shadow-purple-300/20"
+              {/* Resources Dropdown - Only for Job Seekers and unauthenticated users */}
+              {(!session || session.user.role === "Job Seeker") && (
+                <div className="relative">
+                  <div
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    className="relative"
+                  >
+                    <button
+                      className={`relative flex items-center gap-2 px-4 py-2.5 mx-1 rounded-xl font-medium transition-all duration-300 group ${
+                        isResourcesActive()
+                          ? isDark
+                            ? "text-white bg-gradient-to-r from-purple-500/20 to-pink-500/20 shadow-lg shadow-purple-500/10"
+                            : "text-gray-900 bg-gradient-to-r from-purple-100 to-pink-100 shadow-lg shadow-purple-300/10"
+                          : isDark
+                            ? "text-gray-300 hover:text-white hover:bg-white/5"
+                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                       }`}
                     >
+                      <Layers
+                        className={`w-4 h-4 transition-colors duration-300 ${
+                          isResourcesActive()
+                            ? "text-purple-400"
+                            : isDark
+                              ? "text-gray-400 group-hover:text-purple-300"
+                              : "text-gray-500 group-hover:text-purple-500"
+                        }`}
+                      />
+                      Tools
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform duration-300 ${isResourcesDropdownOpen ? "rotate-180" : ""}`}
+                      />
+                      {isResourcesActive() && (
+                        <div className="absolute -bottom-1 left-1/2 w-1 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transform -translate-x-1/2"></div>
+                      )}
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {isResourcesDropdownOpen && (
                       <div
-                        className={`px-3 py-2 border-b mb-2 ${isDark ? "border-purple-500/10" : "border-purple-300/10"}`}
+                        className={`absolute left-0 mt-2 w-80 backdrop-blur-xl border rounded-2xl shadow-2xl py-3 animate-in fade-in-0 zoom-in-95 ${
+                          isDark
+                            ? "bg-slate-900/98 border-purple-500/30 shadow-purple-500/20"
+                            : "bg-white/98 border-purple-300/30 shadow-purple-300/20"
+                        }`}
                       >
-                        <p
-                          className={`text-xs font-semibold uppercase tracking-wider ${isDark ? "text-purple-300" : "text-purple-600"}`}
+                        <div
+                          className={`px-3 py-2 border-b mb-2 ${isDark ? "border-purple-500/10" : "border-purple-300/10"}`}
                         >
-                          UpSkaleAI Tools
-                        </p>
-                      </div>
-                      <div className="grid grid-cols-1 gap-1 px-2">
-                        {resourcesItems.map((item) => (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            className={`group flex items-start gap-3 px-3 py-3 rounded-xl transition-all duration-200 border ${
-                              isDark
-                                ? "hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 border-transparent hover:border-purple-500/20"
-                                : "hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 border-transparent hover:border-purple-300/20"
-                            }`}
-                            onClick={() => setIsResourcesDropdownOpen(false)}
+                          <p
+                            className={`text-xs font-semibold uppercase tracking-wider ${isDark ? "text-purple-300" : "text-purple-600"}`}
                           >
-                            <div
-                              className={`mt-0.5 w-8 h-8 bg-gradient-to-br rounded-lg flex items-center justify-center border group-hover:scale-110 transition-transform ${
+                            UpSkaleAI Tools
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-1 gap-1 px-2">
+                          {resourcesItems.map((item) => (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              className={`group flex items-start gap-3 px-3 py-3 rounded-xl transition-all duration-200 border ${
                                 isDark
-                                  ? "from-purple-500/20 to-pink-500/20 border-purple-500/20"
-                                  : "from-purple-100 to-pink-100 border-purple-300/20"
+                                  ? "hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 border-transparent hover:border-purple-500/20"
+                                  : "hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 border-transparent hover:border-purple-300/20"
                               }`}
+                              onClick={() => setIsResourcesDropdownOpen(false)}
                             >
-                              <div className="text-purple-400">{item.icon}</div>
-                            </div>
-                            <div className="flex-1">
                               <div
-                                className={`font-medium text-sm group-hover:text-purple-400 transition-colors ${
-                                  isDark ? "text-white" : "text-gray-900"
+                                className={`mt-0.5 w-8 h-8 bg-gradient-to-br rounded-lg flex items-center justify-center border group-hover:scale-110 transition-transform ${
+                                  isDark
+                                    ? "from-purple-500/20 to-pink-500/20 border-purple-500/20"
+                                    : "from-purple-100 to-pink-100 border-purple-300/20"
                                 }`}
                               >
-                                {item.name}
+                                <div className="text-purple-400">
+                                  {item.icon}
+                                </div>
                               </div>
-                              <div
-                                className={`text-xs mt-0.5 ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                              >
-                                {item.description}
+                              <div className="flex-1">
+                                <div
+                                  className={`font-medium text-sm group-hover:text-purple-400 transition-colors ${
+                                    isDark ? "text-white" : "text-gray-900"
+                                  }`}
+                                >
+                                  {item.name}
+                                </div>
+                                <div
+                                  className={`text-xs mt-0.5 ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                                >
+                                  {item.description}
+                                </div>
                               </div>
-                            </div>
-                          </Link>
-                        ))}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Desktop Auth Buttons & Theme Toggle */}
@@ -513,102 +616,104 @@ const Navbar = () => {
                   <div className="animate-pulse h-4 w-16 bg-gray-300 rounded"></div>
                 </div>
               ) : status === "authenticated" ? (
-                /* User Dropdown for authenticated users */
-                <div className="relative" ref={userDropdownRef}>
-                  <button
-                    ref={userButtonRef}
-                    onClick={toggleUserDropdown}
-                    className={`flex items-center gap-2 px-3 py-2 transition-colors duration-300 rounded-xl border ${
-                      isDark
-                        ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
-                    }`}
-                  >
-                    <div
-                      className={`w-9 h-9 bg-gradient-to-br rounded-xl flex items-center justify-center border ${
+                <>
+                  {/* User Dropdown for authenticated users */}
+                  <div className="relative" ref={userDropdownRef}>
+                    <button
+                      ref={userButtonRef}
+                      onClick={toggleUserDropdown}
+                      className={`flex items-center gap-2 px-3 py-2 transition-colors duration-300 rounded-xl border ${
                         isDark
-                          ? "from-purple-500/20 to-pink-500/20 border-purple-500/30"
-                          : "from-purple-100 to-pink-100 border-purple-300/30"
-                      }`}
-                    >
-                      <User className="w-4 h-4 text-purple-400" />
-                    </div>
-                    <div className="hidden xl:block text-left">
-                      <p
-                        className={`text-sm font-medium ${isDark ? "text-white" : "text-gray-900"}`}
-                      >
-                        {getUserDisplayName()}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {session.user.role}
-                      </p>
-                    </div>
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform duration-300 ${isUserDropdownOpen ? "rotate-180" : ""}`}
-                    />
-                  </button>
-
-                  {isUserDropdownOpen && (
-                    <div
-                      className={`absolute right-0 mt-2 w-64 backdrop-blur-xl border rounded-xl shadow-2xl py-2 animate-in fade-in-0 zoom-in-95 ${
-                        isDark
-                          ? "bg-slate-900/98 border-purple-500/30 shadow-purple-500/20"
-                          : "bg-white/98 border-purple-300/30 shadow-purple-300/20"
+                          ? "text-gray-300 hover:text-white hover:bg-white/5 border-transparent hover:border-purple-500/20"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-transparent hover:border-purple-300/20"
                       }`}
                     >
                       <div
-                        className={`px-4 py-3 border-b ${isDark ? "border-purple-500/10" : "border-purple-300/10"}`}
+                        className={`w-9 h-9 bg-gradient-to-br rounded-xl flex items-center justify-center border ${
+                          isDark
+                            ? "from-purple-500/20 to-pink-500/20 border-purple-500/30"
+                            : "from-purple-100 to-pink-100 border-purple-300/30"
+                        }`}
                       >
+                        <User className="w-4 h-4 text-purple-400" />
+                      </div>
+                      <div className="hidden xl:block text-left">
                         <p
-                          className={`text-sm font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                          className={`text-sm font-medium ${isDark ? "text-white" : "text-gray-900"}`}
                         >
                           {getUserDisplayName()}
                         </p>
-                        <p
-                          className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}
-                        >
-                          {session.user.email}
-                        </p>
-                        <div
-                          className={`mt-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor()}`}
-                        >
+                        <p className="text-xs text-gray-500">
                           {session.user.role}
+                        </p>
+                      </div>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform duration-300 ${isUserDropdownOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    {isUserDropdownOpen && (
+                      <div
+                        className={`absolute right-0 mt-2 w-64 backdrop-blur-xl border rounded-xl shadow-2xl py-2 animate-in fade-in-0 zoom-in-95 ${
+                          isDark
+                            ? "bg-slate-900/98 border-purple-500/30 shadow-purple-500/20"
+                            : "bg-white/98 border-purple-300/30 shadow-purple-300/20"
+                        }`}
+                      >
+                        <div
+                          className={`px-4 py-3 border-b ${isDark ? "border-purple-500/10" : "border-purple-300/10"}`}
+                        >
+                          <p
+                            className={`text-sm font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                          >
+                            {getUserDisplayName()}
+                          </p>
+                          <p
+                            className={`text-xs ${isDark ? "text-gray-400" : "text-gray-600"}`}
+                          >
+                            {session.user.email}
+                          </p>
+                          <div
+                            className={`mt-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor()}`}
+                          >
+                            {session.user.role}
+                          </div>
+                        </div>
+                        <div className="py-2">
+                          {userMenuItems.map((item) => (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 mx-2 rounded-lg ${
+                                isDark
+                                  ? "text-gray-300 hover:text-white hover:bg-purple-500/10"
+                                  : "text-gray-600 hover:text-gray-900 hover:bg-purple-50"
+                              }`}
+                              onClick={() => setIsUserDropdownOpen(false)}
+                            >
+                              <div className="text-purple-400">{item.icon}</div>
+                              {item.name}
+                            </Link>
+                          ))}
+                          <div
+                            className={`mx-2 my-2 border-t ${isDark ? "border-purple-500/10" : "border-purple-300/10"}`}
+                          ></div>
+                          <button
+                            onClick={handleSignOut}
+                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 mx-2 rounded-lg ${
+                              isDark
+                                ? "text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                : "text-red-600 hover:text-red-700 hover:bg-red-50"
+                            }`}
+                          >
+                            <LogOut className="w-4 h-4" />
+                            Sign Out
+                          </button>
                         </div>
                       </div>
-                      <div className="py-2">
-                        {userMenuItems.map((item) => (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 mx-2 rounded-lg ${
-                              isDark
-                                ? "text-gray-300 hover:text-white hover:bg-purple-500/10"
-                                : "text-gray-600 hover:text-gray-900 hover:bg-purple-50"
-                            }`}
-                            onClick={() => setIsUserDropdownOpen(false)}
-                          >
-                            <div className="text-purple-400">{item.icon}</div>
-                            {item.name}
-                          </Link>
-                        ))}
-                        <div
-                          className={`mx-2 my-2 border-t ${isDark ? "border-purple-500/10" : "border-purple-300/10"}`}
-                        ></div>
-                        <button
-                          onClick={handleSignOut}
-                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 mx-2 rounded-lg ${
-                            isDark
-                              ? "text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                              : "text-red-600 hover:text-red-700 hover:bg-red-50"
-                          }`}
-                        >
-                          <LogOut className="w-4 h-4" />
-                          Sign Out
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                </>
               ) : (
                 /* Sign In button for unauthenticated users */
                 <>
@@ -718,45 +823,27 @@ const Navbar = () => {
 
             {/* Main Navigation Links */}
             <div className="space-y-2">
-              {mainNavItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    setIsUserDropdownOpen(false);
-                  }}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
-                    isActiveLink(item.href)
-                      ? isDark
-                        ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30"
-                        : "bg-gradient-to-r from-purple-100 to-pink-100 text-gray-900 border border-purple-300/30"
-                      : isDark
+              {mainNavItems.map((item) =>
+                item.action ? (
+                  <button
+                    key={item.name}
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setIsUserDropdownOpen(false);
+                      item.action();
+                    }}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 w-full text-left ${
+                      isDark
                         ? "text-gray-300 hover:text-white hover:bg-white/5"
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                  }`}
-                >
-                  <div
-                    className={`${isActiveLink(item.href) ? "text-purple-400" : isDark ? "text-gray-400" : "text-gray-500"}`}
+                    }`}
                   >
-                    {item.icon}
-                  </div>
-                  {item.name}
-                </Link>
-              ))}
-            </div>
-
-            {/* Resources Section */}
-            <div
-              className={`pt-3 border-t ${isDark ? "border-purple-500/20" : "border-purple-300/20"}`}
-            >
-              <p
-                className={`text-xs font-semibold uppercase tracking-wider mb-2 px-2 ${isDark ? "text-purple-300" : "text-purple-600"}`}
-              >
-                Tools & Resources
-              </p>
-              <div className="space-y-2">
-                {resourcesItems.map((item) => (
+                    <div className={isDark ? "text-gray-400" : "text-gray-500"}>
+                      {item.icon}
+                    </div>
+                    {item.name}
+                  </button>
+                ) : (
                   <Link
                     key={item.name}
                     href={item.href}
@@ -779,18 +866,59 @@ const Navbar = () => {
                     >
                       {item.icon}
                     </div>
-                    <div>
-                      <div>{item.name}</div>
-                      <div
-                        className={`text-xs ${isDark ? "text-gray-500" : "text-gray-500"}`}
-                      >
-                        {item.description}
-                      </div>
-                    </div>
+                    {item.name}
                   </Link>
-                ))}
-              </div>
+                ),
+              )}
             </div>
+
+            {/* Resources Section - Only for Job Seekers and unauthenticated users */}
+            {(!session || session.user.role === "Job Seeker") && (
+              <div
+                className={`pt-3 border-t ${isDark ? "border-purple-500/20" : "border-purple-300/20"}`}
+              >
+                <p
+                  className={`text-xs font-semibold uppercase tracking-wider mb-2 px-2 ${isDark ? "text-purple-300" : "text-purple-600"}`}
+                >
+                  Tools & Resources
+                </p>
+                <div className="space-y-2">
+                  {resourcesItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        setIsUserDropdownOpen(false);
+                      }}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
+                        isActiveLink(item.href)
+                          ? isDark
+                            ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white border border-purple-500/30"
+                            : "bg-gradient-to-r from-purple-100 to-pink-100 text-gray-900 border border-purple-300/30"
+                          : isDark
+                            ? "text-gray-300 hover:text-white hover:bg-white/5"
+                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                      }`}
+                    >
+                      <div
+                        className={`${isActiveLink(item.href) ? "text-purple-400" : isDark ? "text-gray-400" : "text-gray-500"}`}
+                      >
+                        {item.icon}
+                      </div>
+                      <div>
+                        <div>{item.name}</div>
+                        <div
+                          className={`text-xs ${isDark ? "text-gray-500" : "text-gray-500"}`}
+                        >
+                          {item.description}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* User Menu Items (Mobile - if authenticated) */}
             {status === "authenticated" && (
@@ -879,6 +1007,15 @@ const Navbar = () => {
         <div
           className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 lg:hidden animate-in fade-in-0"
           onClick={() => setIsMenuOpen(false)}
+        />
+      )}
+
+      {/* Post Job Modal - Only for Company users */}
+      {status === "authenticated" && session?.user?.role === "Company" && (
+        <PostJobModal
+          isOpen={isPostJobModalOpen}
+          onClose={() => setIsPostJobModalOpen(false)}
+          isDark={isDark}
         />
       )}
     </>
