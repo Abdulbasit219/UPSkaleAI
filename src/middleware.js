@@ -10,8 +10,15 @@ export async function middleware(request) {
     if (
       url.pathname.startsWith("/admin") ||
       url.pathname.startsWith("/company") ||
-      url.pathname.startsWith("/dashboardd") ||
-      url.pathname.startsWith("/profile")
+      url.pathname.startsWith("/dashboard") ||
+      url.pathname.startsWith("/profile") ||
+      url.pathname.startsWith("/code-twin") ||
+      url.pathname.startsWith("/jobsearch/apply/") ||
+      url.pathname.startsWith("/jobsearch/interview/") ||
+      url.pathname.startsWith("/chat") ||
+      url.pathname.startsWith("/resume-checker") ||
+      url.pathname.startsWith("/career-path") ||
+      url.pathname.startsWith("/learning")
     ) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
@@ -28,10 +35,10 @@ export async function middleware(request) {
         return NextResponse.redirect(new URL("/admin/dashboard", request.url));
       } else if (token.role === "Company") {
         return NextResponse.redirect(
-          new URL("/company/dashboard", request.url)
+          new URL("/company/dashboard", request.url),
         );
       } else {
-        return NextResponse.redirect(new URL("/dashboardd", request.url));
+        return NextResponse.redirect(new URL("/dashboard", request.url));
       }
     }
 
@@ -47,7 +54,7 @@ export async function middleware(request) {
     }
 
     // Job Seeker Routes
-    if (url.pathname.startsWith("/dashboardd") && token.role !== "Job Seeker") {
+    if (url.pathname.startsWith("/dashboard") && token.role !== "Job Seeker") {
       return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
   }
@@ -62,7 +69,14 @@ export const config = {
     "/verify/:path*",
     "/admin/:path*",
     "/company/:path*",
-    "/dashboardd/:path*",
+    "/dashboard/:path*",
     "/profile/:path*",
+    "/code-twin",
+    "/jobsearch/apply/:path*",
+    "/jobsearch/interview/:path*",
+    "/chat",
+    "/resume-checker",
+    "/career-path",
+    "/learning",
   ],
 };

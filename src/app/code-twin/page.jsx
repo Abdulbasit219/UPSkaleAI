@@ -189,7 +189,7 @@ welcome();`);
         return [
           {
             name: "Dashboard",
-            href: "/dashboardd",
+            href: "/dashboard",
             icon: <Sparkles className="w-4 h-4" />,
           },
           {
