@@ -111,6 +111,14 @@ export default function ChatPage() {
   const messagesEndRef = useRef(null);
   const [socket, setSocket] = useState(null);
 
+  const activeChatRef = useRef(activeChat);
+  const myIdRef = useRef(myId);
+
+  useEffect(() => {
+    activeChatRef.current = activeChat;
+    myIdRef.current = myId;
+  }, [activeChat, myId]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -128,15 +136,26 @@ export default function ChatPage() {
 
     newSocket.on("receive_message", (data) => {
       console.log("Received message:", data);
-      setMessages((prev) => {
-        const isDuplicate = prev.some((m) => {
-          if (m._id && data._id && m._id === data._id) return true;
-          if (m.tempId && data.tempId && m.tempId === data.tempId) return true;
-          return false;
+
+      const currentActive = activeChatRef.current;
+      const currentMyId = myIdRef.current;
+
+      if (!currentActive || !currentMyId) return;
+
+      const currentRoomId = `chat-${[String(currentMyId), String(currentActive.id)].sort().join("-")}`;
+
+      if (data.roomId === currentRoomId) {
+        setMessages((prev) => {
+          const isDuplicate = prev.some((m) => {
+            if (m._id && data._id && m._id === data._id) return true;
+            if (m.tempId && data.tempId && m.tempId === data.tempId)
+              return true;
+            return false;
+          });
+          if (isDuplicate) return prev;
+          return [...prev, data];
         });
-        if (isDuplicate) return prev;
-        return [...prev, data];
-      });
+      }
     });
 
     setSocket(newSocket);
