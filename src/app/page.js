@@ -319,7 +319,7 @@ export default function UpSkaleAILanding() {
           </div>
 
           {/* Social Proof Footer - Scrolling Marquee */}
-          <div className="mt-24 flex flex-col items-center gap-10">
+          {/* <div className="mt-24 flex flex-col items-center gap-10">
             <div className="text-sm font-bold opacity-40 uppercase tracking-[0.3em] text-center">
               Trusted by 10,000+ top-tier professionals
             </div>
@@ -358,7 +358,7 @@ export default function UpSkaleAILanding() {
                 ))}
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
 
