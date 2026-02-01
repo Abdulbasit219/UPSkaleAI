@@ -29,19 +29,6 @@ export default function WelcomeHeader({ userData, isDark }) {
 
         {/* Right Section */}
         <div className="flex items-center gap-3">
-          <button
-            className={`p-2.5 backdrop-blur-sm text-white rounded-lg border transition-all hover:scale-105 relative ${
-              isDark
-                ? "bg-slate-800/50 border-slate-700 hover:bg-slate-700"
-                : "bg-white/80 border-gray-300 hover:bg-white"
-            }`}
-          >
-            <Bell
-              className={`w-5 h-5 ${isDark ? "text-white" : "text-gray-700"}`}
-            />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
-
           <Link
             href="learning"
             className="px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-2 hover:scale-105"

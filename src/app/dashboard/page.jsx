@@ -16,6 +16,7 @@ import RecentActivityCard from "@/components/profile/recentActivity/RecentActivi
 
 import { fetchProfile } from "@/store/slices/profileSlice";
 import { fetchEnrolledCourses } from "@/store/slices/enrolledCoursesSlice";
+import AppliedJobsCard from "@/components/dashboard/user/AppliedJobsCard";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
@@ -30,6 +31,9 @@ export default function Dashboard() {
   const user = session?.user;
 
   const [tasks, setTasks] = useState([]);
+  const [appliedJobs, setAppliedJobs] = useState([]);
+  const [applicationsLoading, setApplicationsLoading] = useState(false);
+
   const [recommendedCourses, setRecommendedCourses] = useState([]);
 
   /* ================= AUTH ================= */
@@ -51,6 +55,7 @@ export default function Dashboard() {
     if (!enrolledCourses.length) dispatch(fetchEnrolledCourses());
 
     fetchTodayTasks();
+    fetchAppliedJobs();
   }, [status]);
 
   /* ================= API CALLS ================= */
@@ -97,6 +102,22 @@ export default function Dashboard() {
       console.error(err);
     }
   };
+
+  const fetchAppliedJobs = useCallback(async () => {
+    try {
+      setApplicationsLoading(true);
+
+      const { data } = await axios.get("/api/jobs/applications");
+
+      if (data?.success) {
+        setAppliedJobs(data.data);
+      }
+    } catch (err) {
+      console.error("Applications fetch error:", err);
+    } finally {
+      setApplicationsLoading(false);
+    }
+  }, []);
 
   /* ================= DERIVED DATA ================= */
   const userData = useMemo(
@@ -215,11 +236,14 @@ export default function Dashboard() {
           </div>
 
           <div className="space-y-6">
-            <TodayGoals
-              todayTasks={tasks}
+            {/* <TodayGoals
+              todayTasks={tasks} 
               onToggleTask={toggleTask}
               isDark={isDark}
             />
+            */}
+
+            <AppliedJobsCard jobs={appliedJobs} isDark={isDark} />
 
             <RecentActivityCard
               recentActivity={profile?.recentActivity}

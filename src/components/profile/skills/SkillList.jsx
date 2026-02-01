@@ -2,9 +2,31 @@ import React, { useState } from "react";
 import SkillCard from "./SkillCard";
 import { BarChart3, Plus } from "lucide-react";
 import AddSkillModal from "./AddSkillModal";
+import EditSkillModal from "./EditSkillModal";
 
-const SkillList = ({ isDark, handleAddSkill, skills }) => {
+const SkillList = ({
+  isDark,
+  handleAddSkill,
+  handleUpdateSkill,
+  handleDeleteSkill,
+  skills,
+}) => {
   const [openSkillsModal, setOpenSkillsModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [selectedSkill, setSelectedSkill] = useState(null);
+
+  const handleEdit = (skill) => {
+    setSelectedSkill(skill);
+    setOpenEditModal(true);
+  };
+
+  const handleDelete = (skill) => {
+    if (
+      window.confirm(`Are you sure you want to delete "${skill.skillName}"?`)
+    ) {
+      handleDeleteSkill(skill);
+    }
+  };
 
   return (
     <div
@@ -40,7 +62,13 @@ const SkillList = ({ isDark, handleAddSkill, skills }) => {
       {/* SKILL LIST */}
       <div className="space-y-3">
         {skills?.map((skill, index) => (
-          <SkillCard key={index} skill={skill} isDark={isDark} />
+          <SkillCard
+            key={skill._id || index}
+            skill={skill}
+            isDark={isDark}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         ))}
       </div>
 
@@ -50,6 +78,16 @@ const SkillList = ({ isDark, handleAddSkill, skills }) => {
           setOpenSkillsModal={setOpenSkillsModal}
           isDark={isDark}
           handleAddSkill={handleAddSkill}
+        />
+      )}
+
+      {openEditModal && selectedSkill && (
+        <EditSkillModal
+          openEditModal={openEditModal}
+          setOpenEditModal={setOpenEditModal}
+          isDark={isDark}
+          handleUpdateSkill={handleUpdateSkill}
+          skill={selectedSkill}
         />
       )}
     </div>

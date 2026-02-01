@@ -15,13 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const AddSkillModal = ({
-  openSkillsModal,
-  setOpenSkillsModal,
+const EditSkillModal = ({
+  openEditModal,
+  setOpenEditModal,
   isDark,
-  handleAddSkill,
+  handleUpdateSkill,
+  skill,
 }) => {
   const [localSkill, setLocalSkill] = useState({
     skillName: "",
@@ -30,7 +31,16 @@ const AddSkillModal = ({
   });
   const [error, setError] = useState("");
 
-  // Skill level configuration
+  useEffect(() => {
+    if (skill) {
+      setLocalSkill({
+        skillName: skill.skillName || "",
+        level: skill.level || "",
+        lastPracticed: skill.lastPracticed || "",
+      });
+    }
+  }, [skill]);
+
   const skillLevels = {
     beginner: {
       progress: 25,
@@ -66,7 +76,6 @@ const AddSkillModal = ({
   };
 
   const handleSubmit = () => {
-    // Validation
     if (!localSkill.skillName.trim()) {
       setError("Skill name is required");
       return;
@@ -82,12 +91,11 @@ const AddSkillModal = ({
       return;
     }
 
-    // Get level config
     const normalizedLevel = localSkill.level.toLowerCase();
     const levelConfig = skillLevels[normalizedLevel];
 
-    // Prepare skill data
     const skillData = {
+      skillId: skill._id,
       skillName: localSkill.skillName.trim(),
       level: levelConfig.label,
       progress: levelConfig.progress,
@@ -95,19 +103,18 @@ const AddSkillModal = ({
       colorClass: levelConfig.color,
     };
 
-    handleAddSkill(skillData);
-    setLocalSkill({ skillName: "", level: "", lastPracticed: "" });
+    handleUpdateSkill(skillData);
     setError("");
-    setOpenSkillsModal(false);
+    setOpenEditModal(false);
   };
 
   return (
-    <Dialog open={openSkillsModal} onOpenChange={setOpenSkillsModal}>
+    <Dialog open={openEditModal} onOpenChange={setOpenEditModal}>
       <DialogContent
         className={`${isDark ? "bg-slate-900 text-white" : "bg-white"}`}
       >
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold">Add New Skill</DialogTitle>
+          <DialogTitle className="text-lg font-bold">Edit Skill</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 mt-3">
@@ -161,8 +168,7 @@ const AddSkillModal = ({
           <Button
             variant="outline"
             onClick={() => {
-              setOpenSkillsModal(false);
-              setLocalSkill({ skillName: "", level: "", lastPracticed: "" });
+              setOpenEditModal(false);
               setError("");
             }}
             className={`${isDark ? "border-slate-700 text-white hover:bg-slate-800" : ""}`}
@@ -171,9 +177,9 @@ const AddSkillModal = ({
           </Button>
           <Button
             onClick={handleSubmit}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
+            className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600"
           >
-            Add Skill
+            Update Skill
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -181,4 +187,4 @@ const AddSkillModal = ({
   );
 };
 
-export default AddSkillModal;
+export default EditSkillModal;

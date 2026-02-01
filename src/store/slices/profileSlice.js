@@ -94,6 +94,41 @@ export const addSkill = createAsyncThunk(
   }
 );
 
+export const updateSkill = createAsyncThunk(
+  "profile/updateSkill",
+  async (
+    { skillId, skillName, level, lastPracticed, progress },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.put("/api/user/profile/skills", {
+        skillId,
+        skillName,
+        level,
+        lastPracticed,
+        progress,
+      });
+      return response.data.skill;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to update skill");
+    }
+  }
+);
+
+export const deleteSkill = createAsyncThunk(
+  "profile/deleteSkill",
+  async ({ skillId, skillName }, { rejectWithValue }) => {
+    try {
+      await axios.delete("/api/user/profile/skills", {
+        data: { skillId, skillName },
+      });
+      return skillId;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to delete skill");
+    }
+  }
+);
+
 // Async thunk to delete cover photo
 export const deleteCoverPhoto = createAsyncThunk(
   "profile/deleteCoverPhoto",
@@ -357,6 +392,24 @@ const profileSlice = createSlice({
           state.data.skills.push(action.payload);
         }
       })
+      .addCase(updateSkill.fulfilled, (state, action) => {
+        if (state.data?.skills) {
+          const index = state.data.skills.findIndex(
+            (skill) => skill._id === action.payload._id
+          );
+          if (index !== -1) {
+            state.data.skills[index] = action.payload;
+          }
+        }
+      })
+
+      .addCase(deleteSkill.fulfilled, (state, action) => {
+        if (state.data?.skills) {
+          state.data.skills = state.data.skills.filter(
+            (skill) => skill._id !== action.payload
+          );
+        }
+      })
 
       .addCase(fetchLearningPath.pending, (state) => {
         state.learningPathLoading = true;
@@ -395,7 +448,7 @@ const profileSlice = createSlice({
           );
         }
       })
-      
+
       .addCase(addEducation.fulfilled, (state, action) => {
         if (state.data?.education) {
           state.data.education.push(action.payload);

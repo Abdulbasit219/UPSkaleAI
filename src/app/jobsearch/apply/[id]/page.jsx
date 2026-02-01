@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   ArrowLeft,
   Send,
@@ -29,13 +30,16 @@ import {
   Shield,
   IdCardLanyard,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchProfile } from "@/store/slices/profileSlice";
 import BackgroundPattern from "@/components/ui/BackgroundPattern";
 import Link from "next/link";
 import { jobsApi } from "@/lib/api.config";
 
 export default function QuickApplyPage({ params }) {
   const { id } = React.use(params);
+  const dispatch = useDispatch();
+  const { data: session } = useSession(); // Get session from NextAuth
   const [currentStep, setCurrentStep] = useState(1);
   const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -56,6 +60,34 @@ export default function QuickApplyPage({ params }) {
   const theme = useSelector((state) => state.theme.mode);
   const isDark = theme === "dark";
   const [jobDetails, setJobDetails] = useState(null);
+  
+  // Get profile data from Redux store
+  const profileData = useSelector((state) => state.profile.data);
+  const profileLoading = useSelector((state) => state.profile.loading);
+
+  // Fetch profile data on component mount
+  useEffect(() => {
+    if (!profileData && !profileLoading) {
+      dispatch(fetchProfile());
+    }
+  }, [dispatch, profileData, profileLoading]);
+
+  // Auto-fill form data when profile or session is loaded
+  useEffect(() => {
+    if (profileData || session?.user) {
+      setFormData((prev) => ({
+        ...prev,
+        // Use profile data first, then session data, then keep previous value
+        fullName: profileData?.name || session?.user?.name || prev.fullName,
+        email: session?.user?.email || prev.email,
+        phone: profileData?.phone || session?.user?.phone || prev.phone,
+        location: profileData?.location || prev.location,
+        github: profileData?.socialLinks?.github || prev.github,
+        linkedin: profileData?.socialLinks?.linkedin || prev.linkedin,
+        portfolio: profileData?.socialLinks?.website || prev.portfolio,
+      }));
+    }
+  }, [profileData, session]);
 
   const getJobDetails = async () => {
     if (!id) return;
@@ -232,18 +264,22 @@ export default function QuickApplyPage({ params }) {
                 has been submitted successfully.
               </p>
               <div className="space-y-3">
-                <button className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all">
-                  Track Application
-                </button>
-                <button
-                  className={`w-full py-3 rounded-xl font-semibold transition-all border ${
-                    isDark
-                      ? "bg-slate-800 text-white border-slate-700 hover:bg-slate-700"
-                      : "bg-white text-gray-900 border-gray-300 hover:bg-gray-100"
-                  }`}
-                >
-                  Browse More Jobs
-                </button>
+                <Link href="/dashboard">
+                  <button className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all">
+                    Track Application
+                  </button>
+                </Link>
+                <Link href="/jobsearch">
+                  <button
+                    className={`w-full py-3 rounded-xl font-semibold transition-all border ${
+                      isDark
+                        ? "bg-slate-800 text-white border-slate-700 hover:bg-slate-700"
+                        : "bg-white text-gray-900 border-gray-300 hover:bg-gray-100"
+                    }`}
+                  >
+                    Browse More Jobs
+                  </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -388,6 +424,35 @@ export default function QuickApplyPage({ params }) {
                     >
                       Personal Information
                     </h2>
+
+                    {/* Show auto-fill notification if profile data or session is loaded */}
+                    {(profileData || session?.user) && (
+                      <div
+                        className={`p-4 rounded-xl border flex items-start gap-3 ${
+                          isDark
+                            ? "bg-purple-500/10 border-purple-500/20"
+                            : "bg-purple-50 border-purple-300/20"
+                        }`}
+                      >
+                        <Sparkles className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p
+                            className={`text-sm font-medium ${
+                              isDark ? "text-white" : "text-gray-900"
+                            }`}
+                          >
+                            Auto-filled from your profile
+                          </p>
+                          <p
+                            className={`text-xs mt-1 ${
+                              isDark ? "text-gray-400" : "text-gray-600"
+                            }`}
+                          >
+                            We've pre-filled your information. Feel free to edit as needed.
+                          </p>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
@@ -995,7 +1060,7 @@ export default function QuickApplyPage({ params }) {
                               }
                             >
                               {formData.resume
-                                ? formData.resume.name
+                                ? formData.resumeName || "Uploaded"
                                 : "Not uploaded"}
                             </span>
                           </div>

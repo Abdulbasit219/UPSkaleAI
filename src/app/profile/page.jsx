@@ -20,9 +20,11 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import {
   addSkill,
   deleteProjectAction,
+  deleteSkill,
   fetchLearningPath,
   fetchProfile,
   updateProfile,
+  updateSkill,
 } from "@/store/slices/profileSlice";
 import CurrentLearningPath from "@/components/profile/CurrentLearningPath";
 import ExperienceSection from "@/components/profile/ExperienceSection";
@@ -89,13 +91,36 @@ export default function ProfilePage() {
           skillName: skillData.skillName,
           level: skillData.level,
           lastPracticed: skillData.lastPracticed,
-        }),
+        })
       ).unwrap();
       toast.success("Skill added successfully!");
       return true;
     } catch (error) {
       toast.error(error?.message || "Failed to add skill");
       return false;
+    }
+  };
+
+  const handleUpdateSkill = async (skillData) => {
+    try {
+      await dispatch(updateSkill(skillData)).unwrap();
+      toast.success("Skill Updated Successfully");
+    } catch (error) {
+      toast.error("Error");
+    }
+  };
+
+  const handleDeleteSkill = async (skill) => {
+    try {
+      await dispatch(
+        deleteSkill({
+          skillId: skill._id,
+          skillName: skill.skillName,
+        })
+      ).unwrap();
+      toast.success("skill deleted");
+    } catch (error) {
+      toast.error("Error");
     }
   };
 
@@ -124,7 +149,7 @@ export default function ProfilePage() {
         ((profile?.projects?.length || 0) * 20 +
           (profile?.streak || 0) * 5 +
           (profile?.badges?.length || 0) * 10) /
-          3,
+          3
       )}%`,
       label: "Career Ready",
       color: "from-green-500 to-emerald-500",
@@ -190,10 +215,12 @@ export default function ProfilePage() {
             <SkillList
               isDark={isDark}
               handleAddSkill={handleAddSkill}
+              handleUpdateSkill={handleUpdateSkill}
+              handleDeleteSkill={handleDeleteSkill}
               skills={profile?.skills}
             />
             <EducationSection education={profile?.education} isDark={isDark} />
-            
+
             <ProjectPortfolio
               profile={profile}
               isDark={isDark}
