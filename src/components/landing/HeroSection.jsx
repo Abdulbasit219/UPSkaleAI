@@ -102,8 +102,9 @@ export default function HeroSection() {
         <div className="flex flex-col sm:flex-row gap-5 justify-center items-center animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-300">
           <Link
             href="/signup"
-            className={`group ${!isDark ? "border border-black": ""} relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.5)] flex items-center gap-2 overflow-hidden"
-          `}>
+            className={`group ${!isDark ? "border border-black" : ""} relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.5)] flex items-center gap-2 overflow-hidden"
+          `}
+          >
             <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-10 transition-opacity" />
             <Sparkles className="w-5 h-5 text-purple-600" />
             <span>Start Free Assessment</span>
@@ -124,7 +125,7 @@ export default function HeroSection() {
         </div>
 
         {/* Stats / Social Proof - Minimalist */}
-        <div className="mt-20 pt-10 border-t border-white/5 animate-in fade-in slide-in-from-bottom-20 duration-1000 delay-500">
+        {/* <div className="mt-20 pt-10 border-t border-white/5 animate-in fade-in slide-in-from-bottom-20 duration-1000 delay-500">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             {[
               { label: "Active Learners", value: "10K+" },
@@ -146,7 +147,7 @@ export default function HeroSection() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Bottom Fade */}

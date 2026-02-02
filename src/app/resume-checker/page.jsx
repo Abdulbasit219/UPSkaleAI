@@ -9,6 +9,8 @@ import {
   Crown,
   Sparkles,
 } from "lucide-react";
+import Spotlight from "@/components/ui/Spotlight";
+import BackgroundPattern from "@/components/ui/BackgroundPattern";
 import CTABanner from "@/components/ui/CTABanner";
 import {
   ResumeUpload,
@@ -285,7 +287,7 @@ export default function ATSResumeChecker() {
       // Parse the AI response into structured data for the UI
       const parsedResults = parseAnalysisResponse(
         data.analysis,
-        data.parsed.score
+        data.parsed.score,
       );
 
       setResults(parsedResults);
@@ -309,11 +311,14 @@ export default function ATSResumeChecker() {
   return (
     <div
       className={`min-h-screen pt-24 pb-12 transition-colors duration-300 ${
-        isDark
-          ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white"
-          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50 text-gray-900"
+        isDark ? "bg-slate-950 text-white" : "bg-slate-50 text-gray-900"
       }`}
     >
+      <BackgroundPattern />
+      <Spotlight
+        className="-top-40 left-0 md:left-60 md:-top-20"
+        fill={isDark ? "white" : "#a855f7"}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h1

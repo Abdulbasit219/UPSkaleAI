@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Spotlight from "@/components/ui/Spotlight";
+import BackgroundPattern from "@/components/ui/BackgroundPattern";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -27,7 +29,7 @@ export default function ForgotPasswordPage() {
       }
     } catch (error) {
       toast.error(
-        error?.response?.data?.message || "Something went wrong, try again"
+        error?.response?.data?.message || "Something went wrong, try again",
       );
     } finally {
       setIsLoading(false);
@@ -37,11 +39,14 @@ export default function ForgotPasswordPage() {
   return (
     <div
       className={`min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${
-        isDark
-          ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950"
-          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50"
+        isDark ? "bg-slate-950 text-white" : "bg-slate-50 text-gray-900"
       }`}
     >
+      <BackgroundPattern />
+      <Spotlight
+        className="-top-40 left-0 md:left-60 md:-top-20"
+        fill={isDark ? "white" : "#a855f7"}
+      />
       <div className="max-w-md w-full relative z-10">
         <div
           className={`backdrop-blur-xl border rounded-3xl p-8 shadow-2xl ${
@@ -62,7 +67,9 @@ export default function ForgotPasswordPage() {
                 className={`w-8 h-8 ${isDark ? "text-purple-400" : "text-purple-600"}`}
               />
             </div>
-            <h2 className={`text-3xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
+            <h2
+              className={`text-3xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}
+            >
               Forgot Password?
             </h2>
             <p className={isDark ? "text-gray-400" : "text-gray-600"}>
@@ -82,7 +89,9 @@ export default function ForgotPasswordPage() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className={`h-5 w-5 ${isDark ? "text-gray-500" : "text-gray-400"}`} />
+                  <Mail
+                    className={`h-5 w-5 ${isDark ? "text-gray-500" : "text-gray-400"}`}
+                  />
                 </div>
                 <input
                   id="email"

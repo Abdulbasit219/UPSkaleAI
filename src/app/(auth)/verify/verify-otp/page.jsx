@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import axios from "axios";
 import { useSearchParams, useRouter } from "next/navigation";
+import Spotlight from "@/components/ui/Spotlight";
+import BackgroundPattern from "@/components/ui/BackgroundPattern";
 
 export default function ResetPasswordPage() {
   const [otp, setOtp] = useState("");
@@ -32,7 +34,7 @@ export default function ResetPasswordPage() {
 
       if (res.data.success) {
         toast.success("Password reset successfully!");
-        router.push("/sign-in"); 
+        router.push("/sign-in");
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to reset password");
@@ -44,11 +46,14 @@ export default function ResetPasswordPage() {
   return (
     <div
       className={`min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${
-        isDark
-          ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950"
-          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50"
+        isDark ? "bg-slate-950 text-white" : "bg-slate-50 text-gray-900"
       }`}
     >
+      <BackgroundPattern />
+      <Spotlight
+        className="-top-40 left-0 md:left-60 md:-top-20"
+        fill={isDark ? "white" : "#a855f7"}
+      />
       <div className="max-w-md w-full relative z-10">
         <div
           className={`backdrop-blur-xl border rounded-3xl p-8 shadow-2xl ${
@@ -77,7 +82,9 @@ export default function ResetPasswordPage() {
               Reset Password
             </h2>
             <p className={isDark ? "text-gray-400" : "text-gray-600"}>
-              Enter the OTP sent to <span className="font-semibold">{email}</span> and set a new password.
+              Enter the OTP sent to{" "}
+              <span className="font-semibold">{email}</span> and set a new
+              password.
             </p>
           </div>
 

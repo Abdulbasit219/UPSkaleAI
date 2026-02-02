@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
+import Spotlight from "@/components/ui/Spotlight";
+import BackgroundPattern from "@/components/ui/BackgroundPattern";
 
 const Page = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,11 +57,14 @@ const Page = () => {
   return (
     <div
       className={`min-h-screen flex items-center justify-center p-4 ${
-        isDark
-          ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950"
-          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50"
+        isDark ? "bg-slate-950 text-white" : "bg-slate-50 text-gray-900"
       }`}
     >
+      <BackgroundPattern />
+      <Spotlight
+        className="-top-40 left-0 md:left-60 md:-top-20"
+        fill={isDark ? "white" : "#a855f7"}
+      />
       <div className="w-full max-w-md relative z-10">
         <div
           className={`backdrop-blur-xl border rounded-2xl p-8 md:p-10 shadow-2xl ${
