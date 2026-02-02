@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import BackgroundPattern from "@/components/ui/BackgroundPattern";
+import Spotlight from "@/components/ui/Spotlight";
 import SharedCTABanner from "@/components/ui/CTABanner";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -291,13 +292,15 @@ export default function CareerPathPage() {
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
-        isDark
-          ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950"
-          : "bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50"
+        isDark ? "bg-slate-950 text-white" : "bg-slate-50 text-gray-900"
       } pt-16 sm:pt-20`}
     >
       {/* Background Pattern */}
       <BackgroundPattern />
+      <Spotlight
+        className="-top-40 left-0 md:left-60 md:-top-20"
+        fill={isDark ? "white" : "#a855f7"}
+      />
 
       {isLoading ? (
         <div className="flex items-center justify-center min-h-[60vh]">
