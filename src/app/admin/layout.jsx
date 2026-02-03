@@ -45,9 +45,9 @@ export default function AdminLayout({ children }) {
     { name: "User Management", href: "/admin/users", icon: Users },
     { name: "Company Management", href: "/admin/companies", icon: Building2 },
     { name: "Job Posts", href: "/admin/jobs", icon: Briefcase },
-    { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-    { name: "Moderation", href: "/admin/moderation", icon: Flag },
-    { name: "Settings", href: "/admin/settings", icon: Settings },
+    // { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+    // { name: "Moderation", href: "/admin/moderation", icon: Flag },
+    // { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
   const isActive = (href) => {
