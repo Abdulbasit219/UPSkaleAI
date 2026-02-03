@@ -12,19 +12,19 @@ import {
 export const stats = [
   {
     label: "Total Jobs",
-    value: "12,345",
+    value: "8",
     icon: <Briefcase className="w-6 h-6" />,
     color: "from-purple-500 to-pink-500",
   },
   {
     label: "New Today",
-    value: "456",
+    value: "1",
     icon: <Zap className="w-6 h-6" />,
     color: "from-blue-500 to-cyan-500",
   },
   {
     label: "Remote Options",
-    value: "7,890",
+    value: "5",
     icon: <Globe className="w-6 h-6" />,
     color: "from-green-500 to-emerald-500",
   },
@@ -37,15 +37,15 @@ export const stats = [
 ];
 
 export const filters = [
-  { id: "all", name: "All Jobs", icon: <Briefcase />, count: 12345 },
-  { id: "full-time", name: "Full-time", icon: <Clock />, count: 5678 },
-  { id: "part-time", name: "Part-time", icon: <Clock />, count: 1234 },
-  { id: "remote", name: "Remote", icon: <Globe />, count: 7890 },
-  { id: "internship", name: "Internship", icon: <Award />, count: 567 },
-  // { id: "contract", name: "Contract", icon: <Code />, count: 890 },
-  // { id: "featured", name: "Featured", icon: <Star />, count: 123 },
-  { id: "recommended", name: "Recommended", icon: <Sparkles />, count: 123 },
-  { id: "urgent", name: "Urgent", icon: <Zap />, count: 45 },
+  { id: "all", name: "All Jobs", icon: <Briefcase />, count: 8 },
+  { id: "full-time", name: "Full-time", icon: <Clock />, count: 7 },
+  { id: "part-time", name: "Part-time", icon: <Clock />, count: 0 },
+  { id: "remote", name: "Remote", icon: <Globe />, count: 5 },
+  { id: "internship", name: "Internship", icon: <Award />, count: 0 },
+  // { id: "contract", name: "Contract", icon: <Code />, count: 1 },
+  // { id: "featured", name: "Featured", icon: <Star />, count: 2 },
+  { id: "recommended", name: "Recommended", icon: <Sparkles />, count: 8 },
+  { id: "urgent", name: "Urgent", icon: <Zap />, count: 1 },
 ];
 
 export const featuredCompanies = [

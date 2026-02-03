@@ -170,8 +170,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* User & Company Growth */}
+      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div
           className={`rounded-xl border backdrop-blur-xl p-6 ${
             isDark
@@ -211,13 +210,10 @@ export default function AdminDashboard() {
                   strokeWidth={2}
                   name="Users"
                 />
-                {/* Companies line suppressed as we just have users for now in API */}
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
-
-        {/* Job Posting Trends */}
         <div
           className={`rounded-xl border backdrop-blur-xl p-6 ${
             isDark
@@ -254,7 +250,7 @@ export default function AdminDashboard() {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Activity */}
