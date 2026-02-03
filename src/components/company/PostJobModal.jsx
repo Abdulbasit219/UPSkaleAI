@@ -100,10 +100,12 @@ export default function PostJobModal({ isOpen, onClose, isDark, onJobPosted }) {
       });
 
       const data = await response.json();
-
       if (!response.ok) {
         toast.error(data.message || "Failed to create job");
+        return;
       }
+
+      toast.success("Job posted successfully 🎉");
 
       setSuccess(true);
       setTimeout(() => {
