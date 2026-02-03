@@ -68,7 +68,12 @@ export default function UserManagement() {
       user.email.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
       statusFilter === "all" || user.status === statusFilter;
-    return matchesSearch && matchesStatus;
+
+    const isExcludedRole =
+      user.role?.toLowerCase() === "company" ||
+      user.role?.toLowerCase() === "admin";
+
+    return matchesSearch && matchesStatus && !isExcludedRole;
   });
 
   const getStatusColor = (status) => {
@@ -161,7 +166,7 @@ export default function UserManagement() {
       render: (user) => (
         <span
           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-            user.status
+            user.status,
           )}`}
         >
           {user.status}
@@ -307,7 +312,7 @@ export default function UserManagement() {
                 <div className="flex items-center gap-4 mt-4">
                   <span
                     className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
-                      selectedUser.status
+                      selectedUser.status,
                     )}`}
                   >
                     {selectedUser.status}
