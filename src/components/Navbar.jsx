@@ -48,7 +48,6 @@ const Navbar = () => {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
-  // Refs for detecting outside clicks
   const userDropdownRef = useRef(null);
   const userButtonRef = useRef(null);
 
@@ -126,7 +125,6 @@ const Navbar = () => {
   // Role-based main navigation items
   const getMainNavItems = () => {
     if (!session) {
-      // Unauthenticated users see default items
       return [
         { name: "Home", href: "/", icon: <Home className="w-4 h-4" /> },
         {
