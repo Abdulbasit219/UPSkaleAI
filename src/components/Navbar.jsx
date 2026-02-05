@@ -62,7 +62,6 @@ const Navbar = () => {
     setMounted(true);
   }, []);
 
-  // Use 'dark' as default for server-side rendering to prevent hydration mismatch
   const theme = mounted ? themeMode : "dark";
   const isDark = theme === "dark";
 
@@ -72,12 +71,10 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close user dropdown when route changes
   useEffect(() => {
     setIsUserDropdownOpen(false);
   }, [pathname]);
 
-  // Close user dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -408,26 +405,23 @@ const Navbar = () => {
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-2.5 group"
+              className="flex items-center group"
               onClick={() => setIsMenuOpen(false)}
             >
-              <div className="relative w-10 h-10 flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-tr from-purple-600 to-pink-600 rounded-xl blur-[2px] opacity-70 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div
-                  className={`relative w-full h-full rounded-xl flex items-center justify-center border backdrop-blur-sm transition-all duration-300 ${
-                    isDark
-                      ? "bg-slate-900/90 border-white/10 group-hover:border-purple-500/50"
-                      : "bg-white/90 border-slate-200 group-hover:border-purple-500/50"
-                  }`}
-                >
-                  <Sparkles className="w-5 h-5 text-purple-500 fill-purple-500/20" />
-                </div>
+              <div className="relative">
+                <img
+                  src="/logo.png"
+                  alt="UpSkaleAI Logo"
+                  className="h-16 mt-2 sm:h-22 w-auto object-contain transition-all duration-500 group-hover:scale-110 drop-shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+                />
               </div>
-              <div className="font-bold text-xl tracking-tight leading-none">
-                <span className={isDark ? "text-white" : "text-slate-900"}>
-                  UpSkale
-                </span>
-                <span className="text-purple-500">AI</span>
+              <div className="flex flex-col -ml-3 sm:-ml-5">
+                <div className="font-extrabold text-2xl sm:text-3xl tracking-tighter leading-none flex items-center">
+                  <span className={isDark ? "text-white" : "text-slate-900"}>
+                    UpSkale
+                  </span>
+                  <span className="text-purple-500">AI</span>
+                </div>
               </div>
             </Link>
 
