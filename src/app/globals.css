@@ -148,4 +148,30 @@ body {
   .animate-spotlight {
     animation: spotlight 2s ease 0.75s 1 forwards;
   }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  @keyframes shine {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+  .group:hover .shine-effect {
+    animation: shine 1.5s ease-in-out infinite;
+  }
 }
