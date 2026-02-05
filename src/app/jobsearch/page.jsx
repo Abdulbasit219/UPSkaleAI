@@ -60,7 +60,6 @@ export default function UpSkaleAIJobs() {
       }
 
       if (response.data.success) {
-        // Handle potential naming differences between matchScore and match
         const processedJobs = (
           response.data.data.jobs ||
           response.data.data ||
@@ -164,7 +163,7 @@ export default function UpSkaleAIJobs() {
             Get AI Recommendations
           </button>
 
-          {/* Integrated Search Bar - Now properly positioned and styled */}
+          {/* Integrated Search Bar */}
           <div className="max-w-4xl mx-auto mt-10">
             <div
               className={`group flex flex-col sm:flex-row gap-2 p-2 rounded-3xl border transition-all duration-300 ${
