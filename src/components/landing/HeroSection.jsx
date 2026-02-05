@@ -102,7 +102,7 @@ export default function HeroSection() {
         <div className="flex flex-col sm:flex-row gap-5 justify-center items-center animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-300">
           <Link
             href="/signup"
-            className={`group ${!isDark ? "border border-black" : ""} relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.5)] flex items-center gap-2 overflow-hidden"
+            className={`group ${!isDark ? "border border-black" : ""} relative px-8 py-4 bg-white text-black rounded-full font-bold md:text-lg text-sm transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.5)] flex items-center gap-2 overflow-hidden"
           `}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-10 transition-opacity" />
