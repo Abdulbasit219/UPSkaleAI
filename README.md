@@ -205,24 +205,12 @@
   </tr>
   <tr>
     <td align="center" width="20%">
-      <img src="https://skillicons.dev/icons?i=javascript" width="65" height="65" alt="JavaScript" />
-      <br><b>JavaScript</b>
+      <img src="https://skillicons.dev/icons?i=python" width="65" height="65" alt="Python" />
+      <br><b>Python</b>
     </td>
     <td align="center" width="20%">
-      <img src="https://skillicons.dev/icons?i=redux" width="65" height="65" alt="Redux" />
-      <br><b>Redux Toolkit</b>
-    </td>
-    <td align="center" width="20%">
-      <img src="https://skillicons.dev/icons?i=git" width="65" height="65" alt="Git" />
-      <br><b>Git</b>
-    </td>
-    <td align="center" width="20%">
-      <img src="https://skillicons.dev/icons?i=vscode" width="65" height="65" alt="VS Code" />
-      <br><b>VS Code</b>
-    </td>
-    <td align="center" width="20%">
-      <img src="https://skillicons.dev/icons?i=vercel" width="65" height="65" alt="Vercel" />
-      <br><b>Vercel</b>
+      <img src="https://skillicons.dev/icons?i=fastapi" width="65" height="65" alt="FastAPI" />
+      <br><b>FastAPI</b>
     </td>
   </tr>
 </table>
@@ -358,19 +346,28 @@ npm run start
 
 </details>
 
-<details>
-<summary><b>🐳 Docker Setup (Alternative)</b></summary>
+<details open>
+<summary><b>Step 5: Setup Python Microservices (Optional/Recommender)</b></summary>
 
 ```bash
-# Build the image
-docker build -t upskaleai .
+# Navigate to the recommender service
+cd python-services/recommender_service
 
-# Run the container
-docker run -p 3000:3000 --env-file .env.local upskaleai
+# Create and activate virtual environment
+python -m venv venv
+# Windows:
+.\venv\Scripts\activate
+# Linux/Mac:
+# source venv/bin/activate
 
-# Using Docker Compose
-docker-compose up -d
+# Install requirements
+pip install -r requirements.txt
+
+# Start the service
+uvicorn main:app --reload --port 8000
 ```
+
+🎉 **Success!** Navigate to [http://localhost:3000](http://localhost:3000) for the main app and [http://localhost:8000/docs](http://localhost:8000/docs) for the AI API docs.
 
 </details>
 
@@ -385,139 +382,22 @@ docker-compose up -d
 Ai-Coding-Assistant-FYP/
 │
 ├── 📂 src/
-│   ├── 📂 app/                          # Next.js App Router
-│   │   ├── 🏠 page.js                   # Landing page
-│   │   ├── 📂 (auth)/                   # Auth routes group
-│   │   │   ├── 🔐 sign-in/             # Login page
-│   │   │   ├── ✍️ signup/               # Registration
-│   │   │   ├── ✉️ verify/              # Email verification
-│   │   │   └── 🔑 forgot-password/     # Password reset
-│   │   ├── 📂 api/                      # API routes
-│   │   │   ├── 👤 user/
-│   │   │   │   └── signup/route.js
-│   │   │   ├── 🔐 auth/
-│   │   │   │   └── [...nextauth]/
-│   │   │   ├── 💼 jobs/
-│   │   │   │   ├── route.js            # GET /api/jobs
-│   │   │   │   ├── [id]/route.js       # GET /api/jobs/:id
-│   │   │   │   ├── apply/route.js      # POST /api/jobs/apply
-│   │   │   │   ├── create/route.js     # POST /api/jobs/create
-│   │   │   │   ├── match/route.js      # GET /api/jobs/match
-│   │   │   │   ├── applications/route.js
-│   │   │   │   ├── saved/
-│   │   │   │   │   ├── route.js
-│   │   │   │   │   └── [id]/route.js
-│   │   │   │   └── update/[id]/route.js
-│   │   │   ├── 🏢 company/
-│   │   │   │   ├── jobs/route.js
-│   │   │   │   └── applications/route.js
-│   │   │   ├── 🤖 analyze-resume/route.js
-│   │   │   ├── ✅ verify-code/route.js
-│   │   │   ├── 🔄 resend-code/route.js
-│   │   │   ├── 📤 upload/route.js
-│   │   │   └── ✓ check-username-unique/route.js
-│   │   ├── 💼 jobsearch/                # Job search page
-│   │   │   ├── page.jsx
-│   │   │   └── details/[id]/page.jsx
-│   │   ├── 🏢 company/
-│   │   │   └── dashboard/page.jsx       # Company dashboard
-│   │   ├── 🗺️ career-path/page.jsx      # AI career mapper
-│   │   ├── 📊 assessment/page.jsx       # Skill assessment
-│   │   ├── 📄 resume-builder/page.jsx   # Resume builder
-│   │   ├── ✅ resume-checker/page.jsx   # ATS checker
-│   │   ├── 🤖 code-twin/page.jsx        # AI coding assistant
-│   │   ├── 💬 chat/page.jsx             # AI chat
-│   │   ├── 👤 profile/page.jsx          # User profile
-│   │   ├── ⚙️ settings/page.jsx         # Settings
-│   │   ├── 📚 how-it-works/page.jsx
-│   │   ├── ✨ features/page.jsx
-│   │   ├── 💰 pricing/page.jsx
-│   │   ├── 📞 contact/page.jsx
-│   │   ├── 📋 layout.js                 # Root layout
-│   │   ├── 🎨 globals.css               # Global styles
-│   │   ├── ⏳ loading.jsx               # Loading state
-│   │   └── ❌ not-found.jsx             # 404 page
-│   │
-│   ├── 📂 components/
-│   │   ├── 🧭 Navbar.jsx                # Navigation bar
-│   │   ├── 🦶 Footer.jsx                # Footer
-│   │   ├── 📜 ScrollToTop.js            # Scroll utility
-│   │   ├── 📂 ui/                        # Reusable UI components
-│   │   │   ├── button.jsx
-│   │   │   ├── input.jsx
-│   │   │   ├── label.jsx
-│   │   │   ├── separator.jsx
-│   │   │   ├── sonner.jsx               # Toast notifications
-│   │   │   ├── FeatureCard.jsx
-│   │   │   └── ... (16 components)
-│   │   ├── 📂 jobs/                      # Job-related components
-│   │   │   ├── JobCard.jsx
-│   │   │   ├── FilterPills.jsx
-│   │   │   ├── Sidebar.jsx
-│   │   │   ├── CTABanner.jsx
-│   │   │   └── data/mockJobsData.js
-│   │   └── 📂 company/                   # Company dashboard components
-│   │       ├── DashboardHeader.jsx
-│   │       ├── StatsGrid.jsx
-│   │       ├── TabNavigation.jsx
-│   │       ├── OverviewTab.jsx
-│   │       ├── JobsTab.jsx
-│   │       ├── ApplicationsTab.jsx
-│   │       └── PostJobModal.jsx
-│   │
-│   ├── 📂 lib/                           # Utilities & configs
-│   │   ├── 🔧 utils.js                  # Utility functions
-│   │   ├── 🗄️ connectDB.js             # MongoDB connection
-│   │   ├── 🌐 api.config.js             # API client (Axios)
-│   │   ├── ☁️ cloudinary.js             # Cloudinary config
-│   │   ├── 📧 nodemailer.js             # Email config
-│   │   └── 📨 resend.js                 # Resend config
-│   │
-│   ├── 📂 models/                        # MongoDB Mongoose models
-│   │   ├── AuthUser.js                  # User model
-│   │   ├── Job.js                       # Job model
-│   │   ├── JobApplication.js            # Application model
-│   │   └── SavedJob.js                  # Saved jobs model
-│   │
-│   ├── 📂 schemas/                       # Zod validation schemas
-│   │   ├── signupSchema.js
-│   │   ├── signinSchema.js
-│   │   ├── verifySchema.js
-│   │   └── jobSchema.js
-│   │
-│   ├── 📂 store/                         # Redux store
-│   │   ├── store.js
-│   │   └── slices/
-│   │       └── themeSlice.js
-│   │
-│   ├── 📂 context/                       # React contexts
-│   │   └── AuthProvider.jsx
-│   │
-│   ├── 📂 providers/                     # App providers
-│   │   └── ReduxProvider.jsx
-│   │
-│   ├── 📂 helpers/                       # Helper functions
-│   │   └── sendVerificationEmail.js
-│   │
-│   └── 🔒 middleware.js                 # Next.js middleware (auth)
+│   ├── 📂 app/                          # Next.js App Router (UI & Auth)
+│   ├── 📂 api/                          # Next.js Serverless Functions
+│   ├── 📂 components/                   # React UI Components (Shadcn/UI)
+│   ├── 📂 lib/                          # Database & API Configs
+│   ├── 📂 models/                       # Mongoose User/Job Models
+│   └── 📂 store/                         # Redux State Management
+│
+├── 📂 python-services/                  # Python Microservices
+│   ├── 📂 recommender_service/          # AI Job Matching (FastAPI)
+│   ├── 📂 resume_service/               # PDF Parsing Logic
+│   └── 📂 ai_service/                    # LLM Integration Helpers
 │
 ├── 📂 public/                            # Static assets
-│   ├── 🖼️ favicon.ico
-│   ├── 🖼️ favicon.png
-│   └── 📂 uploads/
-│
-├── 📂 emails/                            # Email templates
-│   └── VerificationEmail.jsx
-│
+├── 📂 emails/                            # Nodemailer Templates
 ├── ⚙️ .env.local                         # Environment variables
 ├── 🎨 tailwind.config.js                # Tailwind configuration
-├── ⚡ next.config.mjs                   # Next.js configuration
-├── 📦 package.json                      # Dependencies
-├── 🔧 eslint.config.mjs                 # ESLint config
-├── 📝 jsconfig.json                     # JavaScript config
-├── 🎨 postcss.config.mjs                # PostCSS config
-├── 🎨 components.json                   # Shadcn UI config
-├── 🚫 .gitignore                        # Git ignore rules
 └── 📄 README.md                         # This file
 ```
 
@@ -773,42 +653,6 @@ Content-Type: application/json
 </details>
 
 ---
-
-## 🧪 Testing
-
-### Running Tests
-
-```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm test -- --watch
-
-# Run tests with coverage
-npm test -- --coverage
-
-# Run specific test file
-npm test -- JobCard.test.js
-```
-
-### Test Structure
-
-```
-tests/
-├── unit/
-│   ├── components/
-│   │   └── JobCard.test.jsx
-│   ├── lib/
-│   │   └── utils.test.js
-│   └── models/
-│       └── Job.test.js
-├── integration/
-│   └── api/
-│       └── jobs.test.js
-└── e2e/
-    └── job-application-flow.test.js
-```
 
 ---
 
