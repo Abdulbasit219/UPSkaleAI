@@ -5,14 +5,14 @@ import { ArrowLeft, Send, Building, Target, Clock } from "lucide-react";
 import BackgroundPattern from "@/components/ui/BackgroundPattern";
 
 // Custom Hook and Components
-import { useJobApplication } from "@/components/jobs/details/useJobApplication";
-import ApplicationSuccess from "@/components/jobs/details/ApplicationSuccess";
-import ApplicationSteps from "@/components/jobs/details/ApplicationSteps";
-import PersonalDetailsForm from "@/components/jobs/details/PersonalDetailsForm";
-import ApplicationDetailsForm from "@/components/jobs/details/ApplicationDetailsForm";
-import AttachmentsForm from "@/components/jobs/details/AttachmentsForm";
-import ReviewForm from "@/components/jobs/details/ReviewForm";
-import JobSummarySidebar from "@/components/jobs/details/JobSummarySidebar";
+import { useJobApplication } from "@/components/jobs/apply/useJobApplication";
+import ApplicationSuccess from "@/components/jobs/apply/ApplicationSuccess";
+import ApplicationSteps from "@/components/jobs/apply/ApplicationSteps";
+import PersonalDetailsForm from "@/components/jobs/apply/PersonalDetailsForm";
+import ApplicationDetailsForm from "@/components/jobs/apply/ApplicationDetailsForm";
+import AttachmentsForm from "@/components/jobs/apply/AttachmentsForm";
+import ReviewForm from "@/components/jobs/apply/ReviewForm";
+import JobSummarySidebar from "@/components/jobs/apply/JobSummarySidebar";
 
 export default function QuickApplyPage({ params }) {
   const { id } = React.use(params);
